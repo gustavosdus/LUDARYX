@@ -9,7 +9,7 @@ public sealed class ArtworkService
 
     public ArtworkService()
     {
-        _directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UnifiedGameLauncher", "custom-covers");
+        _directory = Path.Combine(AppDataService.RootDirectory, "custom-covers");
         Directory.CreateDirectory(_directory);
     }
 
