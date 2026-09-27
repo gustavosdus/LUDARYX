@@ -37,6 +37,13 @@ public sealed class EAAppProvider : ClientShortcutProvider
 
     protected override string[] ExcludedShortcutNames => new[] { "EA app", "EA Desktop" };
 
+    public override Task StartClientAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        StartEaClientAllowingTrustedLocalReparse();
+        return Task.CompletedTask;
+    }
+
     // Se o EA app estava fechado, não basta esperar EADesktop.exe aparecer:
     // o processo nasce antes de a interface e os serviços do cliente estarem
     // realmente prontos para receber o comando de iniciar um jogo.
