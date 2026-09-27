@@ -1,0 +1,24 @@
+# LUDARYX 1.0.2
+
+Atualização de manutenção e qualidade de vida.
+
+## Novidades
+- Migração automática dos dados locais de %LOCALAPPDATA%\UnifiedGameLauncher para %LOCALAPPDATA%\LUDARYX, preservando o caminho antigo como fallback de segurança.
+- Status das integrações nas Configurações para Steam, Epic, GOG, Xbox/Microsoft Store, EA app, Ubisoft Connect, Battle.net, Riot, SteamGridDB e atualizações.
+- Exportação e importação de backup dos dados locais do LUDARYX.
+- Limite configurável e limpeza automática do cache de capas baixadas.
+- Logs separados por sessão e relatório de diagnóstico sanitizado.
+- Melhorias nas mensagens de falha ao iniciar jogos e indicação da integração envolvida.
+- Atualizador com resumo das notas da release e opção de lembrar mais tarde ou abrir as novidades no GitHub.
+- Melhor tratamento do fullscreen após mudança de resolução/monitor.
+- Gerenciamento de duplicatas com versão principal e opção de ocultar automaticamente versões secundárias.
+- Jogos adicionados manualmente agora permitem editar novamente executável, argumentos, URI, pasta de trabalho e execução como administrador pela tela de detalhes.
+
+## Compatibilidade
+- Windows 10/11 x64
+- Mouse e teclado
+- Controles Xbox compatíveis com XInput
+- PlayStation 5 DualSense
+
+## Atualização
+A versão 1.0.2 usa o mesmo AppId do instalador anterior e pode ser instalada por cima da 1.0.1.
