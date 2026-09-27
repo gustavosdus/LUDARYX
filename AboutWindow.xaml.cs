@@ -9,7 +9,7 @@ public partial class AboutWindow : Window
     {
         InitializeComponent();
         LocalizationService.Apply(this);
-        DiagnosticsText.Text = DiagnosticLogService.BuildDiagnosticReport();
+        DiagnosticsText.Text = DiagnosticLogService.GetSystemSummary();
         VersionText.Text = $"{LocalizationService.Translate("Versão")} {GitHubUpdateService.GetCurrentVersionDisplay()}";
     }
 
