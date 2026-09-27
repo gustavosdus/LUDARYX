@@ -3390,9 +3390,25 @@ public sealed class MetadataService
         metadata.VerticalCoverUrl = url;
 
         // Não reutiliza o header_image: a vertical do Steam é a Library Capsule 600x900.
+        // Importante: uma tentativa de revalidar/atualizar a Library Capsule nunca pode
+        // apagar a arte anterior se a CDN falhar ou retornar um arquivo inválido.
         if (!IsExpectedImageSize(metadata.VerticalCoverLocalPath, 600, 900))
-            metadata.VerticalCoverLocalPath = await DownloadCoverAsync(
+        {
+            var previousPath = metadata.VerticalCoverLocalPath;
+            var refreshed = await DownloadCoverAsync(
                 url, game.ProviderId + "_vertical", token, force: true);
+
+            if (!string.IsNullOrWhiteSpace(refreshed) &&
+                File.Exists(refreshed) &&
+                IsExpectedImageSize(refreshed, 600, 900))
+            {
+                metadata.VerticalCoverLocalPath = refreshed;
+            }
+            else
+            {
+                metadata.VerticalCoverLocalPath = previousPath;
+            }
+        }
     }
 
     private static string BuildSteamLibraryCapsuleUrl(Game game) =>
