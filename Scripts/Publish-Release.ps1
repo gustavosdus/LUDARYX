@@ -10,6 +10,12 @@ $UpdaterProject = Join-Path $ProjectRoot "Updater\LUDARYX.Updater.csproj"
 $MainPublish = Join-Path $ProjectRoot "bin\$Configuration\net8.0-windows\$Runtime\publish"
 $UpdaterPublish = Join-Path $ProjectRoot "Updater\bin\$Configuration\net8.0-windows\$Runtime\publish"
 
+$runningLudaryx = Get-Process -Name "LUDARYX" -ErrorAction SilentlyContinue
+if ($runningLudaryx) {
+    $processList = ($runningLudaryx | ForEach-Object { "PID $($_.Id)" }) -join ", "
+    throw "O LUDARYX está aberto ($processList). Encerre-o completamente, inclusive pela System Tray, antes de gerar a publicação."
+}
+
 Write-Host "Publicando LUDARYX..."
 dotnet publish $MainProject `
     -c $Configuration `
