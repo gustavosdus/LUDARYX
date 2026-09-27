@@ -49,13 +49,15 @@ dotnet run
 
 ## Publicar uma build Windows x64
 
-Use o script de publicação para gerar o launcher e o updater auxiliar juntos:
+Para gerar uma release local completa em um único comando, incluindo validação de versão, publicação, compilação do instalador e SHA-256:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File Scripts\Publish-Release.ps1
+powershell -ExecutionPolicy Bypass -File Scripts\Build-Release.ps1
 ```
 
-O script publica `LUDARYX.exe` e `LUDARYX.Updater.exe` na mesma pasta. Depois, compile `LUDARYX-Installer-1.0.2.iss` no Inno Setup para criar o instalador.
+O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.0.2.iss` com Inno Setup 6 e gera `Installer\SHA256SUMS.txt`.
+
+Para publicar apenas os executáveis, continue usando `Scripts\Publish-Release.ps1`.
 
 ## SteamGridDB
 
