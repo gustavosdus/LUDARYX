@@ -1,0 +1,172 @@
+using System.Diagnostics;
+using UnifiedGameLauncher.Models;
+
+namespace UnifiedGameLauncher.Services;
+
+public sealed class GameSessionService : IDisposable
+{
+    private readonly Dictionary<string, CancellationTokenSource> _tracking = new(StringComparer.OrdinalIgnoreCase);
+    private readonly object _sync = new();
+    private readonly GameStateService _state = new();
+
+    public bool IsRunning(Game game)
+    {
+        var processName = GetProcessName(game);
+        if (string.IsNullOrWhiteSpace(processName))
+            return false;
+
+        try
+        {
+            return Process.GetProcessesByName(processName).Any(process => !process.HasExited);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public void RefreshRunningState(IEnumerable<Game> games)
+    {
+        foreach (var game in games)
+            SetRunning(game, IsRunning(game));
+    }
+
+    public void TrackAfterLaunch(Game game, LauncherSettings settings)
+    {
+        lock (_sync)
+        {
+            if (_tracking.ContainsKey(game.ProviderId))
+                return;
+
+            var cts = new CancellationTokenSource();
+            _tracking[game.ProviderId] = cts;
+            _ = Task.Run(() => TrackSessionAsync(game, settings, cts.Token));
+        }
+    }
+
+    private async Task TrackSessionAsync(Game game, LauncherSettings settings, CancellationToken token)
+    {
+        try
+        {
+            var processName = GetProcessName(game);
+            if (string.IsNullOrWhiteSpace(processName))
+                return;
+
+            Process? process = null;
+            var waitUntil = DateTime.UtcNow.AddMinutes(2);
+
+            while (!token.IsCancellationRequested && DateTime.UtcNow < waitUntil)
+            {
+                process = FindProcess(processName);
+                if (process is not null)
+                    break;
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+            }
+
+            if (process is null)
+                return;
+
+            SetRunning(game, true);
+            var lastTick = DateTime.UtcNow;
+            var unsaved = TimeSpan.Zero;
+
+            while (!token.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), token);
+
+                if (process.HasExited)
+                    break;
+
+                var now = DateTime.UtcNow;
+                var delta = now - lastTick;
+                lastTick = now;
+                unsaved += delta;
+
+                if (unsaved >= TimeSpan.FromSeconds(30))
+                {
+                    _state.AddPlayTime(game, settings, unsaved);
+                    unsaved = TimeSpan.Zero;
+                }
+            }
+
+            if (unsaved > TimeSpan.Zero)
+                _state.AddPlayTime(game, settings, unsaved);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException($"Session tracking failed for {game.Name}", ex);
+        }
+        finally
+        {
+            SetRunning(game, false);
+            lock (_sync)
+            {
+                if (_tracking.Remove(game.ProviderId, out var cts))
+                    cts.Dispose();
+            }
+        }
+    }
+
+    private static Process? FindProcess(string processName)
+    {
+        try
+        {
+            return Process.GetProcessesByName(processName)
+                .FirstOrDefault(process =>
+                {
+                    try { return !process.HasExited; }
+                    catch { return false; }
+                });
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string? GetProcessName(Game game)
+    {
+        if (string.IsNullOrWhiteSpace(game.Executable))
+            return null;
+
+        try
+        {
+            return Path.GetFileNameWithoutExtension(game.Executable);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static void SetRunning(Game game, bool running)
+    {
+        var dispatcher = System.Windows.Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.CheckAccess())
+        {
+            game.IsRunning = running;
+            return;
+        }
+
+        dispatcher.BeginInvoke(() => game.IsRunning = running);
+    }
+
+    public void Dispose()
+    {
+        List<CancellationTokenSource> sources;
+        lock (_sync)
+        {
+            sources = _tracking.Values.ToList();
+            _tracking.Clear();
+        }
+
+        foreach (var source in sources)
+        {
+            source.Cancel();
+            source.Dispose();
+        }
+    }
+}
