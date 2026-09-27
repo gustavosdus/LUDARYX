@@ -115,6 +115,12 @@ Binários, instaladores e ZIPs compilados devem ser publicados em **GitHub Relea
 
 A build inicial pode ser distribuída sem assinatura digital, mas o Windows SmartScreen pode apresentar aviso de editor desconhecido. Não afirme que uma build é assinada se ela não for.
 
+## Code signing policy
+
+Consulte [CODE-SIGNING-POLICY.md](CODE-SIGNING-POLICY.md).
+
+O projeto está se preparando para solicitar assinatura gratuita para software open source pela SignPath Foundation. Até que uma build assinada seja efetivamente publicada e verificável, as releases devem continuar sendo tratadas como não assinadas.
+
 ## Desenvolvimento com auxílio de IA
 
 O LUDARYX foi desenvolvido com o auxílio de ferramentas de inteligência artificial, incluindo o **ChatGPT**, em tarefas como geração e revisão de código, correção de erros, documentação, refinamento da interface e organização do projeto.
