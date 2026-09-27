@@ -30,15 +30,22 @@ public sealed class JsonSettingsService
 
         if (TryLoadFile(_backupFile, out settings, out sourceJson))
         {
+            DiagnosticLogService.LogInfo("settings.json could not be loaded; restored settings from settings.backup.json.");
             MigrateLegacySecrets(settings, sourceJson);
             try
             {
                 // Restaura o principal para que os próximos carregamentos voltem ao caminho normal.
                 File.Copy(_backupFile, _file, true);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                DiagnosticLogService.LogException("Could not restore settings.json from backup", ex);
+            }
             return settings;
         }
+
+        if (File.Exists(_file) || File.Exists(_backupFile))
+            DiagnosticLogService.LogInfo("Both settings.json and settings.backup.json were unavailable or invalid; defaults will be used.");
 
         return new LauncherSettings();
     }
@@ -72,8 +79,9 @@ public sealed class JsonSettingsService
             settings.SteamGridDbApiKey = SecretProtectionService.Unprotect(settings.ProtectedSteamGridDbApiKey);
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLogService.LogException($"Could not load settings file {Path.GetFileName(path)}", ex);
             return false;
         }
     }
