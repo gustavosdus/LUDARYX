@@ -138,7 +138,17 @@ public sealed class XboxProvider : IGameProvider
         "dolby access", "dts sound unbound",
         "realtek audio console", "realtek audio control",
         "intel graphics command center", "amd software",
-        "expressvpn", "nordvpn", "surfshark", "proton vpn"
+        "expressvpn", "nordvpn", "surfshark", "proton vpn",
+        "backup do windows", "backup do windows 7", "windows backup",
+        "calendar", "calendário", "calendario",
+        "captura e esboço", "snip & sketch", "snip and sketch",
+        "configurações", "configuracoes", "settings",
+        "mail", "email", "correio",
+        "mensagens da operadora", "messaging", "messaging by microsoft",
+        "movie maker", "windows movie maker",
+        "planos de celular", "mobile plans",
+        "print 3d", "3d print",
+        "backup", "camera", "clock", "alarme", "relógio", "relogio"
     };
 
     private static readonly string[] NonGamePublisherFragments =
@@ -171,7 +181,24 @@ public sealed class XboxProvider : IGameProvider
         "Intel Graphics Command Center",
         "AMD Software",
         "NVIDIA Control Panel",
-        "Microsoft PC Manager"
+        "Microsoft PC Manager",
+        "Backup do Windows",
+        "Calendário",
+        "Calendar",
+        "Captura e Esboço",
+        "Configurações",
+        "Settings",
+        "Câmera",
+        "Camera",
+        "Email",
+        "Mail",
+        "Mensagens da Operadora",
+        "Movie Maker",
+        "Planos de Celular",
+        "Mobile Plans",
+        "Print 3D",
+        "Relógio",
+        "Clock"
     };
 
     private static readonly string[] KnownGameNameFragments =

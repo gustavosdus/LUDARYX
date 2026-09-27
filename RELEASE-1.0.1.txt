@@ -1,0 +1,18 @@
+LUDARYX 1.0.1
+
+Atualização de manutenção após a primeira release pública.
+
+Principais mudanças:
+- filtros adicionais para impedir que aplicativos do Windows/Microsoft Store sejam tratados como jogos;
+- sistema de atualização via GitHub Releases;
+- progresso visual durante o download;
+- validação obrigatória por SHA-256;
+- processo auxiliar LUDARYX.Updater.exe para iniciar o instalador somente após o fechamento do launcher;
+- opção para verificar atualizações ao iniciar e botão de verificação manual;
+- versão do programa e do instalador sincronizadas em 1.0.1.
+
+Importante para distribuição:
+- use Scripts/Publish-Release.ps1 para gerar LUDARYX.exe e LUDARYX.Updater.exe;
+- compile LUDARYX-Installer-1.0.1.iss;
+- gere SHA256SUMS.txt com Scripts/Generate-ReleaseHashes.ps1;
+- anexe o instalador e SHA256SUMS.txt à GitHub Release v1.0.1.

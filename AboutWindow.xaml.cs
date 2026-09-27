@@ -10,6 +10,7 @@ public partial class AboutWindow : Window
         InitializeComponent();
         LocalizationService.Apply(this);
         DiagnosticsText.Text = DiagnosticLogService.GetSystemSummary();
+        VersionText.Text = $"{LocalizationService.Translate("Versão")} {GitHubUpdateService.GetCurrentVersionDisplay()}";
     }
 
     private void OpenLogs_Click(object sender, RoutedEventArgs e)
@@ -34,6 +35,35 @@ public partial class AboutWindow : Window
         catch (Exception ex)
         {
             DiagnosticLogService.LogException("Could not copy diagnostic summary", ex);
+        }
+    }
+
+    private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var result = await GitHubUpdateService.CheckForUpdatesAsync();
+            if (!result.IsUpdateAvailable)
+            {
+                MessageBox.Show(
+                    this,
+                    $"Nenhuma atualização foi encontrada.\n\nVersão atual: {result.CurrentVersionDisplay}",
+                    "LUDARYX",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            var shouldClose = await GitHubUpdateService.PromptAndDownloadUpdateAsync(this, result, CancellationToken.None);
+            if (shouldClose)
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("Could not check for updates from About window", ex);
+            MessageBox.Show(ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

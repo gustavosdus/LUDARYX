@@ -15,15 +15,21 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore
+      - name: Restore LUDARYX
+        run: dotnet restore UnifiedGameLauncher.csproj
 
-      - name: Build Release
-        run: dotnet build -c Release --no-restore
+      - name: Restore updater
+        run: dotnet restore Updater/LUDARYX.Updater.csproj
+
+      - name: Build LUDARYX
+        run: dotnet build UnifiedGameLauncher.csproj -c Release --no-restore
+
+      - name: Build updater
+        run: dotnet build Updater/LUDARYX.Updater.csproj -c Release --no-restore

@@ -25,7 +25,7 @@ public sealed class PcGamingWikiService
     public PcGamingWikiService()
     {
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "LUDARYX/1.0.0 (PC game library metadata client; MediaWiki API) .NET/8.0");
+            "LUDARYX/1.0.1 (PC game library metadata client; MediaWiki API) .NET/8.0");
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/json");
         _http.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-US,en;q=0.9");
     }

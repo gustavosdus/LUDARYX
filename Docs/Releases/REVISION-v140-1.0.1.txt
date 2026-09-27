@@ -1,0 +1,18 @@
+LUDARYX 1.0.1 — revisão interna v140
+
+Esta revisão inaugura o fluxo de atualização seguro via GitHub para versões futuras.
+
+Alterações principais:
+- download de updates com janela de progresso e cancelamento;
+- validação obrigatória do instalador por SHA-256 usando SHA256SUMS.txt da release;
+- instalação automática bloqueada quando o hash estiver ausente ou divergente;
+- novo executável auxiliar LUDARYX.Updater.exe;
+- o updater auxiliar aguarda o processo principal fechar antes de abrir o instalador;
+- updater auxiliar é copiado para uma pasta temporária antes da execução, evitando bloqueio durante a atualização;
+- script Scripts/Publish-Release.ps1 publica LUDARYX e updater juntos;
+- GitHub Actions passa a compilar os dois projetos;
+- versão pública atualizada para 1.0.1;
+- filtro de aplicativos não-jogos da Microsoft Store/Xbox herdado da v139.
+
+Regra para releases futuras:
+Anexar o instalador .exe e SHA256SUMS.txt à mesma GitHub Release. O SHA256SUMS.txt precisa conter o nome exato do instalador e seu SHA-256.

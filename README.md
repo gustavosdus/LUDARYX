@@ -22,7 +22,7 @@
 
 ## Versão
 
-**LUDARYX 1.0.0** — revisão interna de preparação para publicação no GitHub.
+**LUDARYX 1.0.1** — atualização de manutenção com filtro aprimorado da Microsoft Store e atualizador seguro via GitHub.
 
 ## Requisitos para desenvolvimento
 
@@ -46,11 +46,13 @@ dotnet run
 
 ## Publicar uma build Windows x64
 
+Use o script de publicação para gerar o launcher e o updater auxiliar juntos:
+
 ```powershell
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+powershell -ExecutionPolicy Bypass -File Scripts\Publish-Release.ps1
 ```
 
-Depois, compile `LUDARYX-Installer-1.0.0.iss` no Inno Setup se quiser criar o instalador.
+O script publica `LUDARYX.exe` e `LUDARYX.Updater.exe` na mesma pasta. Depois, compile `LUDARYX-Installer-1.0.1.iss` no Inno Setup para criar o instalador.
 
 ## SteamGridDB
 
@@ -113,3 +115,16 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md). Bugs e sugestões possuem templat
 O código-fonte do LUDARYX é disponibilizado sob a **MIT License**. Consulte [`LICENSE`](LICENSE).
 
 Marcas, nomes de produtos, artes, capas, descrições e outros conteúdos de terceiros continuam pertencendo aos seus respectivos titulares e não são relicenciados pela licença MIT do código do LUDARYX.
+
+
+## Atualizações automáticas
+
+A partir da versão 1.0.1, o LUDARYX pode verificar novas releases publicadas neste repositório. O fluxo automático:
+
+1. consulta a release mais recente do GitHub;
+2. baixa o instalador com progresso visual;
+3. baixa `SHA256SUMS.txt`;
+4. valida o SHA-256 antes de permitir a instalação;
+5. usa `LUDARYX.Updater.exe` como processo auxiliar para aguardar o fechamento do launcher e abrir o instalador.
+
+Para que a atualização automática funcione, cada release deve incluir um instalador `.exe` e um `SHA256SUMS.txt` contendo o hash SHA-256 desse instalador. Se o arquivo de hashes estiver ausente ou não corresponder ao instalador, o LUDARYX bloqueia a instalação automática e direciona o usuário para a release no GitHub.

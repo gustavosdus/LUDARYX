@@ -1,4 +1,4 @@
-﻿LUDARYX 1.0.0 — Third-Party Notices
+﻿LUDARYX 1.0.1 — Third-Party Notices
 
 This file is informational and should be shipped with binary distributions.
 Always verify package licenses again before a public/commercial release.

@@ -37,6 +37,8 @@ public sealed class LauncherSettings
     public string NeonLineColor { get; set; } = "Red";
     public string Theme { get; set; } = "Dark";
     public string Language { get; set; } = "pt-BR";
+    public bool CheckForUpdatesOnStartup { get; set; } = true;
+    public DateTime? LastUpdateCheckUtc { get; set; }
     public Dictionary<string, int> SteamGridDbGameIds { get; set; } = new();
 }
 

@@ -1,7 +1,7 @@
-﻿<Window x:Class="UnifiedGameLauncher.SettingsWindow"
+<Window x:Class="UnifiedGameLauncher.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Configurações" Width="820" Height="780"
+        Title="Configurações" Width="820" Height="840"
         WindowStartupLocation="CenterOwner" Background="#0D0F14">
     <Grid Margin="24">
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
@@ -57,6 +57,16 @@
                     <TextBlock Text="SteamGridDB" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
                     <TextBlock Text="Use a API Key do SteamGridDB para buscar automaticamente capas verticais e horizontais, inclusive de jogos de outros launchers." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,8"/>
                     <PasswordBox x:Name="SteamGridDbApiKeyBox" Width="520" HorizontalAlignment="Left" ToolTip="API Key do SteamGridDB"/>
+                </StackPanel>
+                <Separator Margin="0,14,0,12"/>
+                <StackPanel>
+                    <TextBlock Text="Atualizações" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="Verifique novas versões publicadas no GitHub e baixe o instalador mais recente quando disponível." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,8"/>
+                    <CheckBox x:Name="CheckForUpdatesOnStartupCheck" Content="Procurar atualizações ao iniciar" Foreground="#D9DDE7" Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="CheckUpdatesNowButton" Content="VERIFICAR AGORA" Padding="12,6" Click="CheckUpdatesNow_Click"/>
+                        <TextBlock x:Name="UpdateStatusText" Foreground="#9BA3B4" Margin="12,7,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Border>

@@ -31,6 +31,7 @@ public partial class SettingsWindow : Window
         ThemeCombo.SelectedIndex = _settings.Theme == "Light" ? 1 : 0;
         SelectLanguage(_settings.Language);
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
+        CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
 
         LocalizationService.SetLanguage(_settings.Language);
         LocalizationService.Apply(this);
@@ -89,6 +90,7 @@ public partial class SettingsWindow : Window
         _settings.Theme = (ThemeCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() == "Light" ? "Light" : "Dark";
         _settings.Language = (LanguageCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? LocalizationService.PortugueseBrazil;
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
+        _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
         // Atualiza apenas os itens que estão realmente presentes no gerenciador.
         // IDs ocultos de jogos que não foram descobertos nesta sessão são preservados,
         // evitando que uma atualização/recarga temporária faça itens antigos reaparecerem.
@@ -129,6 +131,57 @@ public partial class SettingsWindow : Window
         window.ShowDialog();
     }
 
+    private async void CheckUpdatesNow_Click(object sender, RoutedEventArgs e)
+    {
+        CheckForUpdatesOnStartupCheck.IsEnabled = false;
+        CheckUpdatesNowButton.IsEnabled = false;
+        UpdateStatusText.Text = "Verificando atualizações no GitHub...";
+
+        try
+        {
+            _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
+            _settings.LastUpdateCheckUtc = DateTime.UtcNow;
+            _settingsService.Save(_settings);
+
+            var result = await GitHubUpdateService.CheckForUpdatesAsync();
+            if (!result.IsUpdateAvailable)
+            {
+                UpdateStatusText.Text = $"Você já está na versão mais recente ({result.CurrentVersionDisplay}).";
+                MessageBox.Show(
+                    this,
+                    $"Nenhuma atualização foi encontrada.\n\nVersão atual: {result.CurrentVersionDisplay}",
+                    "LUDARYX",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            UpdateStatusText.Text = $"Nova versão encontrada: {result.LatestVersionDisplay}";
+            var installNow = await GitHubUpdateService.PromptAndDownloadUpdateAsync(this, result, CancellationToken.None);
+            if (installNow)
+            {
+                DialogResult = true;
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusText.Text = "Não foi possível verificar atualizações agora.";
+            DiagnosticLogService.LogException("Could not check for updates", ex);
+            MessageBox.Show(
+                this,
+                $"Não foi possível verificar atualizações agora.\n\n{ex.Message}",
+                "LUDARYX",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+        finally
+        {
+            CheckForUpdatesOnStartupCheck.IsEnabled = true;
+            CheckUpdatesNowButton.IsEnabled = true;
+        }
+    }
+
     private void Cancel_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
 
     private static LauncherSettings Clone(LauncherSettings source) => new()
@@ -149,6 +202,8 @@ public partial class SettingsWindow : Window
         NeonLineColor = source.NeonLineColor,
         Theme = source.Theme,
         Language = source.Language,
+        CheckForUpdatesOnStartup = source.CheckForUpdatesOnStartup,
+        LastUpdateCheckUtc = source.LastUpdateCheckUtc,
         EnrichMetadataAutomatically = source.EnrichMetadataAutomatically,
         UseSteamStoreMetadata = source.UseSteamStoreMetadata,
         UseIgdbMetadata = source.UseIgdbMetadata,

@@ -8,8 +8,8 @@ namespace UnifiedGameLauncher.Services;
 /// </summary>
 public sealed class SingleInstanceService : IDisposable
 {
-    private const string MutexName = @"Local\LUDARYX.SingleInstance.1.0.0";
-    private const string ActivationEventName = @"Local\LUDARYX.Activate.1.0.0";
+    private const string MutexName = @"Local\LUDARYX.SingleInstance";
+    private const string ActivationEventName = @"Local\LUDARYX.Activate";
 
     private readonly Mutex? _mutex;
     private readonly EventWaitHandle? _activationEvent;

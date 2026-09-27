@@ -1,4 +1,4 @@
-﻿# Legal Notice — LUDARYX 1.0.0
+﻿# Legal Notice — LUDARYX 1.0.1
 
 LUDARYX is an independent game-library launcher. It is not affiliated with, sponsored by, or endorsed by Valve/Steam, Epic Games, GOG, Microsoft/Xbox, Electronic Arts, Ubisoft, Blizzard/Battle.net, Riot Games, SteamGridDB, PCGamingWiki, Wikimedia Foundation, or other companies/services referenced by the application.
 

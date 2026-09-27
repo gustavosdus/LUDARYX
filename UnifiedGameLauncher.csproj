@@ -18,12 +18,15 @@
     <Description>Launcher unificado para jogos de PC</Description>
     <Copyright>Copyright © 2026 Gustavo José da Silva</Copyright>
 
-    <!-- Versão pública oficial 1.0.0 -->
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <InformationalVersion>1.0.0</InformationalVersion>
+    <!-- Versão pública oficial 1.0.1 -->
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <InformationalVersion>1.0.1</InformationalVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Updater\**\*.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="DATA-SOURCES.md" CopyToOutputDirectory="PreserveNewest" />

@@ -112,6 +112,7 @@ public partial class MainWindow : Window
             var startupAnimationTask = PlayStartupAnimationAsync();
             var libraryTask = RefreshLibrary(uiPublishGate: startupAnimationTask);
             await Task.WhenAll(startupAnimationTask, libraryTask);
+            _ = MaybeCheckForUpdatesAsync();
         };
         Closing += MainWindow_Closing;
         Closed += (_, _) =>
@@ -177,6 +178,39 @@ public partial class MainWindow : Window
         await Task.Delay(1500);
         StartupOverlay.Visibility = Visibility.Collapsed;
         StartupOverlay.Opacity = 1;
+    }
+
+    private async Task MaybeCheckForUpdatesAsync()
+    {
+        try
+        {
+            if (!_settings.CheckForUpdatesOnStartup)
+                return;
+
+            var lastCheckUtc = _settings.LastUpdateCheckUtc;
+            if (lastCheckUtc.HasValue && DateTime.UtcNow - lastCheckUtc.Value < TimeSpan.FromHours(24))
+                return;
+
+            _settings.LastUpdateCheckUtc = DateTime.UtcNow;
+            _settingsService.Save(_settings);
+
+            var result = await GitHubUpdateService.CheckForUpdatesAsync();
+            if (!result.IsUpdateAvailable)
+                return;
+
+            var shouldCloseForInstaller = await GitHubUpdateService.PromptAndDownloadUpdateAsync(this, result, CancellationToken.None);
+            if (!shouldCloseForInstaller)
+                return;
+
+            _allowRealClose = true;
+            try { _trayIcon?.Dispose(); } catch { }
+            Close();
+            System.Windows.Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("Automatic update check failed", ex);
+        }
     }
 
     #endregion
