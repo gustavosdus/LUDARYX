@@ -23,6 +23,7 @@ public sealed class ManualProvider : IGameProvider
             Executable = x.Executable,
             LaunchArguments = x.Arguments,
             LaunchUri = x.LaunchUri,
+            InstallPath = x.WorkingDirectory,
             CoverImage = x.CoverPath
         }).ToList();
         return Task.FromResult(result);
@@ -32,7 +33,16 @@ public sealed class ManualProvider : IGameProvider
     {
         LaunchTargetValidator.ValidateForLaunch(game);
         if (!string.IsNullOrWhiteSpace(game.LaunchUri)) ProcessService.StartUri(game.LaunchUri);
-        else if (!string.IsNullOrWhiteSpace(game.Executable)) ProcessService.Start(game.Executable, game.LaunchArguments);
+        else if (!string.IsNullOrWhiteSpace(game.Executable))
+        {
+            var definition = _settingsService.Load().ManualGames
+                .FirstOrDefault(x => x.Id.Equals(game.Id, StringComparison.OrdinalIgnoreCase));
+            ProcessService.Start(
+                game.Executable,
+                game.LaunchArguments,
+                definition?.WorkingDirectory,
+                definition?.RunAsAdministrator == true);
+        }
         else throw new InvalidOperationException("O jogo manual não possui executável ou URI de inicialização.");
         return Task.CompletedTask;
     }
