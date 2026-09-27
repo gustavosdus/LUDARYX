@@ -1719,7 +1719,7 @@ public partial class MainWindow : Window
         else if (e.Key == Key.Escape && _fullscreen) ToggleFullscreen();
     }
 
-    private static bool MatchesShortcut(KeyEventArgs e, string? shortcut)
+    private static bool MatchesShortcut(System.Windows.Input.KeyEventArgs e, string? shortcut)
     {
         if (string.IsNullOrWhiteSpace(shortcut))
             return false;
