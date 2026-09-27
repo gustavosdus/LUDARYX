@@ -13,6 +13,7 @@ public sealed class GameStateService
         game.IsExcluded = settings.ExcludedGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase);
         if (settings.LastPlayedUtc.TryGetValue(game.ProviderId, out var last)) game.LastPlayedUtc = last;
         if (settings.PlayCounts.TryGetValue(game.ProviderId, out var count)) game.PlayCount = count;
+        if (settings.TotalPlayTimeSeconds.TryGetValue(game.ProviderId, out var seconds)) game.TotalPlayTimeSeconds = seconds;
         if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual)) ApplyManualMetadata(game, manual);
     }
 
@@ -24,6 +25,21 @@ public sealed class GameStateService
         game.LastPlayedUtc = settings.LastPlayedUtc[id];
         game.PlayCount = settings.PlayCounts[id];
         _settingsService.Save(settings);
+    }
+
+    public void AddPlayTime(Game game, LauncherSettings settings, TimeSpan elapsed, bool save = true)
+    {
+        if (elapsed <= TimeSpan.Zero)
+            return;
+
+        var id = game.ProviderId;
+        var seconds = Math.Max(0, (long)Math.Round(elapsed.TotalSeconds));
+        settings.TotalPlayTimeSeconds[id] = settings.TotalPlayTimeSeconds.TryGetValue(id, out var current)
+            ? current + seconds
+            : seconds;
+        game.TotalPlayTimeSeconds = settings.TotalPlayTimeSeconds[id];
+        if (save)
+            _settingsService.Save(settings);
     }
 
     public void ToggleFavorite(Game game, LauncherSettings settings)
@@ -57,6 +73,8 @@ public sealed class GameStateService
         if (!string.IsNullOrWhiteSpace(manual.Developer)) game.Metadata.Developer = manual.Developer;
         if (!string.IsNullOrWhiteSpace(manual.Publisher)) game.Metadata.Publisher = manual.Publisher;
         if (manual.ReleaseYear.HasValue) game.Metadata.ReleaseYear = manual.ReleaseYear;
+        if (manual.AgeRatings is { Count: > 0 })
+            game.Metadata.AgeRatings = new Dictionary<string, string>(manual.AgeRatings, StringComparer.OrdinalIgnoreCase);
         if (!string.IsNullOrWhiteSpace(manual.HorizontalCoverUrl)) game.Metadata.CustomHorizontalCoverLocalPath = manual.HorizontalCoverUrl;
         if (!string.IsNullOrWhiteSpace(manual.VerticalCoverUrl)) game.Metadata.CustomVerticalCoverLocalPath = manual.VerticalCoverUrl;
 
