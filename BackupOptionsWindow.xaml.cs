@@ -5,11 +5,25 @@ namespace UnifiedGameLauncher;
 
 public partial class BackupOptionsWindow : Window
 {
+    private readonly bool _importMode;
+    private readonly string? _sourceZip;
+
     public BackupSelection Selection { get; private set; } = new();
 
-    public BackupOptionsWindow()
+    public BackupOptionsWindow(bool importMode = false, string? sourceZip = null)
     {
         InitializeComponent();
+        _importMode = importMode;
+        _sourceZip = sourceZip;
+
+        if (_importMode)
+        {
+            Title = "Restaurar backup";
+            HeaderText.Text = "RESTAURAR BACKUP";
+            DescriptionText.Text = "Escolha quais categorias deseja restaurar deste backup.";
+            ContinueButton.Content = "RESTAURAR";
+        }
+
         SettingsCheck.Checked += SelectionChanged;
         SettingsCheck.Unchecked += SelectionChanged;
         ArtworkCheck.Checked += SelectionChanged;
@@ -35,8 +49,13 @@ public partial class BackupOptionsWindow : Window
     private void RefreshEstimate()
     {
         var selection = ReadSelection();
-        var bytes = BackupService.GetEstimatedBackupSourceSizeBytes(selection);
-        EstimatedSizeText.Text = $"Dados de origem estimados: {bytes / 1024d / 1024d:0.0} MB";
+        var bytes = _importMode && !string.IsNullOrWhiteSpace(_sourceZip)
+            ? BackupService.GetEstimatedImportSizeBytes(_sourceZip, selection)
+            : BackupService.GetEstimatedBackupSourceSizeBytes(selection);
+
+        EstimatedSizeText.Text = _importMode
+            ? $"Dados selecionados para restauração: {bytes / 1024d / 1024d:0.0} MB"
+            : $"Dados de origem estimados: {bytes / 1024d / 1024d:0.0} MB";
     }
 
     private void Continue_Click(object sender, RoutedEventArgs e)
