@@ -67,6 +67,13 @@ public sealed class GameStateService
             manual.DisableAutomaticSteamGridDbVertical = existing.DisableAutomaticSteamGridDbVertical;
             manual.DisableAutomaticSteamGridDbHorizontal = existing.DisableAutomaticSteamGridDbHorizontal;
         }
+
+        // Nunca deixe a edição textual apagar uma arte personalizada já aplicada
+        // diretamente ao modelo atual, mesmo se ela ainda não estava persistida no
+        // ManualMetadata de uma build anterior.
+        manual.HorizontalCoverUrl ??= game.Metadata.CustomHorizontalCoverLocalPath;
+        manual.VerticalCoverUrl ??= game.Metadata.CustomVerticalCoverLocalPath;
+
         settings.ManualMetadata[game.ProviderId] = manual;
         ApplyManualMetadata(game, manual);
         _settingsService.Save(settings);
