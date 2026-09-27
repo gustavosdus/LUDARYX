@@ -33,6 +33,12 @@ public partial class SettingsWindow : Window
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
         CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
         AutoHideDuplicateSecondaryCheck.IsChecked = _settings.AutoHideDuplicateSecondary;
+        ShowOnlyPrimaryDuplicatesCheck.IsChecked = _settings.ShowOnlyPrimaryDuplicates;
+        DuplicatePriorityBox.Text = string.Join(", ", _settings.DuplicatePlatformPriority);
+        ShortcutSearchBox.Text = _settings.Shortcuts.FocusSearch;
+        ShortcutFullscreenBox.Text = _settings.Shortcuts.ToggleFullscreen;
+        ShortcutRefreshBox.Text = _settings.Shortcuts.RefreshLibrary;
+        ShortcutSettingsBox.Text = _settings.Shortcuts.OpenSettings;
         AutoCleanupCacheCheck.IsChecked = _settings.AutoCleanupCache;
         MaxCacheSizeBox.Text = _settings.MaxCacheSizeMb.ToString();
         RefreshCacheSize();
@@ -97,6 +103,38 @@ public partial class SettingsWindow : Window
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
         _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
         _settings.AutoHideDuplicateSecondary = AutoHideDuplicateSecondaryCheck.IsChecked == true;
+        _settings.ShowOnlyPrimaryDuplicates = ShowOnlyPrimaryDuplicatesCheck.IsChecked == true;
+        _settings.DuplicatePlatformPriority = DuplicatePriorityBox.Text
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var shortcutValues = new[]
+        {
+            ShortcutSearchBox.Text.Trim(),
+            ShortcutFullscreenBox.Text.Trim(),
+            ShortcutRefreshBox.Text.Trim(),
+            ShortcutSettingsBox.Text.Trim()
+        };
+        foreach (var shortcut in shortcutValues)
+        {
+            if (!IsValidShortcut(shortcut))
+            {
+                MessageBox.Show(this,
+                    $"Atalho inválido: {shortcut}\n\nUse formatos como Ctrl+F, F11, F5 ou Ctrl+,.",
+                    "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+        }
+
+        _settings.Shortcuts = new ShortcutSettings
+        {
+            FocusSearch = shortcutValues[0],
+            ToggleFullscreen = shortcutValues[1],
+            RefreshLibrary = shortcutValues[2],
+            OpenSettings = shortcutValues[3]
+        };
+
         _settings.AutoCleanupCache = AutoCleanupCacheCheck.IsChecked == true;
         _settings.MaxCacheSizeMb = int.TryParse(MaxCacheSizeBox.Text, out var cacheLimit)
             ? Math.Clamp(cacheLimit, 128, 16384)
@@ -192,6 +230,27 @@ public partial class SettingsWindow : Window
         }
     }
 
+    private static bool IsValidShortcut(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        try
+        {
+            return new System.Windows.Input.KeyGestureConverter()
+                .ConvertFromInvariantString(value) is System.Windows.Input.KeyGesture;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void RefreshIntegrationStatus_Click(object sender, RoutedEventArgs e)
+    {
+        IntegrationStatusList.ItemsSource = IntegrationStatusService.GetStatuses(_settings);
+    }
+
     private void RefreshCacheSize()
     {
         var mb = CacheMaintenanceService.GetCacheSizeBytes() / 1024d / 1024d;
@@ -252,16 +311,11 @@ public partial class SettingsWindow : Window
 
     private void ExportBackup_Click(object sender, RoutedEventArgs e)
     {
-        var estimatedBytes = BackupService.GetEstimatedBackupSourceSizeBytes();
-        var estimatedMb = estimatedBytes / 1024d / 1024d;
-        var proceed = MessageBox.Show(this,
-            $"O backup incluirá configurações, favoritos, jogos manuais e artes personalizadas.\n\n" +
-            $"Dados de origem estimados: {estimatedMb:0.0} MB.\n" +
-            "O cache automático de capas não será incluído porque pode ser recriado.\n\nContinuar?",
-            "Backup do LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Information);
-        if (proceed != MessageBoxResult.Yes)
+        var optionsWindow = new BackupOptionsWindow { Owner = this };
+        if (optionsWindow.ShowDialog() != true)
             return;
 
+        var selection = optionsWindow.Selection;
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Filter = "Backup do LUDARYX (*.zip)|*.zip",
@@ -271,7 +325,7 @@ public partial class SettingsWindow : Window
 
         try
         {
-            BackupService.Export(dialog.FileName);
+            BackupService.Export(dialog.FileName, selection);
             MessageBox.Show(this, "Backup exportado com sucesso.", "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -330,6 +384,7 @@ public partial class SettingsWindow : Window
         FavoriteGameIds = source.FavoriteGameIds.ToList(),
         LastPlayedUtc = new Dictionary<string, DateTime>(source.LastPlayedUtc, StringComparer.OrdinalIgnoreCase),
         PlayCounts = new Dictionary<string, int>(source.PlayCounts, StringComparer.OrdinalIgnoreCase),
+        TotalPlayTimeSeconds = new Dictionary<string, long>(source.TotalPlayTimeSeconds, StringComparer.OrdinalIgnoreCase),
         ManualMetadata = source.ManualMetadata.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase),
         CoverMode = source.CoverMode,
         NeonLineColor = source.NeonLineColor,
@@ -341,7 +396,17 @@ public partial class SettingsWindow : Window
         AutoCleanupCache = source.AutoCleanupCache,
         MaxCacheSizeMb = source.MaxCacheSizeMb,
         AutoHideDuplicateSecondary = source.AutoHideDuplicateSecondary,
+        ShowOnlyPrimaryDuplicates = source.ShowOnlyPrimaryDuplicates,
         PreferredDuplicateProviders = new Dictionary<string, string>(source.PreferredDuplicateProviders, StringComparer.OrdinalIgnoreCase),
+        DuplicatePlatformPriority = source.DuplicatePlatformPriority.ToList(),
+        LibrarySortMode = source.LibrarySortMode,
+        Shortcuts = new ShortcutSettings
+        {
+            FocusSearch = source.Shortcuts.FocusSearch,
+            ToggleFullscreen = source.Shortcuts.ToggleFullscreen,
+            RefreshLibrary = source.Shortcuts.RefreshLibrary,
+            OpenSettings = source.Shortcuts.OpenSettings
+        },
         EnrichMetadataAutomatically = source.EnrichMetadataAutomatically,
         UseSteamStoreMetadata = source.UseSteamStoreMetadata,
         UseIgdbMetadata = source.UseIgdbMetadata,
@@ -360,7 +425,19 @@ public partial class SettingsWindow : Window
             LaunchUri = x.LaunchUri,
             WorkingDirectory = x.WorkingDirectory,
             RunAsAdministrator = x.RunAsAdministrator,
-            CoverPath = x.CoverPath
+            IconPath = x.IconPath,
+            CoverPath = x.CoverPath,
+            PreferredLaunchProfileId = x.PreferredLaunchProfileId,
+            LaunchProfiles = (x.LaunchProfiles ?? new()).Select(profile => new ManualLaunchProfile
+            {
+                Id = profile.Id,
+                Name = profile.Name,
+                Executable = profile.Executable,
+                Arguments = profile.Arguments,
+                LaunchUri = profile.LaunchUri,
+                WorkingDirectory = profile.WorkingDirectory,
+                RunAsAdministrator = profile.RunAsAdministrator
+            }).ToList()
         }).ToList(),
         SteamGridDbGameIds = new Dictionary<string, int>(source.SteamGridDbGameIds, StringComparer.OrdinalIgnoreCase)
     };
