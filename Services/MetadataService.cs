@@ -97,7 +97,8 @@ public sealed class MetadataService
 
     public MetadataService()
     {
-        var root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UnifiedGameLauncher");
+        AppDataService.EnsureMigrated();
+        var root = AppDataService.RootDirectory;
         Directory.CreateDirectory(root);
         _cacheFile = Path.Combine(root, "metadata.json");
         _coverDir = Path.Combine(root, "covers");
@@ -107,7 +108,7 @@ public sealed class MetadataService
         // Mantemos um identificador estável para as consultas de metadados.
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 LUDARYX/1.0.1");
+            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 LUDARYX/1.0.2");
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/json,text/html;q=0.9,*/*;q=0.8");
         _http.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-US,en;q=0.9");
 
