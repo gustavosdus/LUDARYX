@@ -13,6 +13,12 @@ Atualização de manutenção e qualidade de vida.
 - Melhor tratamento do fullscreen após mudança de resolução/monitor.
 - Gerenciamento de duplicatas com versão principal e opção de ocultar automaticamente versões secundárias.
 - Jogos adicionados manualmente agora permitem editar novamente executável, argumentos, URI, pasta de trabalho e execução como administrador pela tela de detalhes.
+- Aviso quando o executável de um jogo manual deixou de existir.
+- Botão para abrir a pasta de dados do LUDARYX e opção de abrir/testar clientes detectados no Status das integrações.
+- Backup informa o conteúdo e o tamanho estimado antes da exportação; o cache regenerável de capas fica de fora.
+- Indicador visual para a versão principal/secundária de jogos duplicados.
+- Recuperação de configurações registra claramente no diagnóstico quando o arquivo principal ou o backup estão inválidos.
+- Fluxo de release automatizado com validação de versões, detecção do LUDARYX em execução, compilação do instalador e geração do SHA256SUMS.txt.
 
 ## Compatibilidade
 - Windows 10/11 x64
