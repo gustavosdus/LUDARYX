@@ -15,14 +15,35 @@ public static class DiagnosticLogService
     private static readonly object Sync = new();
     private const int MaxLogFileBytes = 2 * 1024 * 1024;
 
-    public static string LogDirectory { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "UnifiedGameLauncher",
-        "Logs");
-
-    public static string CurrentLogPath => Path.Combine(LogDirectory, "ludaryx.log");
+    private static readonly string SessionId = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+    public static string LogDirectory { get; } = Path.Combine(AppDataService.RootDirectory, "Logs");
+    public static string CurrentLogPath => Path.Combine(LogDirectory, $"ludaryx-{SessionId}.log");
 
     public static void LogInfo(string message) => Write("INFO", message);
+
+    public static string BuildDiagnosticReport()
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine(GetSystemSummary());
+        builder.AppendLine($"Sessão: {SessionId}");
+        builder.AppendLine();
+
+        try
+        {
+            if (File.Exists(CurrentLogPath))
+            {
+                var lines = File.ReadLines(CurrentLogPath).TakeLast(250);
+                builder.AppendLine("Últimos eventos da sessão:");
+                foreach (var line in lines)
+                    builder.AppendLine(Sanitize(line));
+            }
+        }
+        catch
+        {
+        }
+
+        return Sanitize(builder.ToString());
+    }
 
     public static void LogException(string context, Exception exception)
     {
@@ -61,6 +82,7 @@ public static class DiagnosticLogService
             Directory.CreateDirectory(LogDirectory);
             lock (Sync)
             {
+                CleanupOldSessions();
                 RotateIfNeeded();
                 var sanitized = Sanitize(message);
                 File.AppendAllText(
@@ -81,8 +103,26 @@ public static class DiagnosticLogService
         var info = new FileInfo(CurrentLogPath);
         if (info.Length < MaxLogFileBytes) return;
 
-        var previous = Path.Combine(LogDirectory, "ludaryx.previous.log");
+        var previous = Path.Combine(LogDirectory, $"ludaryx-{SessionId}.previous.log");
         File.Move(CurrentLogPath, previous, true);
+    }
+
+    private static void CleanupOldSessions()
+    {
+        try
+        {
+            Directory.CreateDirectory(LogDirectory);
+            foreach (var file in new DirectoryInfo(LogDirectory)
+                         .EnumerateFiles("ludaryx-*.log")
+                         .OrderByDescending(x => x.LastWriteTimeUtc)
+                         .Skip(10))
+            {
+                try { file.Delete(); } catch { }
+            }
+        }
+        catch
+        {
+        }
     }
 
     private static string Sanitize(string value)
