@@ -7,20 +7,19 @@ public sealed class BackupSelection
     public bool SettingsAndLibrary { get; set; } = true;
     public bool CustomArtwork { get; set; } = true;
     public bool MetadataCache { get; set; } = true;
+
+    public bool HasAny => SettingsAndLibrary || CustomArtwork || MetadataCache;
 }
 
 public static class BackupService
 {
-    // "covers" é cache regenerável. Além de aumentar muito o backup, ele pode estar
-    // sendo atualizado por um provider ou por outra instância do LUDARYX durante a
-    // restauração. Artes escolhidas pelo usuário ficam em "custom-covers" e continuam
-    // fazendo parte do backup.
-    private static readonly string[] ExcludedFolders = { "Logs", "Updates", "covers" };
+    private static readonly string[] AlwaysExcludedFolders = { "Logs", "Updates", "covers" };
 
     public static long GetEstimatedBackupSourceSizeBytes(BackupSelection? selection = null)
     {
         selection ??= new BackupSelection();
         AppDataService.EnsureMigrated();
+
         var root = AppDataService.RootDirectory;
         if (!Directory.Exists(root))
             return 0;
@@ -29,15 +28,22 @@ public static class BackupService
         foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
         {
             var relative = Path.GetRelativePath(root, file);
-            if (ShouldSkip(relative))
+            if (!ShouldInclude(relative, selection))
                 continue;
-            try { total += new FileInfo(file).Length; } catch { }
+
+            try { total += new FileInfo(file).Length; }
+            catch { }
         }
+
         return total;
     }
 
-    public static void Export(string destinationZip)
+    public static void Export(string destinationZip, BackupSelection? selection = null)
     {
+        selection ??= new BackupSelection();
+        if (!selection.HasAny)
+            throw new InvalidOperationException("Selecione pelo menos uma categoria para o backup.");
+
         AppDataService.EnsureMigrated();
         Directory.CreateDirectory(Path.GetDirectoryName(destinationZip)!);
 
@@ -53,7 +59,7 @@ public static class BackupService
         foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
         {
             var relative = Path.GetRelativePath(root, file);
-            if (ShouldSkip(relative))
+            if (!ShouldInclude(relative, selection))
                 continue;
 
             archive.CreateEntryFromFile(file, relative, CompressionLevel.Optimal);
@@ -66,7 +72,6 @@ public static class BackupService
             throw new FileNotFoundException("O arquivo de backup não foi encontrado.", sourceZip);
 
         AppDataService.EnsureMigrated();
-
         var root = Path.GetFullPath(AppDataService.RootDirectory) + Path.DirectorySeparatorChar;
 
         using var archive = ZipFile.OpenRead(sourceZip);
@@ -75,10 +80,9 @@ public static class BackupService
             if (string.IsNullOrWhiteSpace(entry.Name))
                 continue;
 
-            // Backups produzidos pelas primeiras builds da 1.0.2 incluíam o cache
-            // de capas. Ignora essas entradas também na importação para que backups
-            // antigos possam ser restaurados sem tentar substituir imagens em uso.
-            if (ShouldSkip(entry.FullName))
+            // Backups antigos podem conter cache regenerável. Ele nunca precisa ser
+            // restaurado e pode estar bloqueado pela interface enquanto o app está aberto.
+            if (IsAlwaysExcluded(entry.FullName))
                 continue;
 
             var target = Path.GetFullPath(Path.Combine(AppDataService.RootDirectory, entry.FullName));
@@ -90,17 +94,46 @@ public static class BackupService
         }
     }
 
-    private static bool ShouldSkip(string relativePath)
+    private static bool ShouldInclude(string relativePath, BackupSelection selection)
     {
-        var normalized = relativePath
-            .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
-            .TrimStart(Path.DirectorySeparatorChar);
+        if (IsAlwaysExcluded(relativePath))
+            return false;
 
+        var normalized = Normalize(relativePath);
+        var firstSegment = normalized
+            .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault() ?? string.Empty;
+        var fileName = Path.GetFileName(normalized);
+
+        if (firstSegment.Equals("custom-covers", StringComparison.OrdinalIgnoreCase))
+            return selection.CustomArtwork;
+
+        if (fileName.Equals("metadata.json", StringComparison.OrdinalIgnoreCase))
+            return selection.MetadataCache;
+
+        if (fileName.Equals("settings.json", StringComparison.OrdinalIgnoreCase) ||
+            fileName.Equals("settings.backup.json", StringComparison.OrdinalIgnoreCase) ||
+            fileName.StartsWith(".migration-", StringComparison.OrdinalIgnoreCase))
+            return selection.SettingsAndLibrary;
+
+        // Arquivos locais futuros não categorizados acompanham configurações/biblioteca
+        // para que novos dados importantes não desapareçam silenciosamente do backup.
+        return selection.SettingsAndLibrary;
+    }
+
+    private static bool IsAlwaysExcluded(string relativePath)
+    {
+        var normalized = Normalize(relativePath);
         var firstSegment = normalized
             .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)
             .FirstOrDefault();
 
         return firstSegment is not null &&
-               ExcludedFolders.Contains(firstSegment, StringComparer.OrdinalIgnoreCase);
+               AlwaysExcludedFolders.Contains(firstSegment, StringComparer.OrdinalIgnoreCase);
     }
+
+    private static string Normalize(string relativePath) =>
+        relativePath
+            .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+            .TrimStart(Path.DirectorySeparatorChar);
 }
