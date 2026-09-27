@@ -72,6 +72,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SourceInitialized += MainWindow_SourceInitialized;
+        Microsoft.Win32.SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         _navigationSound = LoadSoundResource("Assets/Navigation.wav");
         _powerOnSound = LoadSoundResource("Assets/PowerOn.wav");
         _launchSound = LoadSoundResource("Assets/Launch.wav");
@@ -81,6 +82,8 @@ public partial class MainWindow : Window
         {
             _mainWindowLoaded = true;
             _settings = _settingsService.Load();
+            if (_settings.AutoCleanupCache)
+                _ = Task.Run(() => CacheMaintenanceService.CleanupToLimit(_settings.MaxCacheSizeMb));
             LocalizationService.SetLanguage(_settings.Language);
             ApplyLanguage();
             ApplyVisualSettings();
@@ -119,6 +122,7 @@ public partial class MainWindow : Window
         {
             _trayIcon?.Dispose();
             _gamepad.Dispose();
+            Microsoft.Win32.SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
         };
         _gamepad.StateChanged += Gamepad_StateChanged;
     }
@@ -353,6 +357,7 @@ public partial class MainWindow : Window
                 await uiPublishGate;
 
             // Publica imediatamente os jogos encontrados antes de qualquer acesso de rede.
+            EnsureDuplicatePrimarySelections(loadedGames);
             PublishLoadedGames(loadedGames);
             StatusText.Text = $"{_games.Count} jogos na biblioteca";
 
@@ -778,6 +783,11 @@ public partial class MainWindow : Window
             (_specialFilter != "favorites" || g.IsFavorite) &&
             (_specialFilter != "recent" || g.LastPlayedUtc.HasValue) &&
             (_specialFilter != "duplicates" || g.IsDuplicate) &&
+            (!_settings.AutoHideDuplicateSecondary ||
+             !g.IsDuplicate ||
+             !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var preferredProvider) ||
+             g.ProviderId.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase) ||
+             _specialFilter == "duplicates") &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             (string.IsNullOrWhiteSpace(query) || g.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
             .OrderByDescending(g => _specialFilter == "recent" ? g.LastPlayedUtc : null)
@@ -789,6 +799,43 @@ public partial class MainWindow : Window
         GameList.ItemsSource = _visibleGames;
         UpdateControllerSelection();
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
+    }
+
+    private void EnsureDuplicatePrimarySelections(IEnumerable<Game> games)
+    {
+        if (!_settings.AutoHideDuplicateSecondary)
+            return;
+
+        var changed = false;
+        var priority = new[]
+        {
+            GamePlatform.Steam, GamePlatform.GOG, GamePlatform.Epic, GamePlatform.Xbox,
+            GamePlatform.EAApp, GamePlatform.UbisoftConnect, GamePlatform.BattleNet,
+            GamePlatform.RiotClient, GamePlatform.Manual
+        };
+
+        foreach (var group in games.Where(g => g.IsDuplicate)
+                     .GroupBy(g => g.CanonicalGameId, StringComparer.OrdinalIgnoreCase))
+        {
+            if (string.IsNullOrWhiteSpace(group.Key) ||
+                _settings.PreferredDuplicateProviders.ContainsKey(group.Key))
+                continue;
+
+            var selected = group
+                .OrderBy(g =>
+                {
+                    var index = Array.IndexOf(priority, g.Platform);
+                    return index < 0 ? int.MaxValue : index;
+                })
+                .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                .First();
+
+            _settings.PreferredDuplicateProviders[group.Key] = selected.ProviderId;
+            changed = true;
+        }
+
+        if (changed)
+            _settingsService.Save(_settings);
     }
 
     #endregion
@@ -1280,6 +1327,14 @@ public partial class MainWindow : Window
         WindowPlacementService.FitToWorkingArea(this, margin: 8, center: true);
     }
 
+    private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
+    {
+        if (!_fullscreen)
+            return;
+
+        Dispatcher.BeginInvoke(ApplyFullscreenBounds, DispatcherPriority.Background);
+    }
+
     private IntPtr MainWindow_WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         if (msg == WM_GETMINMAXINFO && !_fullscreen)
@@ -1361,15 +1416,11 @@ public partial class MainWindow : Window
             // WindowState.Maximized usa a área de trabalho do Windows e, por isso,
             // deixa a barra de tarefas visível. Para fullscreen real usamos os
             // limites físicos do monitor atual.
-            var monitorBounds = GetCurrentMonitorBounds();
             WindowState = WindowState.Normal;
             WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             Topmost = true;
-            Left = monitorBounds.Left;
-            Top = monitorBounds.Top;
-            Width = monitorBounds.Width;
-            Height = monitorBounds.Height;
+            ApplyFullscreenBounds();
             Cursor = Cursors.None;
         }
         else
@@ -1405,6 +1456,18 @@ public partial class MainWindow : Window
             }
         }
         UpdateFullscreenUi();
+    }
+
+    private void ApplyFullscreenBounds()
+    {
+        if (!_fullscreen)
+            return;
+
+        var monitorBounds = GetCurrentMonitorBounds();
+        Left = monitorBounds.Left;
+        Top = monitorBounds.Top;
+        Width = monitorBounds.Width;
+        Height = monitorBounds.Height;
     }
 
     private Rect GetCurrentMonitorBounds()
