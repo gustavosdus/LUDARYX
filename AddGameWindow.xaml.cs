@@ -13,6 +13,7 @@ public partial class AddGameWindow : Window
     private readonly List<ManualLaunchProfile> _profiles = new();
     private ManualLaunchProfile? _currentProfile;
     private bool _loadingProfile;
+    private string? _pendingIconSource;
 
     public ManualGameDefinition? Result { get; private set; }
 
@@ -27,6 +28,7 @@ public partial class AddGameWindow : Window
             HeaderText.Text = "EDITAR CONFIGURAÇÕES DE INICIALIZAÇÃO";
             SaveButton.Content = "SALVAR";
             NameBox.Text = existing.Name;
+            IconPathBox.Text = existing.IconPath ?? "";
 
             foreach (var profile in existing.LaunchProfiles ?? new())
                 _profiles.Add(CloneProfile(profile));
@@ -143,6 +145,20 @@ public partial class AddGameWindow : Window
         }
     }
 
+    private void BrowseIcon_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Ícones e imagens (*.ico;*.exe;*.png;*.jpg;*.jpeg)|*.ico;*.exe;*.png;*.jpg;*.jpeg"
+        };
+
+        if (dialog.ShowDialog(this) == true)
+        {
+            _pendingIconSource = dialog.FileName;
+            IconPathBox.Text = dialog.FileName;
+        }
+    }
+
     private void BrowseWorkingDirectory_Click(object sender, RoutedEventArgs e)
     {
         using var dialog = new Forms.FolderBrowserDialog
@@ -174,16 +190,32 @@ public partial class AddGameWindow : Window
 
         var preferred = ProfileCombo.SelectedItem as ManualLaunchProfile ?? _profiles[0];
 
+        var resultId = _existing?.Id ?? Guid.NewGuid().ToString("N");
+        var iconPath = _existing?.IconPath;
+        if (!string.IsNullOrWhiteSpace(_pendingIconSource))
+        {
+            try
+            {
+                iconPath = ManualIconService.SaveIconCopy(_pendingIconSource, resultId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Não foi possível salvar o ícone personalizado.\n\n{ex.Message}",
+                    "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+        }
+
         Result = new ManualGameDefinition
         {
-            Id = _existing?.Id ?? Guid.NewGuid().ToString("N"),
+            Id = resultId,
             Name = name,
             Executable = preferred.Executable,
             Arguments = preferred.Arguments,
             LaunchUri = preferred.LaunchUri,
             WorkingDirectory = preferred.WorkingDirectory,
             RunAsAdministrator = preferred.RunAsAdministrator,
-            IconPath = _existing?.IconPath,
+            IconPath = iconPath,
             CoverPath = _existing?.CoverPath,
             LaunchProfiles = _profiles.Select(CloneProfile).ToList(),
             PreferredLaunchProfileId = preferred.Id
