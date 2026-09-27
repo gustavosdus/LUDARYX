@@ -62,7 +62,9 @@ public sealed class JsonSettingsService
             settings.ManualMetadata ??= new();
             settings.ManualGames ??= new();
             settings.SteamGridDbGameIds ??= new();
-            settings.PreferredDuplicateProviders ??= new(StringComparer.OrdinalIgnoreCase);
+            settings.PreferredDuplicateProviders = new Dictionary<string, string>(
+                settings.PreferredDuplicateProviders ?? new Dictionary<string, string>(),
+                StringComparer.OrdinalIgnoreCase);
             settings.MaxCacheSizeMb = Math.Clamp(settings.MaxCacheSizeMb <= 0 ? 1024 : settings.MaxCacheSizeMb, 128, 16384);
 
             settings.IgdbClientId = SecretProtectionService.Unprotect(settings.ProtectedIgdbClientId);
