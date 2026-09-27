@@ -67,6 +67,7 @@ public partial class DetailsWindow : Window
         ManualDescriptionBox.Text = displayDescription ?? "";
         EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
         MakePrimaryDuplicateButton.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
+        DuplicatePrimaryBadge.Visibility = Visibility.Collapsed;
 
         if (_game.IsDuplicate &&
             _settings.PreferredDuplicateProviders.TryGetValue(_game.CanonicalGameId, out var preferred) &&
@@ -74,11 +75,19 @@ public partial class DetailsWindow : Window
         {
             MakePrimaryDuplicateButton.Content = LocalizationService.Translate("VERSÃO PRINCIPAL");
             MakePrimaryDuplicateButton.IsEnabled = false;
+            DuplicatePrimaryBadgeText.Text = LocalizationService.Translate("VERSÃO PRINCIPAL DA DUPLICATA");
+            DuplicatePrimaryBadge.Visibility = Visibility.Visible;
         }
         else
         {
             MakePrimaryDuplicateButton.Content = LocalizationService.Translate("TORNAR ESTA VERSÃO PRINCIPAL");
             MakePrimaryDuplicateButton.IsEnabled = true;
+
+            if (_game.IsDuplicate)
+            {
+                DuplicatePrimaryBadgeText.Text = LocalizationService.Translate("VERSÃO SECUNDÁRIA");
+                DuplicatePrimaryBadge.Visibility = Visibility.Visible;
+            }
         }
     }
 
@@ -120,6 +129,13 @@ public partial class DetailsWindow : Window
             MessageBox.Show("A definição deste jogo manual não foi encontrada.", "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(definition.Executable) && !File.Exists(definition.Executable))
+        {
+            MessageBox.Show(this,
+                $"O executável configurado para este jogo não existe mais:\n\n{definition.Executable}\n\nVocê pode selecionar um novo executável na próxima tela.",
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         var window = new AddGameWindow(definition) { Owner = this };
