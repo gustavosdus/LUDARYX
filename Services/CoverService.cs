@@ -11,7 +11,7 @@ public sealed class CoverService
 
     public CoverService()
     {
-        _cache = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UnifiedGameLauncher", "covers");
+        _cache = Path.Combine(AppDataService.RootDirectory, "covers");
         Directory.CreateDirectory(_cache);
     }
 
