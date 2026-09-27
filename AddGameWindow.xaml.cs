@@ -201,8 +201,9 @@ public partial class AddGameWindow : Window
             return false;
         }
 
+        string? safeExe = null;
         if (!string.IsNullOrWhiteSpace(profile.Executable) &&
-            !LaunchTargetValidator.TryValidateExecutable(profile.Executable, out var safeExe, out var exeError))
+            !LaunchTargetValidator.TryValidateExecutable(profile.Executable, out safeExe, out var exeError))
         {
             MessageBox.Show(this, $"{profile.Name}: {exeError}", "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -211,8 +212,9 @@ public partial class AddGameWindow : Window
 
         profile.Executable = safeExe;
 
+        string? safeUri = null;
         if (!string.IsNullOrWhiteSpace(profile.LaunchUri) &&
-            !LaunchTargetValidator.TryValidateUri(profile.LaunchUri, out var safeUri, out var uriError))
+            !LaunchTargetValidator.TryValidateUri(profile.LaunchUri, out safeUri, out var uriError))
         {
             MessageBox.Show(this, $"{profile.Name}: {uriError}", "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
