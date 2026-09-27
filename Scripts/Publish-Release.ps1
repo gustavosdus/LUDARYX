@@ -18,6 +18,14 @@ dotnet publish $MainProject `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true
 
+if ($LASTEXITCODE -ne 0) {
+    throw "A publicação do LUDARYX falhou. Corrija os erros acima antes de continuar."
+}
+
+if (-not (Test-Path -LiteralPath $MainPublish)) {
+    throw "A pasta de publicação principal não foi criada: $MainPublish"
+}
+
 Write-Host "Publicando LUDARYX Updater..."
 dotnet publish $UpdaterProject `
     -c $Configuration `
@@ -25,6 +33,10 @@ dotnet publish $UpdaterProject `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true
+
+if ($LASTEXITCODE -ne 0) {
+    throw "A publicação do LUDARYX Updater falhou. Corrija os erros acima antes de continuar."
+}
 
 $UpdaterExe = Join-Path $UpdaterPublish "LUDARYX.Updater.exe"
 if (-not (Test-Path -LiteralPath $UpdaterExe)) {
