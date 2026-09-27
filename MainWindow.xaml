@@ -426,16 +426,6 @@
                         <Button x:Name="SettingsButton" Content="CONFIGURAÇÕES" Style="{StaticResource NavButton}" Click="Settings_Click"/>
                         <Button x:Name="StatisticsButton" Content="ESTATÍSTICAS" Style="{StaticResource NavButton}" Click="Statistics_Click"/>
 
-                        <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed" Width="260" Height="32" Margin="7,0,3,0"
-                                Background="{DynamicResource SearchFieldBackground}" BorderBrush="#293242" BorderThickness="1" CornerRadius="5">
-                            <Grid>
-                                <TextBlock Text="⌕" Foreground="#7E8798" FontSize="17" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                <TextBox x:Name="FullscreenSearchBox" Margin="32,0,8,0" Background="Transparent" Foreground="#E8ECF5"
-                                         CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0" VerticalContentAlignment="Center" FontSize="12"
-                                         TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
-                            </Grid>
-                        </Border>
-
                         <TextBlock x:Name="FullscreenLibraryLoadingText"
                                    Text="CARREGANDO BIBLIOTECA..."
                                    Visibility="Collapsed"
@@ -446,15 +436,29 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <Button x:Name="FullscreenToolbarButton" Grid.Column="1" Visibility="Collapsed"
-                        Style="{StaticResource FullscreenIconButton}" Margin="8,0,16,0" Click="Fullscreen_Click" ToolTip="Sair da tela cheia">
-                    <Viewbox Width="20" Height="20">
-                        <Canvas Width="24" Height="24">
-                            <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
-                                  Data="M3,4 L21,4 L21,17 L3,17 Z M9,21 L15,21 M12,17 L12,21"/>
-                        </Canvas>
-                    </Viewbox>
-                </Button>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,10,0">
+                    <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed" Width="280" Height="34" Margin="0,0,8,0"
+                            Background="{DynamicResource SearchFieldBackground}" BorderBrush="#293242" BorderThickness="1" CornerRadius="5">
+                        <Grid>
+                            <TextBlock Text="⌕" Foreground="#7E8798" FontSize="17" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            <TextBox x:Name="FullscreenSearchBox" Margin="32,1,10,1"
+                                     Background="Transparent" Foreground="#E8ECF5"
+                                     CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
+                                     Padding="2,0" VerticalContentAlignment="Center" FontSize="12"
+                                     TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
+                        </Grid>
+                    </Border>
+
+                    <Button x:Name="FullscreenToolbarButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Margin="0,0,4,0" Click="Fullscreen_Click" ToolTip="Sair da tela cheia">
+                        <Viewbox Width="20" Height="20">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
+                                      Data="M3,4 L21,4 L21,17 L3,17 Z M9,21 L15,21 M12,17 L12,21"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
 
