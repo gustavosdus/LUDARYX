@@ -759,7 +759,10 @@ public partial class MainWindow : Window
     private async void Settings_Click(object sender, RoutedEventArgs e)
     {
         var window = new SettingsWindow(_games, _settings) { Owner = this };
-        if (window.ShowDialog() == true) await RefreshLibrary("ATUALIZANDO BIBLIOTECA...");
+        if (window.ShowDialog() == true)
+            await RefreshLibrary("ATUALIZANDO BIBLIOTECA...");
+
+        RestoreLibraryFocus();
     }
 
     private void Statistics_Click(object sender, RoutedEventArgs e)
@@ -1375,12 +1378,41 @@ public partial class MainWindow : Window
 
     private void OpenDetails(Game game)
     {
+        var manualCountBefore = _settings.ManualGames.Count;
         var window = new DetailsWindow(game, _settings, _launcher, _metadata) { Owner = this };
         window.ShowDialog();
         _settings = _settingsService.Load();
-        foreach (var g in _games) _state.Apply(g, _settings);
-        ApplyCoverMode();
-        ApplyFilter();
+
+        if (_settings.ManualGames.Count != manualCountBefore)
+        {
+            _ = RefreshLibrary("ATUALIZANDO BIBLIOTECA...");
+        }
+        else
+        {
+            foreach (var g in _games)
+                _state.Apply(g, _settings);
+            ApplyCoverMode();
+            ApplyFilter();
+        }
+
+        RestoreLibraryFocus();
+    }
+
+    private void RestoreLibraryFocus()
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (_controllerToolbarMode)
+            {
+                FocusToolbarControl();
+                return;
+            }
+
+            GameList.Focus();
+            Keyboard.Focus(GameList);
+            UpdateControllerSelection();
+            ScrollSelectedIntoView();
+        }, DispatcherPriority.Input);
     }
     private void Favorite_Click(object sender, RoutedEventArgs e)
     {
