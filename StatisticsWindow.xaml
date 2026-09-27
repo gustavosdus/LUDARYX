@@ -1,0 +1,60 @@
+<Window x:Class="UnifiedGameLauncher.StatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Estatísticas" Width="760" Height="620"
+        WindowStartupLocation="CenterOwner" Background="#0D0F14">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="ESTATÍSTICAS LOCAIS" Foreground="White" FontSize="26" FontWeight="Bold"/>
+            <TextBlock x:Name="SummaryText" Foreground="#9BA3B4" Margin="0,6,0,18" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Mais jogados" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                <ItemsControl x:Name="MostPlayedList" Margin="0,8,0,18">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Name}" Foreground="#D9DDE7"/>
+                                <TextBlock Grid.Column="1" Text="{Binding PlayCountDisplay}" Foreground="#9BA3B4"/>
+                                <TextBlock Grid.Column="2" Text="{Binding TotalPlayTimeDisplay}" Foreground="#9BA3B4"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="Uso por plataforma" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                <ItemsControl x:Name="PlatformStatsList" Margin="0,8,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="140"/>
+                                    <ColumnDefinition Width="140"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Platform}" Foreground="#D9DDE7"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Launches}" Foreground="#9BA3B4"/>
+                                <TextBlock Grid.Column="2" Text="{Binding PlayTime}" Foreground="#9BA3B4"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="2" Content="FECHAR" Width="110" HorizontalAlignment="Right" Margin="0,16,0,0" Click="Close_Click"/>
+    </Grid>
+</Window>
