@@ -22,10 +22,7 @@ public sealed class SteamGridDbService
             BaseAddress = new Uri(BaseUrl),
             Timeout = TimeSpan.FromSeconds(30)
         };
-        _directory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "UnifiedGameLauncher",
-            "custom-covers");
+        _directory = Path.Combine(AppDataService.RootDirectory, "custom-covers");
         Directory.CreateDirectory(_directory);
     }
 
