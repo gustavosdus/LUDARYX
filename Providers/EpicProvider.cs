@@ -16,7 +16,13 @@ public sealed class EpicProvider : IGameProvider
 
     public Task StartClientAsync(CancellationToken cancellationToken = default)
     {
-        if (!IsRunning() && File.Exists(LauncherExe)) ProcessService.Start(LauncherExe);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (IsRunning()) return Task.CompletedTask;
+
+        if (!File.Exists(LauncherExe))
+            throw new InvalidOperationException("O Epic Games Launcher não foi encontrado no caminho detectado.");
+
+        ProcessService.StartTrustedDetectedLocalReparse(LauncherExe);
         return Task.CompletedTask;
     }
 
