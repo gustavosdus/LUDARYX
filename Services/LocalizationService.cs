@@ -88,6 +88,9 @@ public static class LocalizationService
         new("LIMPAR CACHE AGORA", "LIMPAR CACHE AGORA", "CLEAR CACHE NOW", "CLEAR CACHE NOW", "LIMPIAR CACHÉ AHORA", "LIMPIAR CACHÉ AHORA"),
         new("EXPORTAR BACKUP", "EXPORTAR CÓPIA", "EXPORT BACKUP", "EXPORT BACKUP", "EXPORTAR COPIA", "EXPORTAR COPIA"),
         new("IMPORTAR BACKUP", "IMPORTAR CÓPIA", "IMPORT BACKUP", "IMPORT BACKUP", "IMPORTAR COPIA", "IMPORTAR COPIA"),
+        new("O backup inclui configurações, favoritos, jogos manuais e artes personalizadas. O cache automático de capas não é incluído porque pode ser recriado.", "A cópia inclui configurações, favoritos, jogos manuais e artes personalizadas. A cache automática de capas não é incluída porque pode ser recriada.", "The backup includes settings, favorites, manual games, and custom artwork. Automatic artwork cache is excluded because it can be rebuilt.", "The backup includes settings, favourites, manual games, and custom artwork. Automatic artwork cache is excluded because it can be rebuilt.", "La copia incluye ajustes, favoritos, juegos manuales y arte personalizado. La caché automática de carátulas no se incluye porque puede volver a generarse.", "La copia incluye ajustes, favoritos, juegos manuales y arte personalizado. La caché automática de carátulas no se incluye porque puede volver a generarse."),
+        new("ABRIR PASTA DE DADOS", "ABRIR PASTA DE DADOS", "OPEN DATA FOLDER", "OPEN DATA FOLDER", "ABRIR CARPETA DE DATOS", "ABRIR CARPETA DE DATOS"),
+        new("ABRIR CLIENTE", "ABRIR CLIENTE", "OPEN CLIENT", "OPEN CLIENT", "ABRIR CLIENTE", "ABRIR CLIENTE"),
         new("Status das integrações", "Estado das integrações", "Integration status", "Integration status", "Estado de las integraciones", "Estado de las integraciones"),
         new("Mostra quais clientes e integrações foram encontrados neste computador.", "Mostra quais clientes e integrações foram encontrados neste computador.", "Shows which clients and integrations were found on this computer.", "Shows which clients and integrations were found on this computer.", "Muestra qué clientes e integraciones se encontraron en este equipo.", "Muestra qué clientes e integraciones se encontraron en este equipo."),
         new("Gerenciar itens", "Gerir itens", "Manage items", "Manage items", "Administrar elementos", "Administrar elementos"),
@@ -206,6 +209,9 @@ public static class LocalizationService
         new("EDITAR INICIALIZAÇÃO", "EDITAR ARRANQUE", "EDIT LAUNCH", "EDIT LAUNCH", "EDITAR INICIO", "EDITAR INICIO"),
         new("TORNAR ESTA VERSÃO PRINCIPAL", "TORNAR ESTA VERSÃO PRINCIPAL", "MAKE THIS THE PRIMARY VERSION", "MAKE THIS THE PRIMARY VERSION", "HACER ESTA LA VERSIÓN PRINCIPAL", "HACER ESTA LA VERSIÓN PRINCIPAL"),
         new("VERSÃO PRINCIPAL", "VERSÃO PRINCIPAL", "PRIMARY VERSION", "PRIMARY VERSION", "VERSIÓN PRINCIPAL", "VERSIÓN PRINCIPAL"),
+        new("VERSÃO PRINCIPAL DA DUPLICATA", "VERSÃO PRINCIPAL DO DUPLICADO", "PRIMARY DUPLICATE VERSION", "PRIMARY DUPLICATE VERSION", "VERSIÓN PRINCIPAL DEL DUPLICADO", "VERSIÓN PRINCIPAL DEL DUPLICADO"),
+        new("VERSÃO SECUNDÁRIA", "VERSÃO SECUNDÁRIA", "SECONDARY VERSION", "SECONDARY VERSION", "VERSIÓN SECUNDARIA", "VERSIÓN SECUNDARIA"),
+
 
         new("Classificação", "Classificação", "Rating", "Rating", "Clasificación", "Clasificación"),
         new("Desenvolvedor / Publicadora", "Programador / Editora", "Developer / Publisher", "Developer / Publisher", "Desarrollador / Editor", "Desarrollador / Editor"),
