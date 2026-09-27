@@ -19,7 +19,10 @@
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock x:Name="TitleText" Foreground="White" FontSize="30" FontWeight="Bold" TextWrapping="Wrap"/>
-                <TextBlock x:Name="PlatformText" Foreground="#9BA3B4" FontSize="14" Margin="0,5,0,16"/>
+                <TextBlock x:Name="PlatformText" Foreground="#9BA3B4" FontSize="14" Margin="0,5,0,8"/>
+                <Border x:Name="DuplicatePrimaryBadge" Background="#243247" CornerRadius="6" Padding="8,4" HorizontalAlignment="Left" Margin="0,0,0,12" Visibility="Collapsed">
+                    <TextBlock x:Name="DuplicatePrimaryBadgeText" Foreground="#7DD3FC" FontSize="12" FontWeight="SemiBold"/>
+                </Border>
                 <WrapPanel Margin="0,0,0,15">
                     <Button x:Name="FavoriteButton" Content="☆ FAVORITO" Click="Favorite_Click" Margin="0,0,8,0"/>
                     <Button Content="JOGAR" Click="Play_Click" Margin="0,0,8,0"/>
