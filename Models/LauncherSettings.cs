@@ -15,6 +15,7 @@ public sealed class LauncherSettings
     public List<string> FavoriteGameIds { get; set; } = new();
     public Dictionary<string, DateTime> LastPlayedUtc { get; set; } = new();
     public Dictionary<string, int> PlayCounts { get; set; } = new();
+    public Dictionary<string, long> TotalPlayTimeSeconds { get; set; } = new();
     public Dictionary<string, ManualGameMetadata> ManualMetadata { get; set; } = new();
     public string CoverMode { get; set; } = "Auto";
     public bool EnrichMetadataAutomatically { get; set; } = true;
@@ -44,6 +45,13 @@ public sealed class LauncherSettings
     public int MaxCacheSizeMb { get; set; } = 1024;
     public bool AutoHideDuplicateSecondary { get; set; } = false;
     public Dictionary<string, string> PreferredDuplicateProviders { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public List<string> DuplicatePlatformPriority { get; set; } = new()
+    {
+        "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+    };
+    public string LibrarySortMode { get; set; } = "Name";
+    public bool ShowOnlyPrimaryDuplicates { get; set; } = false;
+    public ShortcutSettings Shortcuts { get; set; } = new();
     public Dictionary<string, int> SteamGridDbGameIds { get; set; } = new();
 }
 
@@ -55,6 +63,7 @@ public sealed class ManualGameMetadata
     public string? Developer { get; set; }
     public string? Publisher { get; set; }
     public int? ReleaseYear { get; set; }
+    public Dictionary<string, string> AgeRatings { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public string? HorizontalCoverUrl { get; set; }
     public string? VerticalCoverUrl { get; set; }
     public bool DisableAutomaticSteamGridDbVertical { get; set; }
@@ -70,5 +79,27 @@ public sealed class ManualGameDefinition
     public string? LaunchUri { get; set; }
     public string? WorkingDirectory { get; set; }
     public bool RunAsAdministrator { get; set; }
+    public string? IconPath { get; set; }
     public string? CoverPath { get; set; }
+    public List<ManualLaunchProfile> LaunchProfiles { get; set; } = new();
+    public string? PreferredLaunchProfileId { get; set; }
+}
+
+public sealed class ManualLaunchProfile
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public string Name { get; set; } = "Padrão";
+    public string? Executable { get; set; }
+    public string? Arguments { get; set; }
+    public string? LaunchUri { get; set; }
+    public string? WorkingDirectory { get; set; }
+    public bool RunAsAdministrator { get; set; }
+}
+
+public sealed class ShortcutSettings
+{
+    public string FocusSearch { get; set; } = "Ctrl+F";
+    public string ToggleFullscreen { get; set; } = "F11";
+    public string RefreshLibrary { get; set; } = "F5";
+    public string OpenSettings { get; set; } = "Ctrl+,";
 }
