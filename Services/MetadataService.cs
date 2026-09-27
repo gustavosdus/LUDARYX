@@ -502,65 +502,212 @@ public sealed class MetadataService
         if (appId <= 0)
             return;
 
-        var countryCode = settings.Language switch
-        {
-            "pt-BR" => "BR",
-            "pt-PT" => "PT",
-            "en-US" => "US",
-            "en-GB" => "GB",
-            "es-ES" => "ES",
-            // es-419 é uma região; México é usado apenas para pedir à Steam uma
-            // resposta regional. O LUDARYX nunca converte uma nota de um órgão para outro.
-            "es-419" => "MX",
-            _ => "US"
-        };
+        var (steamLanguage, countryCode) = GetSteamLocale(settings.Language);
+        var changed = false;
 
         await _steamStoreGate.WaitAsync(token);
         try
         {
-            var url = $"https://store.steampowered.com/api/appdetails?appids={appId}&l=english&cc={countryCode}";
-            using var response = await _http.GetAsync(url, token);
-            if (!response.IsSuccessStatusCode)
-                return;
-
-            using var doc = JsonDocument.Parse(
-                await SafeHttpResponseService.ReadTextAsync(response, cancellationToken: token));
-
-            var appIdText = appId.ToString(CultureInfo.InvariantCulture);
-            if (!doc.RootElement.TryGetProperty(appIdText, out var entry) ||
-                !entry.TryGetProperty("success", out var success) ||
-                !success.GetBoolean() ||
-                !entry.TryGetProperty("data", out var data) ||
-                !data.TryGetProperty("ratings", out var ratings) ||
-                ratings.ValueKind != JsonValueKind.Object)
+            // 1) A API estruturada é preferida quando realmente traz o bloco ratings.
+            try
             {
-                return;
+                var apiUrl = $"https://store.steampowered.com/api/appdetails?appids={appId}" +
+                             $"&l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
+                using var apiResponse = await _http.GetAsync(apiUrl, token);
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    using var doc = JsonDocument.Parse(
+                        await SafeHttpResponseService.ReadTextAsync(apiResponse, cancellationToken: token));
+
+                    var appIdText = appId.ToString(CultureInfo.InvariantCulture);
+                    if (doc.RootElement.TryGetProperty(appIdText, out var entry) &&
+                        entry.TryGetProperty("success", out var success) &&
+                        success.GetBoolean() &&
+                        entry.TryGetProperty("data", out var data))
+                    {
+                        if (data.TryGetProperty("ratings", out var ratings) &&
+                            ratings.ValueKind == JsonValueKind.Object)
+                        {
+                            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+                            foreach (var ratingProperty in ratings.EnumerateObject())
+                            {
+                                var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
+                                if (string.IsNullOrWhiteSpace(ratingValue))
+                                    continue;
+
+                                var key = AgeRatingService.NormalizeSystem(ratingProperty.Name);
+                                if (string.IsNullOrWhiteSpace(key))
+                                    key = ratingProperty.Name;
+
+                                game.Metadata.AgeRatings[key] = ratingValue;
+                                changed = true;
+                            }
+                        }
+
+                        if (!game.Metadata.ReleaseYear.HasValue &&
+                            data.TryGetProperty("release_date", out var releaseDate) &&
+                            releaseDate.TryGetProperty("date", out var date))
+                        {
+                            var year = TryExtractYear(date.GetString());
+                            if (year.HasValue)
+                            {
+                                game.Metadata.ReleaseYear = year.Value;
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch
+            {
+                // Continua para a página da própria Steam.
             }
 
-            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
-            foreach (var ratingProperty in ratings.EnumerateObject())
+            // 2) A página da Steam costuma exibir classificações regionais que a API
+            // appdetails omite (por exemplo ClassInd no Brasil). Este fallback só lê
+            // a classificação publicada pela própria loja; não converte uma nota em outra.
+            try
             {
-                var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
-                if (!string.IsNullOrWhiteSpace(ratingValue))
-                    game.Metadata.AgeRatings[ratingProperty.Name] = ratingValue;
+                var pageUrl = $"https://store.steampowered.com/app/{appId}/" +
+                              $"?l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
+                using var pageResponse = await _http.GetAsync(pageUrl, token);
+                if (pageResponse.IsSuccessStatusCode)
+                {
+                    var html = await SafeHttpResponseService.ReadTextAsync(
+                        pageResponse, maxBytes: 4 * 1024 * 1024, cancellationToken: token);
+
+                    game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+                    changed |= ExtractSteamAgeRatingsFromHtml(
+                        html,
+                        settings.Language,
+                        game.Metadata.AgeRatings);
+
+                    if (!game.Metadata.ReleaseYear.HasValue)
+                    {
+                        var year = TryExtractSteamReleaseYearFromHtml(html);
+                        if (year.HasValue)
+                        {
+                            game.Metadata.ReleaseYear = year.Value;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch
+            {
+                // Mantém os valores já existentes no cache.
             }
 
-            lock (_cacheSync)
-                _cache[game.ProviderId] = game.Metadata;
-            SaveCache();
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch
-        {
-            // Classificação indicativa é metadado opcional. Mantém o cache existente.
+            if (changed)
+            {
+                lock (_cacheSync)
+                    _cache[game.ProviderId] = game.Metadata;
+                SaveCache();
+            }
         }
         finally
         {
             _steamStoreGate.Release();
         }
+    }
+
+    private static bool ExtractSteamAgeRatingsFromHtml(
+        string html,
+        string language,
+        Dictionary<string, string> ratings)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            return false;
+
+        var changed = false;
+        var plain = Regex.Replace(html, @"<script[\s\S]*?</script>", " ", RegexOptions.IgnoreCase);
+        plain = Regex.Replace(plain, @"<style[\s\S]*?</style>", " ", RegexOptions.IgnoreCase);
+        plain = Regex.Replace(plain, @"<[^>]+>", " ");
+        plain = WebUtility.HtmlDecode(plain);
+        plain = Regex.Replace(plain, @"\s+", " ").Trim();
+
+        // ClassInd / DEJUS. A página brasileira usa textos como
+        // "Classificação Indicativa: 16 ANOS".
+        var classInd = Regex.Match(
+            plain,
+            @"Classifica(?:ção|cao)\s+Indicativa\s*:\s*(?<value>LIVRE|10\s*ANOS?|12\s*ANOS?|14\s*ANOS?|16\s*ANOS?|18\s*ANOS?)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (classInd.Success)
+        {
+            var value = Regex.Replace(classInd.Groups["value"].Value.ToUpperInvariant(), @"\s*ANOS?", string.Empty).Trim();
+            ratings["dejus"] = value;
+            changed = true;
+        }
+
+        // PEGI pode aparecer tanto em texto/alt quanto no nome da imagem.
+        var pegi = Regex.Match(
+            html,
+            @"(?:PEGI|pegi)[^0-9]{0,80}(?<value>3|7|12|16|18)(?!\d)",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+        if (pegi.Success)
+        {
+            ratings["pegi"] = pegi.Groups["value"].Value;
+            changed = true;
+        }
+
+        // ESRB: captura os nomes públicos comuns sem tentar traduzi-los/converter.
+        var esrb = Regex.Match(
+            plain,
+            @"(?<value>Adults\s+Only(?:\s*18\+)?|Mature(?:\s*17\+)?|Teen|Everyone\s*10\+|Everyone|Rating\s+Pending)\s*(?:\([^)]*\))?",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (esrb.Success &&
+            (plain.Contains("ESRB", StringComparison.OrdinalIgnoreCase) ||
+             language.Equals("en-US", StringComparison.OrdinalIgnoreCase)))
+        {
+            ratings["esrb"] = esrb.Groups["value"].Value.Trim();
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    private static int? TryExtractSteamReleaseYearFromHtml(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            return null;
+
+        foreach (var pattern in new[]
+        {
+            @"class=[""'][^""']*release_date[^""']*[""'][^>]*>[\s\S]*?class=[""'][^""']*date[^""']*[""'][^>]*>(?<value>[\s\S]*?)</div>",
+            @"(?:Release\s+Date|Data\s+de\s+lançamento|Data\s+de\s+lançamento|Fecha\s+de\s+lanzamiento)\s*:?[\s\S]{0,160}?(?<value>19[7-9]\d|20\d{2})"
+        })
+        {
+            var match = Regex.Match(
+                html,
+                pattern,
+                RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+            if (!match.Success)
+                continue;
+
+            var value = WebUtility.HtmlDecode(Regex.Replace(match.Groups["value"].Value, @"<[^>]+>", " "));
+            var year = TryExtractYear(value);
+            if (year.HasValue)
+                return year;
+        }
+
+        return null;
+    }
+
+    private static int? TryExtractYear(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var match = Regex.Match(value, @"\b(19[7-9]\d|20\d{2})\b", RegexOptions.CultureInvariant);
+        return match.Success && int.TryParse(match.Value, out var year) ? year : null;
     }
 
     private static string? GetCachedEnglishDescription(GameMetadata metadata)
@@ -1254,12 +1401,7 @@ public sealed class MetadataService
                 html, @"<div[^>]+class=[""'][^""']*subtitle\s+column[^""']*[""'][^>]*>\s*Publisher:\s*</div>\s*<div[^>]+class=[""'][^""']*summary\s+column[^""']*[""'][^>]*>(?<value>.*?)</div>"));
 
             var release = Extract(html, @"<div[^>]+class=[""'][^""']*release_date[^""']*[""'][^>]*>.*?<div[^>]+class=[""'][^""']*date[^""']*[""'][^>]*>(?<value>.*?)</div>");
-            if (!string.IsNullOrWhiteSpace(release))
-            {
-                var yearMatch = Regex.Match(release, @"\b(19[7-9]\d|20\d{2})\b");
-                if (yearMatch.Success && int.TryParse(yearMatch.Value, out var releaseYear))
-                    metadata.ReleaseYear = releaseYear;
-            }
+            metadata.ReleaseYear = TryExtractYear(release) ?? TryExtractSteamReleaseYearFromHtml(html);
 
             var genreText = Extract(html, @"<b>\s*Genre:\s*</b>\s*(?<value>.*?)(?:<br\s*/?>|</div>)");
             if (!string.IsNullOrWhiteSpace(genreText))
@@ -1283,6 +1425,8 @@ public sealed class MetadataService
                     AddGenre(value, metadata.Genres);
                 }
             }
+
+            ExtractSteamAgeRatingsFromHtml(html, "en-US", metadata.AgeRatings);
 
             var header = Regex.Match(
                 html,
