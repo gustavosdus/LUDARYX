@@ -2,6 +2,13 @@ using System.IO.Compression;
 
 namespace UnifiedGameLauncher.Services;
 
+public sealed class BackupSelection
+{
+    public bool SettingsAndLibrary { get; set; } = true;
+    public bool CustomArtwork { get; set; } = true;
+    public bool MetadataCache { get; set; } = true;
+}
+
 public static class BackupService
 {
     // "covers" é cache regenerável. Além de aumentar muito o backup, ele pode estar
@@ -10,8 +17,9 @@ public static class BackupService
     // fazendo parte do backup.
     private static readonly string[] ExcludedFolders = { "Logs", "Updates", "covers" };
 
-    public static long GetEstimatedBackupSourceSizeBytes()
+    public static long GetEstimatedBackupSourceSizeBytes(BackupSelection? selection = null)
     {
+        selection ??= new BackupSelection();
         AppDataService.EnsureMigrated();
         var root = AppDataService.RootDirectory;
         if (!Directory.Exists(root))
