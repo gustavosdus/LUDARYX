@@ -31,6 +31,7 @@ public partial class DetailsWindow : Window
             try
             {
                 await _metadata.EnsureLocalizedDescriptionAsync(_game, _settings);
+                await _metadata.EnsureLocalizedAgeRatingAsync(_game, _settings);
                 LoadData();
                 LocalizationService.Apply(this);
             }
