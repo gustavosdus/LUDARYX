@@ -15,7 +15,7 @@
 - Capas vertical/horizontal, arte personalizada e integração opcional com SteamGridDB.
 - Metadados, gêneros, desenvolvedora, publicadora e descrições localizadas com fallback em inglês.
 - Favoritos, itens ocultos, recentes, duplicados e classificação manual.
-- Navegação por teclado, controles Xbox/XInput e DualSense.
+- Navegação por mouse e teclado, controles Xbox compatíveis com XInput e controle PlayStation 5 DualSense.
 - Modo tela cheia e interface adequada para uso a distância.
 - Configurações e segredos locais; API keys persistidas protegidas com Windows DPAPI.
 - Sem telemetria própria nesta versão.
@@ -80,6 +80,16 @@ Idiomas disponíveis:
 - English (UK) — inglês britânico (`en-GB`)
 - Español (Latinoamérica)
 - Español (España)
+
+## Compatibilidade de controles
+
+O LUDARYX oferece navegação por:
+
+- mouse e teclado;
+- controles Xbox compatíveis com XInput;
+- controle PlayStation 5 DualSense.
+
+A menção a Xbox, PlayStation e DualSense descreve apenas compatibilidade técnica. LUDARYX não é afiliado, patrocinado ou endossado pela Microsoft ou pela Sony.
 
 ## Diagnóstico
 
