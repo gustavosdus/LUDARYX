@@ -74,6 +74,44 @@
                                         <TextBlock x:Name="UpdateStatusText" Foreground="#9BA3B4" Margin="12,7,0,0" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </StackPanel>
+                                <Separator Margin="0,14,0,12"/>
+                                <StackPanel>
+                                    <TextBlock Text="Duplicatas" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                                    <CheckBox x:Name="AutoHideDuplicateSecondaryCheck" Content="Ocultar automaticamente versões duplicadas secundárias" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                                    <TextBlock Text="Escolha a versão principal na tela de detalhes de qualquer jogo marcado como duplicata." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <Separator Margin="0,14,0,12"/>
+                                <StackPanel>
+                                    <TextBlock Text="Cache e backup" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                                    <CheckBox x:Name="AutoCleanupCacheCheck" Content="Limpar cache automaticamente quando atingir o limite" Foreground="#D9DDE7" Margin="0,8,0,6"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <TextBlock Text="Limite do cache (MB):" Foreground="#D9DDE7" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox x:Name="MaxCacheSizeBox" Width="90" Height="28"/>
+                                        <TextBlock x:Name="CacheSizeText" Foreground="#9BA3B4" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                    </StackPanel>
+                                    <WrapPanel>
+                                        <Button Content="LIMPAR CACHE AGORA" Padding="10,5" Click="ClearCache_Click" Margin="0,0,8,8"/>
+                                        <Button Content="EXPORTAR BACKUP" Padding="10,5" Click="ExportBackup_Click" Margin="0,0,8,8"/>
+                                        <Button Content="IMPORTAR BACKUP" Padding="10,5" Click="ImportBackup_Click" Margin="0,0,8,8"/>
+                                        <Button Content="COPIAR DIAGNÓSTICO" Padding="10,5" Click="CopyDiagnostic_Click" Margin="0,0,8,8"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                                <Separator Margin="0,14,0,12"/>
+                                <StackPanel>
+                                    <TextBlock Text="Status das integrações" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Mostra quais clientes e integrações foram encontrados neste computador." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,8"/>
+                                    <ItemsControl x:Name="IntegrationStatusList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,2">
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}" Foreground="#D9DDE7"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="#9BA3B4"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                         <Grid Grid.Row="1">
