@@ -32,6 +32,11 @@ public partial class SettingsWindow : Window
         SelectLanguage(_settings.Language);
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
         CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
+        AutoHideDuplicateSecondaryCheck.IsChecked = _settings.AutoHideDuplicateSecondary;
+        AutoCleanupCacheCheck.IsChecked = _settings.AutoCleanupCache;
+        MaxCacheSizeBox.Text = _settings.MaxCacheSizeMb.ToString();
+        RefreshCacheSize();
+        IntegrationStatusList.ItemsSource = IntegrationStatusService.GetStatuses(_settings);
 
         LocalizationService.SetLanguage(_settings.Language);
         LocalizationService.Apply(this);
@@ -91,6 +96,11 @@ public partial class SettingsWindow : Window
         _settings.Language = (LanguageCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? LocalizationService.PortugueseBrazil;
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
         _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
+        _settings.AutoHideDuplicateSecondary = AutoHideDuplicateSecondaryCheck.IsChecked == true;
+        _settings.AutoCleanupCache = AutoCleanupCacheCheck.IsChecked == true;
+        _settings.MaxCacheSizeMb = int.TryParse(MaxCacheSizeBox.Text, out var cacheLimit)
+            ? Math.Clamp(cacheLimit, 128, 16384)
+            : 1024;
         // Atualiza apenas os itens que estão realmente presentes no gerenciador.
         // IDs ocultos de jogos que não foram descobertos nesta sessão são preservados,
         // evitando que uma atualização/recarga temporária faça itens antigos reaparecerem.
@@ -182,6 +192,75 @@ public partial class SettingsWindow : Window
         }
     }
 
+    private void RefreshCacheSize()
+    {
+        var mb = CacheMaintenanceService.GetCacheSizeBytes() / 1024d / 1024d;
+        CacheSizeText.Text = $"Uso atual: {mb:0.0} MB";
+    }
+
+    private void ClearCache_Click(object sender, RoutedEventArgs e)
+    {
+        CacheMaintenanceService.ClearDownloadCache();
+        RefreshCacheSize();
+        MessageBox.Show(this, "O cache de capas baixadas foi limpo. Artes personalizadas foram preservadas.",
+            "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void ExportBackup_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = "Backup do LUDARYX (*.zip)|*.zip",
+            FileName = $"LUDARYX-backup-{DateTime.Now:yyyy-MM-dd}.zip"
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        try
+        {
+            BackupService.Export(dialog.FileName);
+            MessageBox.Show(this, "Backup exportado com sucesso.", "LUDARYX",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Não foi possível exportar o backup.\n\n{ex.Message}", "LUDARYX",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ImportBackup_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Backup do LUDARYX (*.zip)|*.zip" };
+        if (dialog.ShowDialog(this) != true) return;
+
+        if (MessageBox.Show(this,
+                "O backup substituirá configurações e dados locais existentes. Continuar?",
+                "LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            BackupService.Import(dialog.FileName);
+            MessageBox.Show(this,
+                "Backup importado. Reinicie o LUDARYX para aplicar todos os dados restaurados.",
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+            DialogResult = true;
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Não foi possível importar o backup.\n\n{ex.Message}", "LUDARYX",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void CopyDiagnostic_Click(object sender, RoutedEventArgs e)
+    {
+        System.Windows.Clipboard.SetText(DiagnosticLogService.BuildDiagnosticReport());
+        MessageBox.Show(this, "Relatório de diagnóstico sanitizado copiado para a área de transferência.",
+            "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
     private void Cancel_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
 
     private static LauncherSettings Clone(LauncherSettings source) => new()
@@ -204,6 +283,11 @@ public partial class SettingsWindow : Window
         Language = source.Language,
         CheckForUpdatesOnStartup = source.CheckForUpdatesOnStartup,
         LastUpdateCheckUtc = source.LastUpdateCheckUtc,
+        SkippedUpdateVersion = source.SkippedUpdateVersion,
+        AutoCleanupCache = source.AutoCleanupCache,
+        MaxCacheSizeMb = source.MaxCacheSizeMb,
+        AutoHideDuplicateSecondary = source.AutoHideDuplicateSecondary,
+        PreferredDuplicateProviders = new Dictionary<string, string>(source.PreferredDuplicateProviders, StringComparer.OrdinalIgnoreCase),
         EnrichMetadataAutomatically = source.EnrichMetadataAutomatically,
         UseSteamStoreMetadata = source.UseSteamStoreMetadata,
         UseIgdbMetadata = source.UseIgdbMetadata,
@@ -220,6 +304,8 @@ public partial class SettingsWindow : Window
             Executable = x.Executable,
             Arguments = x.Arguments,
             LaunchUri = x.LaunchUri,
+            WorkingDirectory = x.WorkingDirectory,
+            RunAsAdministrator = x.RunAsAdministrator,
             CoverPath = x.CoverPath
         }).ToList(),
         SteamGridDbGameIds = new Dictionary<string, int>(source.SteamGridDbGameIds, StringComparer.OrdinalIgnoreCase)
