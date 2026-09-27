@@ -72,12 +72,12 @@ public partial class DetailsWindow : Window
             _settings.PreferredDuplicateProviders.TryGetValue(_game.CanonicalGameId, out var preferred) &&
             preferred.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase))
         {
-            MakePrimaryDuplicateButton.Content = "VERSÃO PRINCIPAL";
+            MakePrimaryDuplicateButton.Content = LocalizationService.Translate("VERSÃO PRINCIPAL");
             MakePrimaryDuplicateButton.IsEnabled = false;
         }
         else
         {
-            MakePrimaryDuplicateButton.Content = "TORNAR ESTA VERSÃO PRINCIPAL";
+            MakePrimaryDuplicateButton.Content = LocalizationService.Translate("TORNAR ESTA VERSÃO PRINCIPAL");
             MakePrimaryDuplicateButton.IsEnabled = true;
         }
     }
