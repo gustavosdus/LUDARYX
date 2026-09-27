@@ -24,7 +24,9 @@
                     <Button x:Name="FavoriteButton" Content="☆ FAVORITO" Click="Favorite_Click" Margin="0,0,8,0"/>
                     <Button Content="JOGAR" Click="Play_Click" Margin="0,0,8,0"/>
                     <Button Content="OCULTAR" Click="Hide_Click" Margin="0,0,8,0"/>
-                    <Button Content="EXCLUIR DA BIBLIOTECA" Click="Exclude_Click"/>
+                    <Button Content="EXCLUIR DA BIBLIOTECA" Click="Exclude_Click" Margin="0,0,8,0"/>
+                    <Button x:Name="EditManualLaunchButton" Content="EDITAR INICIALIZAÇÃO" Click="EditManualLaunch_Click" Visibility="Collapsed" Margin="0,0,8,0"/>
+                    <Button x:Name="MakePrimaryDuplicateButton" Content="TORNAR ESTA VERSÃO PRINCIPAL" Click="MakePrimaryDuplicate_Click" Visibility="Collapsed"/>
                 </WrapPanel>
                 <Border Background="#151923" CornerRadius="10" Padding="16">
                     <Grid>
