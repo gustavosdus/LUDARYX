@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.24
+
+- Corrigido carregamento das capas padrão após a mudança de carregamento progressivo da biblioteca.
+- O cache local de metadados e capas agora é aplicado a todos os jogos antes da biblioteca ser exibida.
+- Capas personalizadas continuam tendo prioridade sobre as capas automáticas.
+- Atualização de metadados pela internet permanece limitada e não bloqueia a exibição da biblioteca.
+- Limites de tempo de enriquecimento foram ajustados sem permitir carregamento infinito.
+- LUDARYX Installer sincronizado para 1.0.24.

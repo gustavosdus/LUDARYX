@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.16
+
+- Corrige o indicador de carregamento da biblioteca que podia não ser renderizado.
+- O texto agora também aparece durante a animação inicial, acima do overlay de startup.
+- Força um ciclo de renderização do WPF antes de iniciar a descoberta/carregamento pesado.
+- Mantém as correções e recursos das versões anteriores.
+- LUDARYX Installer sincronizado para 1.0.16.

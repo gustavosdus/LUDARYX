@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.11
+
+Correções:
+- O Gerenciador de Itens agora preserva IDs ocultos que não estejam presentes na descoberta atual, evitando que itens desmarcados reapareçam após atualização ou recarga.
+- Salvar Configurações não apaga mais jogos manuais nem campos protegidos ao clonar as preferências.
+- settings.json agora mantém settings.backup.json e tenta recuperação automática se o arquivo principal estiver inválido.
+- LUDARYX Installer atualizado para 1.0.11.

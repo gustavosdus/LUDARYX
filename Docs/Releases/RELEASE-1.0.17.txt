@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.17
+
+- Tema escuro mantém o contorno azul claro neon na lista de jogos e na fileira de opções.
+- Tema claro passa a usar contorno vermelho neon na lista de jogos e na fileira de opções.
+- Destaque visual da seleção de jogos também acompanha o tema.
+- LUDARYX Installer sincronizado para 1.0.17.

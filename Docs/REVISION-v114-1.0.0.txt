@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.0 - revisão interna v114
+
+Correções:
+- Xbox/Microsoft Store: remove qualificadores técnicos do nome detectado, como " - PC", " (PC)", " - Windows" e " (Windows)", antes de pesquisar metadados. O nome técnico do atalho não bloqueia mais correspondências exatas em Steam, PCGamingWiki e SteamGridDB.
+- Xbox/Microsoft Store: jogos como "Doom Eternal - PC" passam a ser tratados como "Doom Eternal" para metadados/capas.
+- Xbox/Microsoft Store: ao iniciar um jogo, o Xbox app é aberto/trazido para frente primeiro; o launcher aguarda a inicialização da interface antes de abrir o pacote do jogo.
+- Xbox/Microsoft Store: detecção de cliente em execução reconhece XboxPcApp e GamingApp.
+
+A versão pública permanece 1.0.0.

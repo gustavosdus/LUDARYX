@@ -1,0 +1,23 @@
+name: Sugerir melhoria
+description: Proponha um recurso ou melhoria para o LUDARYX
+title: "[Melhoria] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou necessidade
+      description: Explique o que você gostaria de melhorar.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: Descreva a solução desejada.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas

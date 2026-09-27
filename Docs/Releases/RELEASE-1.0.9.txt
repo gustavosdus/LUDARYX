@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.9
+
+Correção:
+- Corrigida a navegação por teclado quando a barra de pesquisa recebe foco.
+- Seta para baixo ou Esc sai da pesquisa e retorna à biblioteca.
+- Seta para cima sai da pesquisa e volta à barra de opções.
+- Esquerda/direita e as teclas de edição continuam funcionando dentro do texto pesquisado.
+- Versão do LUDARYX e do LUDARYX Installer sincronizadas em 1.0.9.

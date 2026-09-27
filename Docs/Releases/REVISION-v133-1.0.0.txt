@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.0 - revisão interna v133
+
+- Corrige a posição inicial da janela principal em monitores cuja área útil é menor que o tamanho padrão de 1400x900.
+- A janela principal passa a ser reduzida somente quando necessário e centralizada dentro da área útil do monitor, respeitando a barra de tarefas e o DPI do Windows.
+- Corrige a janela de Configurações quando aberta com o LUDARYX maximizado: o tamanho é limitado à área útil e a janela é centralizada no mesmo monitor do programa.
+- A lógica de posicionamento foi centralizada em Services/WindowPlacementService.cs para facilitar manutenção e futuras edições manuais.
+- Versão pública permanece LUDARYX 1.0.0.

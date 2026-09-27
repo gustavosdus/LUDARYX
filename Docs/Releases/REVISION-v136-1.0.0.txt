@@ -1,0 +1,14 @@
+﻿LUDARYX 1.0.0 — revisão interna v136
+
+Preparação para publicação open source no GitHub:
+- licença MIT adicionada;
+- README revisado com screenshots, recursos, build e release;
+- GitHub Actions para restore/build em Windows;
+- templates de bug, melhoria e pull request;
+- CONTRIBUTING.md e política de segurança pública;
+- .gitignore ampliado para builds, logs, configurações e segredos;
+- diagnóstico local com versão, Windows, .NET, arquitetura e acesso à pasta de logs;
+- logs locais sanitizam caminhos do perfil e não registram API keys/tokens por design;
+- warnings atuais do HidSharp tratados de forma localizada e nullability corrigida;
+- script para hashes SHA-256 e checklist de release adicionados;
+- binários e instaladores continuam fora do versionamento e devem ser publicados em GitHub Releases.

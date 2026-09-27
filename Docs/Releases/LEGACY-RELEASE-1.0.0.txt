@@ -1,0 +1,11 @@
+﻿LUDARYX 1.0.0
+
+Produto: LUDARYX
+Versão: 1.0.0
+Editor/Empresa: Gustavo José da Silva
+Descrição: Launcher unificado para jogos de PC
+Executável publicado: LUDARYX.exe
+Instalador: LUDARYX-1.0.0-Setup.exe
+
+Publicação recomendada:
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true

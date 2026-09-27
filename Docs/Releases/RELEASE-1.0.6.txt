@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.6
+
+- Corrige o destaque azul para ser exclusivo entre a barra de opções e a biblioteca de jogos.
+- Ao entrar na barra, nenhum jogo permanece com contorno azul.
+- Ao voltar para a biblioteca, nenhum item da barra permanece destacado.
+- Atualiza o LUDARYX Installer para 1.0.6.

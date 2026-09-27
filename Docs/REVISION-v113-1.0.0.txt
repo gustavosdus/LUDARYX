@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.0 — Revisão v113
+
+- Adicionada tela Sobre / Créditos / Fontes.
+- Adicionados THIRD-PARTY-NOTICES.txt, DATA-SOURCES.md, PRIVACY.md e LEGAL-NOTICE.md.
+- Tela de detalhes passa a informar a fonte dos metadados.
+- Descrições externas passam a ser limitadas a um resumo curto (até 1200 caracteres).
+- PCGamingWiki permanece restrito a dados estruturados/factuais.
+- Documentação deixa explícita a não afiliação com plataformas e titulares de marcas.
+- Versão pública permanece 1.0.0.

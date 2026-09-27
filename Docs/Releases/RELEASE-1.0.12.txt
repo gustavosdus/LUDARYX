@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.12
+
+Correções:
+- O provedor Xbox / Microsoft Store agora consulta metadados dos pacotes AppX em vez de aceitar cegamente todo item retornado por Get-StartApps.
+- Aplicativos comuns do Windows e da Microsoft Store, como Calculadora, Xbox, Fotos, Paint, Bloco de Notas, Terminal, Câmera, Relógio, Store, Clipchamp, Teams, Outlook e outros utilitários, passam a ser filtrados da biblioteca.
+- Jogos publicados pela Microsoft continuam protegidos por uma lista de franquias conhecidas para reduzir falsos positivos no filtro.
+- O PackageFamilyName dos jogos da Store passa a ser preservado no modelo para futuras melhorias de detecção.
+- LUDARYX Installer atualizado para 1.0.12.

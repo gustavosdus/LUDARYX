@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.0 — revisão v112
+
+- PCGamingWiki adicionado como fonte geral de metadados via API MediaWiki.
+- Consulta limitada e com User-Agent próprio para respeitar a infraestrutura do PCGamingWiki.
+- Desenvolvedora, publicadora, lançamento, gêneros e Steam App ID podem ser complementados pelo PCGamingWiki.
+- Steam App ID vindo do PCGamingWiki pode ser usado para consultar appdetails diretamente.
+- G.I. Joe: Wrath of Cobra recebe fallback estável de publisher, descrição e gêneros.
+- Metadados completos já existentes continuam protegidos contra regressões.
+- Versão pública e Installer permanecem 1.0.0.

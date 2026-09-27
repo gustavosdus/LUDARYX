@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.0 - revisão interna v115
+
+Correção EA app:
+- Permite junctions/reparse points legítimos em diretórios de jogos detectados automaticamente pelo provedor EA.
+- A exceção é restrita ao provedor EA e não altera a validação de jogos manuais ou outros launchers.
+- O arquivo .exe em si continua proibido de ser symlink/reparse point.
+- Todo junction encontrado precisa resolver para um caminho local; destinos UNC/rede continuam bloqueados.
+- Mantidas todas as correções anteriores da v114.

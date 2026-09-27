@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.25
+
+- Corrigido cache de capas oficiais da Steam que mantinha artes antigas após o desenvolvedor atualizá-las.
+- Capas automáticas da Steam são revalidadas após 24 horas.
+- O botão ATUALIZAR força a revalidação imediata das capas automáticas da Steam.
+- O cache visual do WPF passa a considerar a versão real do arquivo, permitindo trocar a imagem no mesmo caminho.
+- Capas personalizadas continuam tendo prioridade e não são substituídas.
+- Metadados remotos preservam artes personalizadas existentes.
+- LUDARYX Installer sincronizado para 1.0.25.

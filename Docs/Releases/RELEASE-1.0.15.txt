@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.15
+
+Correções:
+- A rolagem da biblioteca agora acompanha imediatamente a seleção ao segurar esquerda/direita/cima/baixo.
+- Removido o Items.Refresh() completo a cada passo de navegação.
+- O destaque do card agora usa INotifyPropertyChanged e atualiza somente os itens afetados.
+- Eliminada a fila de BringIntoView em prioridade baixa que fazia o scroll ficar atrasado.
+- LUDARYX Installer atualizado para 1.0.15.

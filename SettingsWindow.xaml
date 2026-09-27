@@ -1,0 +1,94 @@
+﻿<Window x:Class="UnifiedGameLauncher.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Configurações" Width="820" Height="780"
+        WindowStartupLocation="CenterOwner" Background="#0D0F14">
+    <Grid Margin="24">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="CONFIGURAÇÕES" Foreground="White" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="Controle a biblioteca, capas, integrações e itens ocultos." Foreground="#9BA3B4" Margin="0,4,0,18"/>
+        </StackPanel>
+        <Border Grid.Row="1" Background="#151923" CornerRadius="10" Padding="14" Margin="0,0,0,14">
+            <StackPanel>
+                <WrapPanel>
+                    <StackPanel Margin="0,0,25,0">
+                        <TextBlock Text="Biblioteca" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                        <CheckBox x:Name="ShowStoreAppsCheck" Content="Mostrar Xbox / Microsoft Store" Foreground="#D9DDE7" Margin="0,10,0,0"/>
+                        <CheckBox x:Name="ShowHiddenCheck" Content="Mostrar itens ocultos na biblioteca" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,25,0">
+                        <TextBlock Text="Execução" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                        <CheckBox x:Name="AutoStartClientsCheck" Content="Iniciar clientes automaticamente" Foreground="#D9DDE7" Margin="0,10,0,0"/>
+                        <CheckBox x:Name="KeepLauncherOpenCheck" Content="Manter launcher aberto" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                        <CheckBox x:Name="StartWithWindowsCheck" Content="Iniciar LUDARYX com o Windows" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                        <CheckBox x:Name="StartFullscreenCheck" Content="Abrir em tela cheia ao iniciar" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Capas" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                        <ComboBox x:Name="CoverModeCombo" Width="170" Margin="0,10,0,0">
+                            <ComboBoxItem Content="Auto" Tag="Auto"/>
+                            <ComboBoxItem Content="Horizontal" Tag="Horizontal"/>
+                            <ComboBoxItem Content="Vertical" Tag="Vertical"/>
+                        </ComboBox>
+                        <TextBlock Text="Linha neon" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,14,0,0"/>
+                        <ComboBox x:Name="NeonLineColorCombo" Width="170" Margin="0,8,0,0">
+                            <ComboBoxItem Content="Vermelha" Tag="Red"/>
+                            <ComboBoxItem Content="Azul claro" Tag="LightBlue"/>
+                        </ComboBox>
+                        <TextBlock Text="Tema" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,14,0,0"/>
+                        <ComboBox x:Name="ThemeCombo" Width="170" Margin="0,8,0,0">
+                            <ComboBoxItem Content="Escuro" Tag="Dark"/>
+                            <ComboBoxItem Content="Claro" Tag="Light"/>
+                        </ComboBox>
+                        <TextBlock Text="Idioma" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,14,0,0"/>
+                        <ComboBox x:Name="LanguageCombo" Width="240" Margin="0,8,0,0">
+                            <ComboBoxItem Content="Português (Brasil)" Tag="pt-BR"/>
+                            <ComboBoxItem Content="Português (Portugal)" Tag="pt-PT"/>
+                            <ComboBoxItem Content="English (US)" Tag="en-US"/>
+                            <ComboBoxItem Content="English (UK)" Tag="en-GB"/>
+                            <ComboBoxItem Content="Español (Latinoamérica)" Tag="es-419"/>
+                            <ComboBoxItem Content="Español (España)" Tag="es-ES"/>
+                        </ComboBox>
+                    </StackPanel>
+                </WrapPanel>
+                <Separator Margin="0,14,0,12"/>
+                <StackPanel>
+                    <TextBlock Text="SteamGridDB" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="Use a API Key do SteamGridDB para buscar automaticamente capas verticais e horizontais, inclusive de jogos de outros launchers." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,8"/>
+                    <PasswordBox x:Name="SteamGridDbApiKeyBox" Width="520" HorizontalAlignment="Left" ToolTip="API Key do SteamGridDB"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <TextBlock Text="Gerenciar itens" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="1" Text="Use os controles para ocultar ou restaurar jogos. Excluir da biblioteca pode ser restaurado aqui." Foreground="#9BA3B4" Margin="0,4,0,10"/>
+            <Border Grid.Row="2" Background="#151923" CornerRadius="10" Padding="10">
+                <ListBox x:Name="GamesList" Background="Transparent" BorderThickness="0" Foreground="White">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="4,6">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding ProviderId}" Foreground="#7F8AA3" FontSize="11" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="FAVORITO" Foreground="#D7B46A" VerticalAlignment="Center" Margin="10" Visibility="{Binding IsFavorite, Converter={StaticResource BoolToVisibility}}"/>
+                                <CheckBox Grid.Column="2" IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center" Margin="12,0,4,0" ToolTip="Mostrar"/>
+                                <Button Grid.Column="3" Content="RESTAURAR" Tag="{Binding}" Click="RestoreExcluded_Click" Margin="8,0,0,0" Visibility="{Binding IsExcluded, Converter={StaticResource BoolToVisibility}}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="3" Margin="0,16,0,0">
+            <Button Content="SOBRE / CRÉDITOS" Width="150" HorizontalAlignment="Left" Click="About_Click"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="CANCELAR" Width="110" Click="Cancel_Click"/>
+                <Button Content="SALVAR" Width="110" Click="Save_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

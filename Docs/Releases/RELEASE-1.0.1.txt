@@ -1,0 +1,17 @@
+﻿LUDARYX 1.0.1 (v63)
+
+Atualização de segurança:
+- API Key do SteamGridDB e credenciais IGDB protegidas pela DPAPI do Windows no settings.json.
+- Migração automática de segredos antigos que estavam em texto puro.
+- Client secret do IGDB enviado no corpo POST, não na URL.
+- Jogos manuais validam executável/URI antes de salvar e novamente antes de executar.
+- Downloads de capas exigem HTTPS, Content-Type de imagem, limite de 15 MB e assinatura de arquivo reconhecida.
+
+Interface / modo tela cheia:
+- Cabeçalho superior desaparece somente em tela cheia; a linha neon permanece.
+- Pesquisa passa para a fileira de filtros, ao lado de Configurações, em tela cheia.
+- Botão de tela cheia passa para o canto direito da fileira em tela cheia.
+- Barra de filtros e ações pode ser navegada pelo controle em tela cheia.
+- D-pad/analógico para cima na primeira linha da biblioteca entra na barra; R1 também entra diretamente.
+- Esquerda/direita percorrem controles; cima/baixo alteram launcher/gênero; A ativa; B retorna à biblioteca.
+- Configurações permitem escolher linha neon vermelha ou azul-claro.

@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.0 — revisão v97
+
+- Corrigida a tradução do gênero "Gratuito para jogar".
+- Tornada a busca de traduções de gêneros insensível a maiúsculas/minúsculas e espaços externos.
+- Corrigidas variações de capitalização de "Multijogador massivo".
+- A versão pública permanece 1.0.0.

@@ -1,0 +1,5 @@
+﻿LUDARYX 1.0.3
+
+Correções:
+- Resolve ambiguidade de System.Windows.Controls.Control com Windows Forms.
+- Corrige referência ao modelo Game em LaunchTargetValidator.

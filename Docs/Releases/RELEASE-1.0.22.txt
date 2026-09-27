@@ -1,0 +1,11 @@
+﻿LUDARYX 1.0.22
+
+- Código organizado para facilitar manutenção e edição manual.
+- MainWindow e GamepadService divididos em regiões lógicas.
+- Adicionado .editorconfig com padrão de formatação para Visual Studio/VS Code.
+- Adicionados guias de edição manual, arquitetura e manutenção de segurança em Docs/.
+- Notas de versões antigas movidas para Docs/Releases/.
+- README refeito com estrutura do projeto, comandos de build, publish e formatação.
+- Adicionado Format-Code.ps1 para formatar/verificar e compilar o código após edições manuais.
+- Nenhuma funcionalidade do launcher foi removida nesta reorganização.
+- LUDARYX Installer sincronizado para 1.0.22.

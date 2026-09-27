@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\LUDARYX.ico</ApplicationIcon>
+
+    <!-- Identidade oficial do aplicativo -->
+    <AssemblyName>LUDARYX</AssemblyName>
+    <RootNamespace>UnifiedGameLauncher</RootNamespace>
+    <Product>LUDARYX</Product>
+    <Company>Gustavo José da Silva</Company>
+    <Authors>Gustavo José da Silva</Authors>
+    <Description>Launcher unificado para jogos de PC</Description>
+    <Copyright>Copyright © 2026 Gustavo José da Silva</Copyright>
+
+    <!-- Versão pública oficial 1.0.0 -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="DATA-SOURCES.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="PRIVACY.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="LEGAL-NOTICE.md" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\LUDARYX.png" />
+    <Resource Include="Assets\LUDARYX.ico" />
+    <Resource Include="Assets\Navigation.wav" />
+    <Resource Include="Assets\PowerOn.wav" />
+    <Resource Include="Assets\Launch.wav" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.20" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.13" />
+    <PackageReference Include="sdl2.nuget" Version="2.32.8" />
+    <PackageReference Include="HidSharp" Version="2.6.4" />
+  </ItemGroup>
+</Project>

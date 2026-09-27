@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.7
+
+Alterações:
+- Adiciona seleção de tema Claro ou Escuro nas Configurações.
+- Mantém o tema Escuro com o visual já existente.
+- No tema Claro, a faixa superior usa cinza e a área da biblioteca usa cinza claro.
+- A escolha do tema é salva e restaurada ao iniciar o LUDARYX.
+- Atualiza o LUDARYX Installer para 1.0.7.

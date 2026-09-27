@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.13
+
+Correções:
+- Filtro do Xbox/Microsoft Store reforçado para não importar aplicativos e utilitários comuns como jogos.
+- Casos adicionais filtrados: Acessórios Xbox, Apple TV/Dispositivos Apple, Disney+, Game Bar Battery Widget, Hub de Comentários, Lively Wallpaper, Mixed Reality Portal, Netflix, NVIDIA Control Panel, PC Manager, Prime Video, Skype, Spotify, SteamGridDB for Xbox, Visualizador 3D, WhatsApp e Xbox Insider Hub.
+- Riot Client/Cliente Riot não aparece mais como jogo.
+- Steamworks Common Redistributables e outros componentes técnicos comuns da Steam não aparecem mais como jogos.
+- LUDARYX Installer atualizado para 1.0.13.

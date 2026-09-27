@@ -1,0 +1,8 @@
+﻿LUDARYX 1.0.8
+
+Correções:
+- Corrige o acúmulo de contornos azuis nos jogos ao voltar das Configurações e navegar com teclado ou controle.
+- A recarga da biblioteca agora é preparada em uma lista local e publicada apenas quando estiver pronta, evitando misturar objetos antigos e novos durante operações assíncronas.
+- A limpeza de seleção agora cobre simultaneamente a biblioteca atual e os itens ainda visíveis na interface.
+- Mantém os temas Claro e Escuro adicionados na versão 1.0.7.
+- LUDARYX Installer atualizado para 1.0.8.

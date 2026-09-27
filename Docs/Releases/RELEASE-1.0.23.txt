@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.23
+
+- Corrigido caso em que a biblioteca podia permanecer carregando indefinidamente.
+- Jogos encontrados localmente agora aparecem antes do enriquecimento de metadados/capas.
+- Providers têm limite individual de tempo durante a descoberta.
+- Metadados e capas têm limites globais e não bloqueiam mais a biblioteca.
+- Downloads de capas são executados com concorrência limitada.
+- Mantida a organização do código para edição manual.
+- LUDARYX Installer sincronizado para 1.0.23.

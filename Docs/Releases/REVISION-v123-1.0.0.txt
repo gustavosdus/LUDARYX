@@ -1,0 +1,5 @@
+﻿LUDARYX 1.0.0 - revisão interna v123
+
+Correção de compilação:
+- Corrigidas sete expressões regulares em Services/MetadataService.cs que usavam escape de aspas incompatível com strings verbatim C#.
+- Preservadas todas as alterações funcionais da v122.

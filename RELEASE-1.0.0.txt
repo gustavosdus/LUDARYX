@@ -1,0 +1,244 @@
+﻿LUDARYX 1.0.0
+
+- Esta build passa a ser a versão oficial 1.0.0 do LUDARYX.
+- Mantém integralmente as funcionalidades e correções da base v89 anterior.
+- Metadados de assembly, arquivo e versão informativa sincronizados para 1.0.0.
+- LUDARYX Installer sincronizado para 1.0.0.
+
+Ajustes visuais adicionais da versão 1.0.0:
+- Em tela cheia, o indicador CARREGANDO/ATUALIZANDO BIBLIOTECA aparece ao lado da barra de pesquisa na fileira superior.
+- Cursor de texto da pesquisa branco no tema escuro e preto no tema claro.
+- No tema claro, os campos de launcher, gênero e pesquisa acompanham o cinza do cabeçalho.
+- No tema escuro, as cores originais desses campos foram preservadas.
+- Recursos de cor centralizados para facilitar futuras edições manuais.
+
+Revisão v91:
+- Tema claro: Adicionar Jogo, Atualizar, Configurações e Pesquisa usam cinza levemente mais escuro que o cabeçalho.
+- Tema escuro permanece visualmente inalterado.
+- Versão pública permanece 1.0.0.
+
+Revisão v92:
+- Corrigida a maximização no modo padrão para respeitar a área útil do monitor e não ficar atrás da barra de tarefas.
+- O modo tela cheia continua ocupando o monitor inteiro.
+- Texto de status/procura do controle alterado para branco em ambos os temas.
+
+Revisão v93
+- Instância única: abrir o LUDARYX novamente restaura a instância existente em vez de criar outro processo/tray icon.
+- Seletor de idioma em Configurações.
+- Idiomas: Português (Brasil), Português (Portugal), English (US), English (UK), Español (Latinoamérica) e Español (España).
+- Traduções centralizadas em Services/LocalizationService.cs para facilitar edições manuais.
+- Versão pública permanece 1.0.0.
+
+Revisão v95
+- A lista de gêneros agora usa traduções por idioma sem alterar os valores internos dos metadados.
+- O filtro preserva o gênero canônico para evitar falhas ao alternar idiomas.
+
+Revisão v96:
+- Rodapé mostra dicas de Selecionar e Personalizar no canto direito.
+- Ícones mudam automaticamente entre Xbox (A/B), PlayStation (X/Círculo) e teclado (Enter/Espaço).
+- A legenda acompanha o último método de entrada realmente usado.
+- Os textos das dicas participam do sistema de idiomas.
+
+Revisão v98 - filtro Microsoft Store / Xbox
+- Reforçado o filtro de aplicativos que não são jogos em instalações de outros PCs.
+- Cortana bloqueada também pelo identificador Microsoft.549981C3F5F10.
+- Avast/AVG e outros antivírus conhecidos deixam de ser listados como jogos.
+- Dolby Access, DTS Sound Unbound e utilitários comuns de áudio/gráficos também são filtrados.
+- A classificação passa a considerar nome, PackageName, PackageFamilyName, AppID e publisher.
+- Versão pública permanece LUDARYX 1.0.0.
+
+Revisão v99
+- Atalhos órfãos do Menu Iniciar não são mais tratados como jogos instalados.
+- A descoberta da Riot valida a instalação real de League of Legends, VALORANT e Legends of Runeterra.
+- League of Legends desinstalado não deve reaparecer apenas porque restou um atalho antigo.
+- Antes de iniciar um produto Riot conhecido, o LUDARYX confirma novamente que o jogo continua instalado.
+
+
+Revisão v100:
+- Metadados automáticos para jogos de outros launchers quando houver correspondência exata na Steam Store.
+- Capas vertical e horizontal automáticas para Epic, GOG, Xbox/Store, EA app, Ubisoft, Battle.net e Riot via SteamGridDB quando a API Key estiver configurada.
+- Jogos não-Steam que também existem na Steam podem usar automaticamente header horizontal e Library Capsule 600x900.
+- Correspondências automáticas são estritas para reduzir capas/metadados de jogos errados.
+- Mapeamentos manuais do SteamGridDB continuam tendo prioridade.
+- Capas personalizadas continuam tendo prioridade sobre artes automáticas.
+
+- Correção de compilação: ClientShortcutProvider.GetGamesAsync agora é virtual para permitir a validação específica do RiotClientProvider.
+
+Revisão v102:
+- Jogos não-Steam existentes passam a ser priorizados no enriquecimento automático.
+- Cache antigo com Source=Local é reprocessado mesmo quando recente.
+- Metadados/capas são buscados com concorrência limitada e timeout individual por jogo.
+- Epic, GOG, Xbox/Store, EA app, Ubisoft, Battle.net e Riot não ficam mais atrás de uma biblioteca Steam grande na fila de enriquecimento.
+- Versão pública permanece LUDARYX 1.0.0.
+
+Revisão v103 — metadados multiplataforma
+- Corrigida a busca de metadados para jogos Epic/EA/Ubisoft/Battle.net/Riot por nome exato na Steam Store.
+- Adicionado fallback pela página de busca da Steam quando a API de pesquisa não retorna o jogo.
+- Jogos GOG passam a consultar primeiro a API v2 do próprio GOG por Product ID.
+- Mantido fallback para o endpoint GOG legado e para a Steam/IGDB quando necessário.
+- Capas automáticas já baixadas são preservadas ao atualizar apenas os metadados textuais.
+- Datas em inglês vindas da Steam são interpretadas com cultura invariável.
+
+Revisão v104:
+- Corrigida a exibição de HTML bruto em descrições vindas do GOG.
+- Descrições antigas já gravadas no cache também são sanitizadas ao serem carregadas.
+- Metadados de múltiplas fontes agora são combinados em vez de parar na primeira resposta parcial.
+- Jogos Epic e de outros launchers ganharam fallback adicional pela busca de sugestões da Steam.
+- Jogos não-Steam tentam metadados Steam automaticamente quando faltam dados textuais.
+- Metadados GOG por Product ID só são aceitos quando o título corresponde ao jogo detectado.
+- Quando o Product ID GOG local estiver incorreto/legado, o catálogo GOG é pesquisado por nome exato.
+- Cache textual associado ao jogo errado é descartado sem apagar capas já válidas.
+
+Revisão v105
+- Epic/outros launchers: busca Steam coleta candidatos por múltiplas rotas e valida o título final pelo appdetails.
+- GOG: metadados dos endpoints v2 e products são combinados em vez de parar na primeira resposta parcial.
+- GOG: leitura mais tolerante de desenvolvedora, publicadora, gêneros e data de lançamento, inclusive campos aninhados.
+- Datas Unix em milissegundos também são reconhecidas.
+
+Revisão v106:
+- GOG: combina também o catálogo para preencher gêneros ausentes.
+- Epic/outros launchers: fallback pela lista oficial de apps Steam antes do appdetails.
+- Mantém versão pública 1.0.0.
+
+Revisão v107
+- Corrigido enriquecimento de metadados para Epic Games e EA app.
+- A busca Steam não aguarda mais a gigantesca lista oficial quando já encontrou candidatos leves.
+- Adicionado fallback pelo endpoint search/results da Steam.
+- Requisições de metadados Steam usam cabeçalhos compatíveis com navegador.
+- Jogos não-Steam podem complementar metadados pelo catálogo GOG quando houver correspondência exata.
+- Versão pública mantida em 1.0.0.
+
+Revisão v108
+- Epic, Ubisoft Connect, Battle.net e outros launchers não-Steam ganharam fallback de metadados por Wikidata/Wikipedia, sem exigir chave de API.
+- O fallback só aceita correspondência exata do título normalizado antes de aplicar dados.
+- Desenvolvedora, publicadora, gêneros, lançamento e descrição podem ser preenchidos por essa fonte.
+- A fonte independente é consultada antes das buscas mais lentas de loja para não consumir o timeout do jogo.
+- Adicionado GenreService para centralizar limpeza, normalização, tradução e deduplicação de gêneros.
+- Action/Ação/Acción e outras variações em idiomas diferentes passam a representar um único gênero interno.
+- Classificações etárias e categorias que não são gêneros (GAME, Teen, Mature 17+, ESRB/PEGI/USK e equivalentes) são removidas automaticamente.
+- Campos de gêneros na classificação manual agora são exibidos no idioma selecionado e normalizados ao salvar.
+- Caches e metadados antigos são higienizados em memória ao serem aplicados.
+- Versão pública permanece LUDARYX 1.0.0.
+
+Revisão v109
+- Metadados Steam por nome exato passam a ser tentados antes de Wikidata/Wikipedia em jogos Epic, EA, Ubisoft, Battle.net e Riot.
+- As três rotinas rápidas de busca exata da Steam passam a ser usadas pelo fluxo principal antes da busca ampla.
+- Descrições genéricas como "2024 video game" e "2022 video game" deixam de ser aceitas como descrição real.
+- Publicadora e ano de lançamento ausentes passam a manter o jogo elegível para nova complementação de metadados.
+- Wikidata/Wikipedia passa a funcionar apenas como fonte complementar, sem bloquear dados melhores de loja.
+- Dados parciais podem ser completados na mesma atualização, reduzindo a necessidade de clicar em Atualizar mais de uma vez.
+- Versão pública permanece LUDARYX 1.0.0.
+Revisão v110:
+- Atualizações de metadados agora são monotônicas: uma busca parcial nunca apaga dados completos já salvos.
+- Wikipedia ganha fallback por título exato para descrições ausentes.
+- Desenvolvedora e publicadora podem ser separadas a partir de frases explícitas do resumo.
+- Gêneros passam a usar lista reconhecida: classificações etárias, categorias e tags desconhecidas são descartadas.
+- Novos aliases cobrem arena fighter, auto battler, collectible card video game, MOBA, turn-based e fantasy.
+
+
+Revisão v111
+- Adicionado fallback exato de Steam App ID para G.I. Joe: Wrath of Cobra (2516170).
+- Metadados do título usam Steam para descrição/gêneros e preservam Maple Powered Games como desenvolvedora e indie.io como publicadora.
+- Estrutura de correções conhecidas centralizada para facilitar manutenção manual.
+
+Revisão interna v114
+- Corrige pesquisa de metadados/capas de jogos Xbox com sufixos técnicos no nome (ex.: " - PC").
+- Abre a interface do Xbox antes de iniciar o jogo e aguarda o cliente ficar pronto.
+
+Revisão interna v115
+- Corrigida a inicialização de jogos do EA app instalados em diretórios que utilizam junctions/reparse points legítimos.
+- A exceção de segurança é limitada ao provedor EA: o executável final precisa ser local, existente e não pode ser link; junctions de diretório só são aceitos quando resolvem para outro caminho local.
+
+Revisão v116:
+- Corrigida a inicialização do próprio EA app em instalações cujo caminho contém junction/reparse point local legítimo. A v115 tratava apenas o executável do jogo; agora o EADesktop.exe usa a mesma validação segura específica do provedor EA.
+
+
+Revisão v117:
+- Corrige publisher extraído da Wikipedia para não incluir orações/descrições após o nome da empresa.
+- Completa ano e gêneros reconhecidos a partir da primeira frase da descrição quando fontes estruturadas vierem incompletas.
+- Restaurar capa padrão passa a persistir a preferência e impede o SteamGridDB de reaplicar automaticamente a arte rejeitada.
+- Escolher/baixar novamente uma arte do SteamGridDB reativa explicitamente a automação para aquela orientação.
+
+Revisão interna v118
+- Steam passa a ser fonte autoritativa para jogos Steam; GOG deixa de substituir descrições da Steam.
+- PCGamingWiki/Wikidata complementam apenas campos ausentes quando o App ID Steam já forneceu dados.
+- Jogos manuais priorizam PCGamingWiki/Wikidata antes de buscas de loja, melhorando títulos de console como Tatsunoko vs. Capcom.
+- Capa horizontal não é mais reutilizada como fallback visual para capa vertical.
+- Jogos Steam restauram explicitamente a Library Capsule oficial 600x900 como capa vertical.
+- Fontes externas seguem preservando dados válidos já encontrados no cache.
+
+
+Revisão interna v119
+- Jogos Steam continuam usando a Library Capsule 600x900 oficial como primeira opção vertical.
+- Quando a Steam não possui arte vertical oficial, o SteamGridDB é usado como fallback automático vertical.
+- O fallback SteamGridDB de jogos Steam é resolvido pelo App ID real para evitar homônimos/edições erradas.
+- Restaurar capa padrão continua bloqueando o fallback SteamGridDB naquela orientação.
+- Arte horizontal da Steam nunca é reutilizada como vertical.
+- O SteamGridDB não substitui automaticamente a arte horizontal oficial de jogos Steam.
+
+Revisão interna v120
+- Corrige regressão de capas automáticas: jogos Epic, GOG, manuais e outros launchers voltam a usar a cadeia automática de arte; flags antigas de v117-v119 não apagam mais capas do SteamGridDB.
+- "Restaurar capa padrão" passa a significar retornar à arte automática padrão do launcher, removendo somente a personalização manual.
+- SteamGridDB aceita fallback vertical por proporção quando não existe grid exatamente 600x900, sem reutilizar arte horizontal como vertical.
+- Fontes de metadados são normalizadas e deduplicadas antes de exibir/salvar, eliminando repetições acumuladas.
+- Cache textual antigo de jogos Steam deixa de ser autoritativo quando não foi originado pelo App ID Steam atual.
+- Quando a Steam responde pelo App ID, metadados textuais antigos de GOG/Wikipedia não são mais reinseridos pelo cache; somente artes locais são preservadas.
+- Appdetails da Steam ganha segunda tentativa e IDs exatos conhecidos para Killer Instinct, Inexistence e Sonic the Hedgehog 4 - Episode I como proteção contra caches antigos incorretos.
+- Wikipedia ganha fallback pela API MediaWiki extracts quando o endpoint REST de resumo falha, melhorando descrições de jogos manuais como Tatsunoko vs. Capcom.
+- Versão pública permanece LUDARYX 1.0.0.
+
+Revisão interna v121
+- Remove o timeout global de 180 segundos do enriquecimento de metadados.
+- Garante uma primeira tentativa para todos os jogos da biblioteca em um único Atualizar.
+- Executa uma segunda passada somente nos jogos que continuam incompletos ou com cache Steam não autoritativo.
+- Salva o progresso após a primeira passada e ao final dos retries.
+- Limita consultas Steam Store appdetails a duas simultâneas.
+- Adiciona retries progressivos para respostas 429/5xx e falhas transitórias da Steam Store.
+- Mantém validação por App ID instalado para substituir caches antigos de GOG/Wikipedia em jogos Steam.
+
+
+Revisão interna v122
+- Steam Store page fallback by installed App ID for missing description/developer/publisher/year/genres.
+- Steam remains authoritative for Steam games before Wikipedia/Wikidata/GOG.
+- Company field parser trims platform/release phrases accidentally captured as publisher/developer.
+- Store tags are only used as genre fallback through the strict GenreService whitelist.
+
+Revisão interna v123
+- Corrigidos literais de regex inválidos introduzidos na v122 em MetadataService.cs.
+- Mantida a nova consulta complementar da página oficial da Steam pelo App ID.
+- Nenhuma alteração na versão pública: 1.0.0.
+
+Revisão interna v124
+- Steam: o App ID do manifesto instalado passa a ser autoritativo mesmo quando o nome comercial mudou ou inclui edição/sufixo diferente.
+- Steam: página oficial pelo App ID não é descartada por divergência de título quando o App ID veio do manifesto local.
+- Steam: descrição oficial ganha fallback via Open Graph quando o bloco tradicional da página estiver ausente.
+- Steam: fontes complementares podem preencher descrição somente quando a descrição Steam continuar ausente/insuficiente.
+
+Revision v125: preserve complete Steam metadata when later Steam responses are partial; cache fallback restricted to the same installed App ID and only fills missing fields.
+
+Revisão interna v126
+- Corrige os seis casos residuais de metadados Steam ainda incompletos.
+- The Walking Dead: gênero Aventura e publicadora Skybound Games.
+- The Witcher 2: gênero RPG e empresas oficiais da Steam.
+- The Witcher 3 Complete Edition: gênero RPG, CD PROJEKT RED como desenvolvedora/publicadora.
+- The Witcher Enhanced Edition: gênero RPG e empresas oficiais da Steam.
+- Life is Strange - Episode 1: Ação/Aventura, DONTNOD Entertainment e Square Enix.
+- Negligee: completa publicadora, desenvolvedora e descrição curta de fallback.
+- Correções são restritas a títulos conhecidos e não alteram o fluxo dos demais jogos Steam.
+
+
+Revisão interna v127
+- Descrições agora são armazenadas separadamente por idioma da interface.
+- Steam: busca descrição localizada por App ID para pt-BR, pt-PT, en-US/en-GB e es-419/es-ES.
+- Wikipedia: fallback usa a edição em português, inglês ou espanhol conforme o idioma atual.
+- A troca de idioma não mistura mais descrições de idiomas anteriores; a descrição é carregada sob demanda e fica em cache.
+- Descrições editadas manualmente pelo usuário permanecem intactas e têm prioridade.
+
+Revisão interna v128
+- Corrige o fallback das descrições localizadas introduzido na v127.
+- Quando não existir uma descrição válida no idioma selecionado, o LUDARYX mantém/exibe a descrição em inglês em vez de mostrar o campo vazio.
+- A regra vale para qualquer launcher/fonte, incluindo Epic e GOG.
+- Descrições em inglês permanecem armazenadas como inglês e não são gravadas incorretamente no cache do idioma atual.
+- Se não houver inglês já armazenado, Steam/Wikipedia podem ser consultadas em inglês como último fallback.
+- Descrições editadas manualmente continuam tendo prioridade.
+- Versão pública permanece LUDARYX 1.0.0.

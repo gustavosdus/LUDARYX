@@ -1,0 +1,12 @@
+﻿LUDARYX 1.0.20
+
+Segunda rodada de hardening de segurança:
+- CoverImageConverter aceita apenas imagens locais validadas; URLs e caminhos de rede não são carregados diretamente pelo WPF.
+- ProcessService centraliza a validação de executáveis locais antes de iniciar qualquer .exe.
+- Executáveis detectados automaticamente pelo Registro também são revalidados.
+- Downloads de imagens desativam redirects automáticos, validam cada salto antes da requisição seguinte e bloqueiam localhost/redes privadas.
+- Respostas JSON externas têm limite de 4 MB para reduzir risco de consumo excessivo de memória.
+- Destinos shell são restritos a shell:AppsFolder para manter a inicialização do Xbox/Microsoft Store sem liberar comandos shell genéricos.
+- Desinstalador não apaga recursivamente toda a pasta escolhida pelo usuário.
+- Scripts de instaladores antigos foram removidos do pacote para evitar distribuição acidental de versões sem os hardenings atuais.
+- LUDARYX Installer sincronizado para 1.0.20.

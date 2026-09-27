@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.0 - revisão interna v116
+
+- Corrige o bloqueio do EA app quando o próprio EADesktop.exe está abaixo de um diretório junction/reparse point local legítimo.
+- Na v115 a exceção segura era aplicada ao executável do jogo, mas o cliente EA ainda era iniciado pelo validador rígido herdado.
+- O provedor EA agora inicia também o EADesktop.exe pela validação local controlada para reparse points.
+- A proteção permanece: caminhos de rede/UNC continuam bloqueados e o arquivo .exe final não pode ser um symlink/reparse point.

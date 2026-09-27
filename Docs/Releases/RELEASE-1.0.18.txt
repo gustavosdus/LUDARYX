@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.18
+
+- Corrigido fechamento inesperado ao trocar entre tema claro e escuro.
+- Recursos de contorno neon agora são substituídos por novos brushes, evitando alteração de brushes congelados pelo WPF.
+- Mantido azul claro neon no tema escuro e vermelho neon no tema claro.
+- LUDARYX Installer sincronizado para 1.0.18.

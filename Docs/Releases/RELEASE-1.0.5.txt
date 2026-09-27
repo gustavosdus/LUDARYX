@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.5
+
+- Corrigido o foco visual da barra: ao voltar para a biblioteca, o último filtro/botão não permanece com contorno azul.
+- A barra de opções agora também pode ser acessada pelo teclado no modo padrão e em tela cheia.
+- Seta para cima na primeira linha de jogos entra na barra.
+- Setas esquerda/direita navegam pela barra; cima/baixo ajustam filtros e retornam à biblioteca; Enter ativa; Esc retorna à biblioteca.
+- LUDARYX Installer atualizado para a versão 1.0.5.

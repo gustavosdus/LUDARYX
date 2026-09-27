@@ -1,0 +1,12 @@
+﻿LUDARYX 1.0.21
+
+- Validação de executáveis, atalhos e imagens verifica links/junctions em toda a cadeia de diretórios.
+- Downloads de capas fixam cada conexão aos IPs já validados, mitigando DNS rebinding.
+- Migração de credenciais legadas grava principal e backup somente após proteção DPAPI.
+- shell:AppsFolder exige AppUserModelId estrito no formato PackageFamilyName!AppId.
+- Inicialização automática não usa mais dotnet pelo PATH como fallback.
+- Leituras de settings, cache e manifests principais possuem limites de tamanho.
+- Cópia de arte local usa exatamente os bytes previamente validados.
+- Buffers HID/Raw Input do DualSense possuem limites máximos explícitos.
+- Saída do PowerShell da Microsoft Store possui limite de tamanho.
+- LUDARYX Installer sincronizado para 1.0.21.

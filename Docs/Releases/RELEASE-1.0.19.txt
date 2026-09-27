@@ -1,0 +1,13 @@
+﻿LUDARYX 1.0.19
+
+Correções de segurança:
+- O instalador continua usando elevação apenas para instalar em Program Files, mas a opção de abrir o LUDARYX após a instalação agora usa runasoriginaluser.
+- Atalhos .lnk detectados por launchers só são executados se ainda estiverem dentro das pastas de atalhos esperadas e não forem reparse points.
+- A detecção Xbox/Microsoft Store usa o caminho absoluto do Windows PowerShell, ArgumentList e não usa mais ExecutionPolicy Bypass.
+- Imagens remotas e capas locais agora têm limite de 15 MB, 12000 px por dimensão e 40 milhões de pixels, além da validação de assinatura.
+- O seletor de capas não aceita mais arquivos arbitrários.
+- Jogos manuais não aceitam executáveis em caminhos de rede/UNC nem URLs http/https como URI de inicialização.
+- LUDARYX Installer sincronizado para 1.0.19.
+
+Observação:
+- Assinatura digital Authenticode do instalador continua dependendo de um certificado de assinatura de código do editor e não pode ser habilitada automaticamente sem esse certificado.

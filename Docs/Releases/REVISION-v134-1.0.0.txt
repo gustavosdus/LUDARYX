@@ -1,0 +1,6 @@
+﻿LUDARYX 1.0.0 - revisão interna v134
+
+- Renomeia English (United States) para English (US).
+- Renomeia English (Europe) para English (UK).
+- A opção English (UK) usa explicitamente inglês britânico, mantendo o código de localidade en-GB.
+- Nenhuma configuração existente é perdida: usuários que já tinham en-GB selecionado continuam usando a mesma opção, agora com o nome correto.

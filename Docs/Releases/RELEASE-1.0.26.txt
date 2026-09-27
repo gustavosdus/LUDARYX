@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.26
+
+- Corrigidas travadas e perda de frames durante a introdução inicial.
+- Descoberta local de jogos passa a executar fora da thread da interface.
+- A grade de jogos e o enriquecimento de capas/metadados aguardam o fim da animação na abertura.
+- Atualizações manuais continuam publicando a biblioteca sem atraso artificial.
+- LUDARYX Installer sincronizado para 1.0.26.

@@ -1,0 +1,9 @@
+﻿LUDARYX 1.0.10
+
+Correção:
+- Mantido o acesso por teclado ao botão de tela cheia ao lado da pesquisa no modo tela cheia.
+- Com o cursor no fim do texto da pesquisa, seta para a direita move o foco para o botão de tela cheia.
+- No botão de tela cheia, seta para a esquerda volta para a pesquisa pela navegação normal da barra.
+- Com o cursor no início da pesquisa, seta para a esquerda volta ao item anterior da barra.
+- Dentro do texto, esquerda/direita continuam movendo o cursor normalmente.
+- Versão do LUDARYX e do LUDARYX Installer sincronizadas em 1.0.10.

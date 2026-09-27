@@ -1,0 +1,32 @@
+﻿LUDARYX 1.0.0 — Third-Party Notices
+
+This file is informational and should be shipped with binary distributions.
+Always verify package licenses again before a public/commercial release.
+
+Microsoft.Data.Sqlite 9.0.20
+- Copyright Microsoft and contributors.
+- License: MIT.
+- Project/package: https://www.nuget.org/packages/Microsoft.Data.Sqlite/9.0.20
+
+SQLitePCLRaw.bundle_e_sqlite3 2.1.13 and bundled SQLite components
+- Copyright 2014-2024 SourceGear, LLC and respective SQLite contributors.
+- Package license: Apache License 2.0.
+- Package: https://www.nuget.org/packages/SQLitePCLRaw.bundle_e_sqlite3/2.1.13
+
+HidSharp 2.6.4
+- Copyright 2010-2025 James F. Bellinger.
+- License: Apache License 2.0.
+- Package: https://www.nuget.org/packages/HidSharp/2.6.4
+
+sdl2.nuget 2.32.8 / Simple DirectMedia Layer (SDL)
+- SDL 2.x is distributed under the zlib license.
+- SDL license: https://www.libsdl.org/license.php
+- Package: https://www.nuget.org/packages/sdl2.nuget/2.32.8
+
+.NET runtime
+- A self-contained build may redistribute Microsoft .NET runtime components under the applicable Microsoft .NET licenses and third-party notices.
+- Preserve the license/notice files emitted by dotnet publish.
+
+IMPORTANT
+This summary does not replace the complete license text supplied by each project.
+When publishing the app, preserve any LICENSE/NOTICE files produced by NuGet/.NET and do not remove upstream copyright notices.

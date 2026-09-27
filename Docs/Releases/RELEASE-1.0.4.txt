@@ -1,0 +1,7 @@
+﻿LUDARYX 1.0.4
+
+- Barra de opções agora pode ser acessada pelo controle também no modo padrão.
+- R1 entra diretamente na barra de opções em modo padrão e tela cheia.
+- Ao pressionar para cima na primeira linha de jogos, o foco passa para a barra em ambos os modos.
+- A navegação da barra considera somente os controles visíveis em cada modo.
+- LUDARYX Installer atualizado para a versão 1.0.4.

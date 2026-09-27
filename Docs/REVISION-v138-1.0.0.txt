@@ -1,0 +1,7 @@
+﻿LUDARYX v138 / 1.0.0
+
+- Adicionada transparência explícita sobre o uso de inteligência artificial no desenvolvimento.
+- README passa a informar que o projeto foi desenvolvido com auxílio de IA, incluindo ChatGPT.
+- Tela Sobre / Créditos recebeu uma seção dedicada ao desenvolvimento com auxílio de IA, localizada para os idiomas suportados.
+- Adicionado Docs/AI-ASSISTANCE.md com detalhes sobre uso, responsabilidade humana e contribuições auxiliadas por IA.
+- CONTRIBUTING.md passou a orientar contribuições feitas com auxílio de IA e a proteção de segredos/dados pessoais.
