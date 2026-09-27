@@ -61,6 +61,76 @@ public partial class SettingsWindow : Window
         };
     }
 
+    private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            return;
+        }
+
+        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            DragMove();
+    }
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void MaximizeWindow_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    private void SettingsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        var query = SettingsSearchBox.Text.Trim();
+        SetSectionVisibility(LibrarySection, query, "biblioteca xbox ocultos");
+        SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
+        SetSectionVisibility(AppearanceSection, query, "aparência capas linha neon tema idioma");
+        SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
+        SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
+        SetSectionVisibility(DuplicatesSection, query, "duplicatas prioridade plataforma");
+        SetSectionVisibility(CacheSection, query, "cache backup diagnóstico pasta dados");
+        SetSectionVisibility(ShortcutsSection, query, "atalhos teclado pesquisar tela cheia atualizar configurações");
+        SetSectionVisibility(IntegrationsSection, query, "status integrações clientes steam epic gog xbox ea ubisoft battle riot");
+        SetSectionVisibility(ManageItemsSection, query, "gerenciar itens jogos ocultar restaurar excluir");
+    }
+
+    private static void SetSectionVisibility(FrameworkElement section, string query, string searchableText)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            section.Visibility = Visibility.Visible;
+            return;
+        }
+
+        var normalizedQuery = SearchNormalizationService.Normalize(query);
+        var normalizedText = SearchNormalizationService.Normalize(searchableText);
+        section.Visibility = normalizedText.Contains(normalizedQuery, StringComparison.Ordinal)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private void ManageItemsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        var view = System.Windows.Data.CollectionViewSource.GetDefaultView(_items);
+        var query = SearchNormalizationService.Normalize(ManageItemsSearchBox.Text);
+
+        view.Filter = item =>
+        {
+            if (item is not GameVisibilityItem gameItem || string.IsNullOrWhiteSpace(query))
+                return true;
+
+            return SearchNormalizationService.Normalize(gameItem.Name).Contains(query, StringComparison.Ordinal) ||
+                   SearchNormalizationService.Normalize(gameItem.ProviderId).Contains(query, StringComparison.Ordinal);
+        };
+
+        view.Refresh();
+    }
+
     private void SelectLanguage(string? languageCode)
     {
         foreach (var item in LanguageCombo.Items.OfType<System.Windows.Controls.ComboBoxItem>())
