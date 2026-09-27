@@ -78,6 +78,9 @@
                                 <StackPanel>
                                     <TextBlock Text="Duplicatas" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
                                     <CheckBox x:Name="AutoHideDuplicateSecondaryCheck" Content="Ocultar automaticamente versões duplicadas secundárias" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                                    <CheckBox x:Name="ShowOnlyPrimaryDuplicatesCheck" Content="Mostrar somente a versão principal de duplicatas" Foreground="#D9DDE7" Margin="0,8,0,0"/>
+                                    <TextBlock Text="Prioridade automática por plataforma (separe por vírgulas):" Foreground="#9BA3B4" Margin="0,8,0,4"/>
+                                    <TextBox x:Name="DuplicatePriorityBox" Height="30"/>
                                     <TextBlock Text="Escolha a versão principal na tela de detalhes de qualquer jogo marcado como duplicata." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,0"/>
                                 </StackPanel>
                                 <Separator Margin="0,14,0,12"/>
@@ -100,16 +103,35 @@
                                 </StackPanel>
                                 <Separator Margin="0,14,0,12"/>
                                 <StackPanel>
+                                    <TextBlock Text="Atalhos de teclado" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="180"/><ColumnDefinition Width="130"/><ColumnDefinition Width="180"/><ColumnDefinition Width="130"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                        <TextBlock Text="Pesquisar:" Foreground="#D9DDE7" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="ShortcutSearchBox" Grid.Column="1" Height="28"/>
+                                        <TextBlock Text="Tela cheia:" Grid.Column="2" Foreground="#D9DDE7" VerticalAlignment="Center" Margin="18,0,0,0"/>
+                                        <TextBox x:Name="ShortcutFullscreenBox" Grid.Column="3" Height="28"/>
+                                        <TextBlock Text="Atualizar biblioteca:" Grid.Row="1" Foreground="#D9DDE7" VerticalAlignment="Center" Margin="0,8,0,0"/>
+                                        <TextBox x:Name="ShortcutRefreshBox" Grid.Row="1" Grid.Column="1" Height="28" Margin="0,8,0,0"/>
+                                        <TextBlock Text="Configurações:" Grid.Row="1" Grid.Column="2" Foreground="#D9DDE7" VerticalAlignment="Center" Margin="18,8,0,0"/>
+                                        <TextBox x:Name="ShortcutSettingsBox" Grid.Row="1" Grid.Column="3" Height="28" Margin="0,8,0,0"/>
+                                    </Grid>
+                                </StackPanel>
+                                <Separator Margin="0,14,0,12"/>
+                                <StackPanel>
                                     <TextBlock Text="Status das integrações" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
                                     <TextBlock Text="Mostra quais clientes e integrações foram encontrados neste computador." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,4,0,8"/>
+                                    <Button Content="ATUALIZAR STATUS" HorizontalAlignment="Left" Padding="10,5" Margin="0,0,0,8" Click="RefreshIntegrationStatus_Click"/>
                                     <ItemsControl x:Name="IntegrationStatusList">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Grid Margin="0,2">
+                                                <Grid Margin="0,4">
                                                     <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                                                     <TextBlock Text="{Binding Name}" Foreground="#D9DDE7"/>
                                                     <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="#9BA3B4"/>
-                                                    <Button Grid.Column="2" Content="ABRIR CLIENTE" Tag="{Binding}" Click="OpenIntegrationClient_Click" Padding="8,3" Margin="8,0,0,0">
+                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Details}" Foreground="#6F7B90" FontSize="10" TextWrapping="Wrap"/>
+                                                    <Button Grid.Column="2" Grid.RowSpan="2" Content="ABRIR CLIENTE" Tag="{Binding}" Click="OpenIntegrationClient_Click" Padding="8,3" Margin="8,0,0,0">
                                                         <Button.Style>
                                                             <Style TargetType="Button">
                                                                 <Setter Property="Visibility" Value="Visible"/>
