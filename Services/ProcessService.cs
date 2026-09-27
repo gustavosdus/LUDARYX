@@ -11,17 +11,33 @@ public static class ProcessService
     }
 
     public static Process? Start(string fileName, string? arguments = null)
+        => Start(fileName, arguments, null, false);
+
+    public static Process? Start(string fileName, string? arguments, string? workingDirectory, bool runAsAdministrator)
     {
         if (!LaunchTargetValidator.TryValidateDetectedExecutable(fileName, out var executable, out var error) ||
             string.IsNullOrWhiteSpace(executable))
             throw new InvalidOperationException(error ?? "O executável não pôde ser validado para inicialização.");
 
-        return Process.Start(new ProcessStartInfo
+        var info = new ProcessStartInfo
         {
             FileName = executable,
             Arguments = arguments ?? "",
             UseShellExecute = true
-        });
+        };
+
+        if (!string.IsNullOrWhiteSpace(workingDirectory))
+        {
+            var fullWorkingDirectory = Path.GetFullPath(workingDirectory);
+            if (!Directory.Exists(fullWorkingDirectory))
+                throw new DirectoryNotFoundException("A pasta de trabalho configurada não existe.");
+            info.WorkingDirectory = fullWorkingDirectory;
+        }
+
+        if (runAsAdministrator)
+            info.Verb = "runas";
+
+        return Process.Start(info);
     }
 
 
