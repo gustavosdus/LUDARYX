@@ -19,12 +19,18 @@ public sealed class DuplicateDetectionService
 
         foreach (var group in list.Where(g => !string.IsNullOrWhiteSpace(g.CanonicalGameId)).GroupBy(g => g.CanonicalGameId, StringComparer.OrdinalIgnoreCase))
         {
-            var platforms = group.Select(g => g.Platform).Distinct().ToList();
-            if (platforms.Count < 2) continue;
-            foreach (var g in group)
+            var entries = group.ToList();
+            if (entries.Count < 2) continue;
+
+            var platforms = entries.Select(g => g.Platform).Distinct().ToList();
+            var display = platforms.Count > 1
+                ? string.Join(" • ", platforms.Select(x => x.ToString()))
+                : $"{platforms[0]} • {entries.Count} versões";
+
+            foreach (var g in entries)
             {
                 g.IsDuplicate = true;
-                g.DuplicatePlatformsDisplay = string.Join(" • ", platforms.Select(x => x.ToString()));
+                g.DuplicatePlatformsDisplay = display;
             }
         }
     }
