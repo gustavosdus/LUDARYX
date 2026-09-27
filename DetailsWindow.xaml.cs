@@ -285,6 +285,28 @@ public partial class DetailsWindow : Window
         }
 
         _settings.ManualGames.Add(copy);
+
+        if (_settings.ManualMetadata.TryGetValue(_game.ProviderId, out var sourceMetadata))
+        {
+            _settings.ManualMetadata[$"Manual:{copy.Id}"] = new ManualGameMetadata
+            {
+                Name = sourceMetadata.Name,
+                Description = sourceMetadata.Description,
+                Genres = sourceMetadata.Genres.ToList(),
+                Developer = sourceMetadata.Developer,
+                Publisher = sourceMetadata.Publisher,
+                ReleaseYear = sourceMetadata.ReleaseYear,
+                AgeRatings = new Dictionary<string, string>(sourceMetadata.AgeRatings ?? new(), StringComparer.OrdinalIgnoreCase),
+                HorizontalCoverUrl = sourceMetadata.HorizontalCoverUrl,
+                VerticalCoverUrl = sourceMetadata.VerticalCoverUrl,
+                DisableAutomaticSteamGridDbVertical = sourceMetadata.DisableAutomaticSteamGridDbVertical,
+                DisableAutomaticSteamGridDbHorizontal = sourceMetadata.DisableAutomaticSteamGridDbHorizontal
+            };
+        }
+
+        if (_settings.SteamGridDbGameIds.TryGetValue(_game.ProviderId, out var sourceSteamGridId))
+            _settings.SteamGridDbGameIds[$"Manual:{copy.Id}"] = sourceSteamGridId;
+
         _settingsServiceSave();
         MessageBox.Show(this,
             LocalizationService.Translate("Entrada manual duplicada. Atualize a biblioteca para exibi-la."),
