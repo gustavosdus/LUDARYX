@@ -408,7 +408,7 @@ public partial class MainWindow : Window
                 .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortMode, StringComparison.OrdinalIgnoreCase));
             SortCombo.SelectedItem = sortItem ?? SortCombo.Items[0];
         }
-        _sessions.RefreshRunningState(_games);
+        _ = _sessions.RefreshRunningStateAsync(_games);
         ApplyFilter();
     }
 
