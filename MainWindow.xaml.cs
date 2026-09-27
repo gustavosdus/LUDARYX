@@ -364,8 +364,13 @@ public partial class MainWindow : Window
             await SetLibraryLoadingAsync(true, "ATUALIZANDO BIBLIOTECA...");
             await EnrichLibraryBestEffortAsync(loadedGames, forceArtworkRefresh);
 
-            // Metadados podem alterar nome, gênero e capas. Reaplica somente a apresentação
-            // depois do enriquecimento, sem substituir a geração de objetos já exibida.
+            // Metadados podem alterar o nome canônico. Recalcula duplicatas depois do
+            // enriquecimento para que o filtro reflita os nomes finais e versões copiadas.
+            _duplicates.Detect(loadedGames);
+            EnsureDuplicatePrimarySelections(loadedGames);
+
+            // Reaplica somente a apresentação depois do enriquecimento, sem substituir
+            // a geração de objetos já exibida.
             ApplyCoverMode();
             BuildGenreFilter();
             ApplyFilter();
@@ -745,6 +750,8 @@ public partial class MainWindow : Window
             });
             await Task.WhenAll(tasks);
             _metadata.SaveCacheSnapshot();
+            _duplicates.Detect(_games);
+            EnsureDuplicatePrimarySelections(_games);
             ApplyCoverMode();
             BuildGenreFilter();
             ApplyFilter();
