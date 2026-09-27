@@ -66,8 +66,31 @@ public static class BackupService
         }
     }
 
-    public static void Import(string sourceZip)
+    public static long GetEstimatedImportSizeBytes(string sourceZip, BackupSelection? selection = null)
     {
+        selection ??= new BackupSelection();
+        if (!File.Exists(sourceZip))
+            return 0;
+
+        long total = 0;
+        using var archive = ZipFile.OpenRead(sourceZip);
+        foreach (var entry in archive.Entries)
+        {
+            if (string.IsNullOrWhiteSpace(entry.Name) || !ShouldInclude(entry.FullName, selection))
+                continue;
+
+            total += Math.Max(0, entry.Length);
+        }
+
+        return total;
+    }
+
+    public static void Import(string sourceZip, BackupSelection? selection = null)
+    {
+        selection ??= new BackupSelection();
+        if (!selection.HasAny)
+            throw new InvalidOperationException("Selecione pelo menos uma categoria para restaurar.");
+
         if (!File.Exists(sourceZip))
             throw new FileNotFoundException("O arquivo de backup não foi encontrado.", sourceZip);
 
@@ -80,9 +103,9 @@ public static class BackupService
             if (string.IsNullOrWhiteSpace(entry.Name))
                 continue;
 
-            // Backups antigos podem conter cache regenerável. Ele nunca precisa ser
-            // restaurado e pode estar bloqueado pela interface enquanto o app está aberto.
-            if (IsAlwaysExcluded(entry.FullName))
+            // Aplica a mesma seleção usada na exportação também durante a restauração.
+            // Isso impede que um backup completo restaure categorias desmarcadas.
+            if (!ShouldInclude(entry.FullName, selection))
                 continue;
 
             var target = Path.GetFullPath(Path.Combine(AppDataService.RootDirectory, entry.FullName));
