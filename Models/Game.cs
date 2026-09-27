@@ -22,6 +22,19 @@ public sealed class Game : INotifyPropertyChanged
     public bool IsFavorite { get; set; }
     public DateTime? LastPlayedUtc { get; set; }
     public int PlayCount { get; set; }
+    public long TotalPlayTimeSeconds { get; set; }
+    private bool _isRunning;
+    public bool IsRunning
+    {
+        get => _isRunning;
+        set
+        {
+            if (_isRunning == value) return;
+            _isRunning = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(RunningDisplay));
+        }
+    }
     public bool IsHidden { get; set; }
     public bool IsExcluded { get; set; }
     public string CanonicalGameId { get; set; } = "";
@@ -32,6 +45,18 @@ public sealed class Game : INotifyPropertyChanged
     public string ReleaseYearDisplay => Metadata.ReleaseYear?.ToString() ?? "";
     public string LastPlayedDisplay => LastPlayedUtc.HasValue ? LastPlayedUtc.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "Nunca jogado";
     public string PlayCountDisplay => PlayCount == 1 ? "1 partida" : $"{PlayCount} partidas";
+    public string TotalPlayTimeDisplay
+    {
+        get
+        {
+            if (TotalPlayTimeSeconds <= 0) return "0 min";
+            var duration = TimeSpan.FromSeconds(TotalPlayTimeSeconds);
+            if (duration.TotalHours >= 1)
+                return $"{(int)duration.TotalHours}h {duration.Minutes:D2}min";
+            return $"{Math.Max(1, duration.Minutes)} min";
+        }
+    }
+    public string RunningDisplay => IsRunning ? "Jogando" : "";
     public string PlatformDisplay => Platform.ToString();
     public string ProviderId => $"{Platform}:{Id}";
     public string DisplayCover => CoverImage ?? "";
