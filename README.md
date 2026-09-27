@@ -11,21 +11,23 @@
 ## Recursos
 
 - Biblioteca unificada para Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Connect, Battle.net e Riot Client.
-- Adição manual de jogos, com edição posterior de executável, argumentos, URI, pasta de trabalho e execução como administrador.
+- Adição manual de jogos, com perfis de inicialização, argumentos, URI, pasta de trabalho, execução como administrador e ícone personalizado.
 - Capas vertical/horizontal, arte personalizada e integração opcional com SteamGridDB.
-- Metadados, gêneros, desenvolvedora, publicadora e descrições localizadas com fallback em inglês.
-- Favoritos, itens ocultos, recentes, duplicados, seleção da versão principal e classificação manual.
+- Metadados, gêneros, desenvolvedora, publicadora, descrições localizadas e classificação indicativa regional quando a fonte disponibiliza o dado.
+- Favoritos, itens ocultos, recentes, filtros combináveis, pesquisa sem distinção de acentos, ordenação, duplicados e seleção da versão principal.
 - Navegação por mouse e teclado, controles Xbox compatíveis com XInput e controle PlayStation 5 DualSense.
 - Modo tela cheia e interface adequada para uso a distância.
 - Configurações em `%LOCALAPPDATA%\LUDARYX`, com migração automática do caminho legado.
-- Status das integrações, backup/restauração, manutenção de cache e relatório de diagnóstico por sessão.
+- Status e diagnóstico das integrações, backup/restauração seletivos, manutenção de cache e relatório de diagnóstico por sessão.
 - Configurações e segredos locais; API keys persistidas protegidas com Windows DPAPI.
+- Detecção local de jogos em execução, tempo de sessão e estatísticas locais.
+- Atalhos de teclado configuráveis e atualização de metadados por jogo, filtro ou biblioteca completa.
 - Atualizador com changelog, opção de lembrar mais tarde, progresso e validação SHA-256.
 - Sem telemetria própria nesta versão.
 
 ## Versão
 
-**LUDARYX 1.0.2** — atualização de manutenção com diagnóstico, backup, cache inteligente, gerenciamento de duplicatas e edição avançada de jogos manuais.
+**LUDARYX 1.0.3** — atualização focada em biblioteca, estatísticas locais, perfis de inicialização, filtros avançados, diagnóstico e detalhes de jogos.
 
 ## Requisitos para desenvolvimento
 
@@ -55,7 +57,7 @@ Para gerar uma release local completa em um único comando, incluindo validaçã
 powershell -ExecutionPolicy Bypass -File Scripts\Build-Release.ps1
 ```
 
-O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.0.2.iss` com Inno Setup 6 e gera `Installer\SHA256SUMS.txt`.
+O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.0.3.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
 
 Para publicar apenas os executáveis, continue usando `Scripts\Publish-Release.ps1`.
 
