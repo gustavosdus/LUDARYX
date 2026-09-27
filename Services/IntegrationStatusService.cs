@@ -2,7 +2,12 @@ using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
 
-public sealed record IntegrationStatusItem(string Name, string Status, bool Available);
+public sealed record IntegrationStatusItem(
+    string Name,
+    string Status,
+    bool Available,
+    GamePlatform? Platform = null,
+    bool CanOpenClient = false);
 
 public static class IntegrationStatusService
 {
@@ -15,9 +20,12 @@ public static class IntegrationStatusService
             {
                 var available = false;
                 try { available = provider.IsInstalled(); } catch { }
+
                 return new IntegrationStatusItem(
                     provider.Name,
                     LocalizationService.Translate(available ? "Detectado" : "Não encontrado"),
+                    available,
+                    provider.Platform,
                     available);
             })
             .ToList();
@@ -27,7 +35,11 @@ public static class IntegrationStatusService
             LocalizationService.Translate(string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey) ? "API não configurada" : "API configurada"),
             !string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey)));
 
-        items.Add(new IntegrationStatusItem("GitHub Updates", LocalizationService.Translate("Disponível"), true));
+        items.Add(new IntegrationStatusItem(
+            "GitHub Updates",
+            LocalizationService.Translate("Disponível"),
+            true));
+
         return items;
     }
 }
