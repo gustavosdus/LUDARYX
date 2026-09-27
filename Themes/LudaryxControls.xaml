@@ -400,103 +400,72 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     </Style>
 
-    <Style x:Key="LudaryxVerticalScrollBar" TargetType="ScrollBar">
-        <Setter Property="Width" Value="10"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ScrollBar">
-                    <Grid Background="Transparent">
-                        <Track x:Name="PART_Track" IsDirectionReversed="True">
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageUpCommand"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Focusable="False"/>
-                            </Track.DecreaseRepeatButton>
-                            <Track.Thumb>
-                                <Thumb Background="#36536E" MinHeight="34">
-                                    <Thumb.Template>
-                                        <ControlTemplate TargetType="Thumb">
-                                            <Border x:Name="ThumbChrome"
-                                                    Width="6"
-                                                    Margin="2,0"
-                                                    Background="{TemplateBinding Background}"
-                                                    CornerRadius="3"/>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource LudaryxBlue}"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
-                            </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageDownCommand"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Focusable="False"/>
-                            </Track.IncreaseRepeatButton>
-                        </Track>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    <ControlTemplate x:Key="LudaryxVerticalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Background="Transparent">
+            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageUpCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Background="#36536E" MinHeight="34">
+                        <Thumb.Template>
+                            <ControlTemplate TargetType="Thumb">
+                                <Border x:Name="ThumbChrome" Width="6" Margin="2,0"
+                                        Background="{TemplateBinding Background}" CornerRadius="3"/>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource LudaryxBlue}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Thumb.Template>
+                    </Thumb>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageDownCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
 
-    <Style x:Key="LudaryxHorizontalScrollBar" TargetType="ScrollBar">
-        <Setter Property="Height" Value="10"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ScrollBar">
-                    <Grid Background="Transparent">
-                        <Track x:Name="PART_Track">
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageLeftCommand"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Focusable="False"/>
-                            </Track.DecreaseRepeatButton>
-                            <Track.Thumb>
-                                <Thumb Background="#36536E" MinWidth="34">
-                                    <Thumb.Template>
-                                        <ControlTemplate TargetType="Thumb">
-                                            <Border x:Name="ThumbChrome"
-                                                    Height="6"
-                                                    Margin="0,2"
-                                                    Background="{TemplateBinding Background}"
-                                                    CornerRadius="3"/>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource LudaryxBlue}"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
-                            </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageRightCommand"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Focusable="False"/>
-                            </Track.IncreaseRepeatButton>
-                        </Track>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    <ControlTemplate x:Key="LudaryxHorizontalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Background="Transparent">
+            <Track x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageLeftCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Background="#36536E" MinWidth="34">
+                        <Thumb.Template>
+                            <ControlTemplate TargetType="Thumb">
+                                <Border x:Name="ThumbChrome" Height="6" Margin="0,2"
+                                        Background="{TemplateBinding Background}" CornerRadius="3"/>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource LudaryxBlue}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Thumb.Template>
+                    </Thumb>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageRightCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
 
     <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="Transparent"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Style" Value="{StaticResource LudaryxVerticalScrollBar}"/>
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="Template" Value="{StaticResource LudaryxVerticalScrollBarTemplate}"/>
             </Trigger>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Style" Value="{StaticResource LudaryxHorizontalScrollBar}"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Template" Value="{StaticResource LudaryxHorizontalScrollBarTemplate}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
