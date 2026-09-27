@@ -385,6 +385,7 @@ public partial class SettingsWindow : Window
         LastPlayedUtc = new Dictionary<string, DateTime>(source.LastPlayedUtc, StringComparer.OrdinalIgnoreCase),
         PlayCounts = new Dictionary<string, int>(source.PlayCounts, StringComparer.OrdinalIgnoreCase),
         TotalPlayTimeSeconds = new Dictionary<string, long>(source.TotalPlayTimeSeconds, StringComparer.OrdinalIgnoreCase),
+        MonthlyPlayTimeSeconds = new Dictionary<string, long>(source.MonthlyPlayTimeSeconds, StringComparer.OrdinalIgnoreCase),
         ManualMetadata = source.ManualMetadata.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase),
         CoverMode = source.CoverMode,
         NeonLineColor = source.NeonLineColor,
