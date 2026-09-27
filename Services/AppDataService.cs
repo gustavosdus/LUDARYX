@@ -22,6 +22,17 @@ public static class AppDataService
         return path;
     }
 
+    public static void OpenRootDirectory()
+    {
+        Directory.CreateDirectory(RootDirectory);
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = $"\"{RootDirectory}\"",
+            UseShellExecute = true
+        });
+    }
+
     public static void EnsureMigrated()
     {
         Directory.CreateDirectory(RootDirectory);
