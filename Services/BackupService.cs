@@ -10,6 +10,24 @@ public static class BackupService
     // fazendo parte do backup.
     private static readonly string[] ExcludedFolders = { "Logs", "Updates", "covers" };
 
+    public static long GetEstimatedBackupSourceSizeBytes()
+    {
+        AppDataService.EnsureMigrated();
+        var root = AppDataService.RootDirectory;
+        if (!Directory.Exists(root))
+            return 0;
+
+        long total = 0;
+        foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(root, file);
+            if (ShouldSkip(relative))
+                continue;
+            try { total += new FileInfo(file).Length; } catch { }
+        }
+        return total;
+    }
+
     public static void Export(string destinationZip)
     {
         AppDataService.EnsureMigrated();
