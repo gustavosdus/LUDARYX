@@ -1170,10 +1170,14 @@ public partial class MainWindow : Window
         var controls = new List<System.Windows.Controls.Control>
         {
             LibraryFilterCombo,
+            PlatformFilterCombo,
             GenreFilter,
+            SortCombo,
             AddGameButton,
             RefreshButton,
-            SettingsButton
+            RefreshVisibleButton,
+            SettingsButton,
+            StatisticsButton
         };
 
         // Estes controles só existem visualmente na barra durante o modo tela cheia.
