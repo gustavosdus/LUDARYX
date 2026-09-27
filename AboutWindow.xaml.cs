@@ -9,7 +9,7 @@ public partial class AboutWindow : Window
     {
         InitializeComponent();
         LocalizationService.Apply(this);
-        DiagnosticsText.Text = DiagnosticLogService.GetSystemSummary();
+        DiagnosticsText.Text = DiagnosticLogService.BuildDiagnosticReport();
         VersionText.Text = $"{LocalizationService.Translate("Versão")} {GitHubUpdateService.GetCurrentVersionDisplay()}";
     }
 
@@ -30,7 +30,7 @@ public partial class AboutWindow : Window
     {
         try
         {
-            System.Windows.Clipboard.SetText(DiagnosticLogService.GetSystemSummary());
+            System.Windows.Clipboard.SetText(DiagnosticLogService.BuildDiagnosticReport());
         }
         catch (Exception ex)
         {
