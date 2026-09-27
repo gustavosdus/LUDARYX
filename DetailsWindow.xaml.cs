@@ -50,7 +50,13 @@ public partial class DetailsWindow : Window
         GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? "Não classificado" : localizedGenres;
         CompanyText.Text = string.Join(" / ", new[] { _game.Metadata.Developer, _game.Metadata.Publisher }.Where(x => !string.IsNullOrWhiteSpace(x)));
         if (string.IsNullOrWhiteSpace(CompanyText.Text)) CompanyText.Text = "Não informado";
-        ReleaseText.Text = _game.ReleaseYearDisplay.Length > 0 ? _game.ReleaseYearDisplay : "Não informado";
+        ReleaseText.Text = _game.ReleaseYearDisplay.Length > 0 ? _game.ReleaseYearDisplay : LocalizationService.Translate("Não informado");
+        AgeRatingText.Text = AgeRatingService.GetDisplay(_game.Metadata, _settings.Language);
+        UsageText.Text = $"{_game.PlayCountDisplay} • {_game.TotalPlayTimeDisplay} • {LocalizationService.Translate("Última execução")}: {_game.LastPlayedDisplay}";
+        var installPath = ResolveInstallDirectory(_game);
+        InstallPathText.Text = string.IsNullOrWhiteSpace(installPath) ? LocalizationService.Translate("Não informado") : installPath;
+        OpenInstallFolderButton.IsEnabled = !string.IsNullOrWhiteSpace(installPath) && Directory.Exists(installPath);
+        RunningText.Text = _game.IsRunning ? LocalizationService.Translate("JOGANDO AGORA") : string.Empty;
         DuplicateText.Text = _game.IsDuplicate ? $"Possível duplicata encontrada em: {_game.DuplicatePlatformsDisplay}" : "Não foram encontradas duplicatas por nome normalizado.";
         var displayDescription = _metadata.GetDisplayDescription(_game, _settings);
         DescriptionText.Text = string.IsNullOrWhiteSpace(displayDescription) ? "Sem descrição." : displayDescription;
@@ -64,8 +70,15 @@ public partial class DetailsWindow : Window
         ManualGenresBox.Text = GenreService.DisplayManyCommaSeparated(_game.Metadata.Genres);
         ManualDeveloperBox.Text = _game.Metadata.Developer ?? "";
         ManualPublisherBox.Text = _game.Metadata.Publisher ?? "";
+        ManualReleaseYearBox.Text = _game.Metadata.ReleaseYear?.ToString() ?? "";
+        var preferredRatingSystem = AgeRatingService.GetPreferredSystemKey(_settings.Language);
+        ManualAgeRatingBox.Text = _game.Metadata.AgeRatings.TryGetValue(preferredRatingSystem, out var manualRating)
+            ? manualRating
+            : "";
+        ManualAgeRatingBox.ToolTip = $"{LocalizationService.Translate("Classificação indicativa")} ({AgeRatingService.GetPreferredSystemLabel(_settings.Language)})";
         ManualDescriptionBox.Text = displayDescription ?? "";
         EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
+        DuplicateManualGameButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
         MakePrimaryDuplicateButton.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
         DuplicatePrimaryBadge.Visibility = Visibility.Collapsed;
 
@@ -115,6 +128,141 @@ public partial class DetailsWindow : Window
     {
         try { await _launcher.LaunchAsync(_game); _state.MarkPlayed(_game, _settings); LoadData(); }
         catch (Exception ex) { MessageBox.Show(ex.Message, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error); }
+    }
+
+    private static string? ResolveInstallDirectory(Game game)
+    {
+        if (!string.IsNullOrWhiteSpace(game.InstallPath))
+        {
+            try
+            {
+                var full = Path.GetFullPath(game.InstallPath);
+                if (Directory.Exists(full))
+                    return full;
+            }
+            catch
+            {
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(game.Executable))
+        {
+            try
+            {
+                var directory = Path.GetDirectoryName(Path.GetFullPath(game.Executable));
+                if (!string.IsNullOrWhiteSpace(directory) && Directory.Exists(directory))
+                    return directory;
+            }
+            catch
+            {
+            }
+        }
+
+        return null;
+    }
+
+    private void OpenInstallFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var directory = ResolveInstallDirectory(_game);
+        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+        {
+            MessageBox.Show(this, LocalizationService.Translate("A pasta do jogo não foi encontrada."),
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = $"\"{directory}\"",
+            UseShellExecute = true
+        });
+    }
+
+    private async void RefreshMetadata_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+            await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true);
+            _metadata.SaveCacheSnapshot();
+            LoadData();
+            LocalizationService.Apply(this);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this,
+                $"Não foi possível atualizar os metadados deste jogo.\n\n{ex.Message}",
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            Mouse.OverrideCursor = null;
+        }
+    }
+
+    private void DuplicateManualGame_Click(object sender, RoutedEventArgs e)
+    {
+        if (_game.Platform != GamePlatform.Manual)
+            return;
+
+        var source = _settings.ManualGames.FirstOrDefault(x =>
+            x.Id.Equals(_game.Id, StringComparison.OrdinalIgnoreCase));
+        if (source is null)
+            return;
+
+        var copy = new ManualGameDefinition
+        {
+            Id = Guid.NewGuid().ToString("N"),
+            Name = source.Name + " (Cópia)",
+            Executable = source.Executable,
+            Arguments = source.Arguments,
+            LaunchUri = source.LaunchUri,
+            WorkingDirectory = source.WorkingDirectory,
+            RunAsAdministrator = source.RunAsAdministrator,
+            IconPath = source.IconPath,
+            CoverPath = source.CoverPath
+        };
+
+        var sourceProfiles = source.LaunchProfiles ?? new();
+        foreach (var profile in sourceProfiles)
+        {
+            var cloned = new ManualLaunchProfile
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Name = profile.Name,
+                Executable = profile.Executable,
+                Arguments = profile.Arguments,
+                LaunchUri = profile.LaunchUri,
+                WorkingDirectory = profile.WorkingDirectory,
+                RunAsAdministrator = profile.RunAsAdministrator
+            };
+            copy.LaunchProfiles.Add(cloned);
+
+            if (profile.Id.Equals(source.PreferredLaunchProfileId, StringComparison.OrdinalIgnoreCase))
+                copy.PreferredLaunchProfileId = cloned.Id;
+        }
+
+        if (copy.LaunchProfiles.Count == 0)
+        {
+            var profile = new ManualLaunchProfile
+            {
+                Name = "Padrão",
+                Executable = copy.Executable,
+                Arguments = copy.Arguments,
+                LaunchUri = copy.LaunchUri,
+                WorkingDirectory = copy.WorkingDirectory,
+                RunAsAdministrator = copy.RunAsAdministrator
+            };
+            copy.LaunchProfiles.Add(profile);
+            copy.PreferredLaunchProfileId = profile.Id;
+        }
+
+        _settings.ManualGames.Add(copy);
+        _settingsServiceSave();
+        MessageBox.Show(this,
+            LocalizationService.Translate("Entrada manual duplicada. Atualize a biblioteca para exibi-la."),
+            "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void EditManualLaunch_Click(object sender, RoutedEventArgs e)
@@ -399,12 +547,32 @@ public partial class DetailsWindow : Window
 
     private void SaveMetadata_Click(object sender, RoutedEventArgs e)
     {
+        int? releaseYear = null;
+        if (int.TryParse(ManualReleaseYearBox.Text.Trim(), out var parsedYear) &&
+            parsedYear >= 1970 && parsedYear <= DateTime.UtcNow.Year + 2)
+        {
+            releaseYear = parsedYear;
+        }
+
+        var ageRatings = _settings.ManualMetadata.TryGetValue(_game.ProviderId, out var previousManual)
+            ? new Dictionary<string, string>(previousManual.AgeRatings ?? new(), StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var ratingSystem = AgeRatingService.GetPreferredSystemKey(_settings.Language);
+        var ratingValue = ManualAgeRatingBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(ratingValue))
+            ageRatings.Remove(ratingSystem);
+        else
+            ageRatings[ratingSystem] = ratingValue;
+
         var manual = new ManualGameMetadata
         {
             Name = ManualNameBox.Text,
             Genres = GenreService.NormalizeMany(ManualGenresBox.Text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList(),
             Developer = ManualDeveloperBox.Text,
             Publisher = ManualPublisherBox.Text,
+            ReleaseYear = releaseYear,
+            AgeRatings = ageRatings,
             Description = ManualDescriptionBox.Text
         };
         _state.SaveManualMetadata(_game, _settings, manual);
