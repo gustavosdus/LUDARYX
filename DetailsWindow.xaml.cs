@@ -28,6 +28,7 @@ public partial class DetailsWindow : Window
         Loaded += async (_, _) =>
         {
             LocalizationService.Apply(this);
+            WindowPlacementService.FitToWorkingArea(this, Owner, margin: 16, center: true);
             try
             {
                 await _metadata.EnsureLocalizedDescriptionAsync(_game, _settings);
@@ -41,6 +42,29 @@ public partial class DetailsWindow : Window
                 // estiver temporariamente indisponível.
             }
         };
+    }
+
+    private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            return;
+        }
+
+        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            DragMove();
+    }
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void MaximizeWindow_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = true;
+        Close();
     }
 
     private void LoadData()
@@ -58,7 +82,8 @@ public partial class DetailsWindow : Window
         InstallPathText.Text = string.IsNullOrWhiteSpace(installPath) ? LocalizationService.Translate("Não informado") : installPath;
         OpenInstallFolderButton.IsEnabled = !string.IsNullOrWhiteSpace(installPath) && Directory.Exists(installPath);
         RunningText.Text = _game.IsRunning ? LocalizationService.Translate("JOGANDO AGORA") : string.Empty;
-        DuplicateText.Text = _game.IsDuplicate ? $"Possível duplicata encontrada em: {_game.DuplicatePlatformsDisplay}" : "Não foram encontradas duplicatas por nome normalizado.";
+        DuplicateText.Text = _game.IsDuplicate ? $"Possível duplicata encontrada em: {_game.DuplicatePlatformsDisplay}" : string.Empty;
+        DuplicateText.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
         var displayDescription = _metadata.GetDisplayDescription(_game, _settings);
         DescriptionText.Text = string.IsNullOrWhiteSpace(displayDescription) ? "Sem descrição." : displayDescription;
         MetadataSourceText.Text = string.IsNullOrWhiteSpace(_game.Metadata.Source)
