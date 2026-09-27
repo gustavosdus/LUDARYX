@@ -40,13 +40,15 @@ public static class AgeRatingService
         return LocalizationService.Translate("Não informado");
     }
 
-    public static string GetPreferredSystemLabel(string language)
+    public static string GetPreferredSystemKey(string language)
     {
-        var system = PreferredSystems.TryGetValue(language, out var systems) && systems.Length > 0
-            ? systems[0]
+        return PreferredSystems.TryGetValue(language, out var systems) && systems.Length > 0
+            ? NormalizeSystem(systems[0])
             : "esrb";
-        return GetSystemLabel(system);
     }
+
+    public static string GetPreferredSystemLabel(string language)
+        => GetSystemLabel(GetPreferredSystemKey(language));
 
     private static bool TryGet(Dictionary<string, string> ratings, string key, out string value)
     {
