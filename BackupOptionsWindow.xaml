@@ -11,8 +11,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock Text="EXPORTAR BACKUP" Foreground="White" FontSize="24" FontWeight="Bold"/>
-            <TextBlock Text="Escolha quais categorias deseja incluir." Foreground="#9BA3B4" Margin="0,5,0,18"/>
+            <TextBlock x:Name="HeaderText" Text="EXPORTAR BACKUP" Foreground="White" FontSize="24" FontWeight="Bold"/>
+            <TextBlock x:Name="DescriptionText" Text="Escolha quais categorias deseja incluir." Foreground="#9BA3B4" Margin="0,5,0,18"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1">
@@ -24,7 +24,7 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="CANCELAR" Width="110" Margin="4" Click="Cancel_Click"/>
-            <Button Content="CONTINUAR" Width="120" Margin="4" Click="Continue_Click"/>
+            <Button x:Name="ContinueButton" Content="CONTINUAR" Width="120" Margin="4" Click="Continue_Click"/>
         </StackPanel>
     </Grid>
 </Window>
