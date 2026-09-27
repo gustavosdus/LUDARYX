@@ -66,9 +66,42 @@ public sealed class JsonSettingsService
             settings.FavoriteGameIds ??= new();
             settings.LastPlayedUtc ??= new();
             settings.PlayCounts ??= new();
+            settings.TotalPlayTimeSeconds ??= new();
             settings.ManualMetadata ??= new();
             settings.ManualGames ??= new();
             settings.SteamGridDbGameIds ??= new();
+            settings.DuplicatePlatformPriority ??= new();
+            if (settings.DuplicatePlatformPriority.Count == 0)
+            {
+                settings.DuplicatePlatformPriority = new()
+                {
+                    "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+                };
+            }
+            settings.Shortcuts ??= new ShortcutSettings();
+
+            foreach (var manualGame in settings.ManualGames)
+            {
+                manualGame.LaunchProfiles ??= new();
+                if (manualGame.LaunchProfiles.Count == 0)
+                {
+                    var legacyProfile = new ManualLaunchProfile
+                    {
+                        Name = "Padrão",
+                        Executable = manualGame.Executable,
+                        Arguments = manualGame.Arguments,
+                        LaunchUri = manualGame.LaunchUri,
+                        WorkingDirectory = manualGame.WorkingDirectory,
+                        RunAsAdministrator = manualGame.RunAsAdministrator
+                    };
+                    manualGame.LaunchProfiles.Add(legacyProfile);
+                    manualGame.PreferredLaunchProfileId = legacyProfile.Id;
+                }
+                else if (string.IsNullOrWhiteSpace(manualGame.PreferredLaunchProfileId))
+                {
+                    manualGame.PreferredLaunchProfileId = manualGame.LaunchProfiles[0].Id;
+                }
+            }
             settings.PreferredDuplicateProviders = new Dictionary<string, string>(
                 settings.PreferredDuplicateProviders ?? new Dictionary<string, string>(),
                 StringComparer.OrdinalIgnoreCase);
