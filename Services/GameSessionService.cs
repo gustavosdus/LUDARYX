@@ -129,12 +129,24 @@ public sealed class GameSessionService : IDisposable
 
     private static string? GetProcessName(Game game)
     {
-        if (string.IsNullOrWhiteSpace(game.Executable))
+        var executable = game.Executable;
+
+        if (string.IsNullOrWhiteSpace(executable) &&
+            !string.IsNullOrWhiteSpace(game.InstallPath) &&
+            Directory.Exists(game.InstallPath))
+        {
+            // Steam/Epic e alguns outros providers iniciam por URI e não armazenam
+            // o executável no modelo. Para estatísticas locais, tenta descobrir o
+            // executável principal dentro da pasta instalada sem alterar o modo de launch.
+            executable = InstalledGameDiscoveryService.FindLikelyGameExe(game.InstallPath, game.Name);
+        }
+
+        if (string.IsNullOrWhiteSpace(executable))
             return null;
 
         try
         {
-            return Path.GetFileNameWithoutExtension(game.Executable);
+            return Path.GetFileNameWithoutExtension(executable);
         }
         catch
         {
