@@ -206,8 +206,62 @@ public partial class SettingsWindow : Window
             "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
+    private void OpenDataFolder_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            AppDataService.OpenRootDirectory();
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("Could not open LUDARYX data folder", ex);
+            MessageBox.Show(this, ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void OpenIntegrationClient_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Button button ||
+            button.Tag is not IntegrationStatusItem item ||
+            item.Platform is not GamePlatform platform)
+            return;
+
+        try
+        {
+            button.IsEnabled = false;
+            var provider = new LibraryService().GetProvider(platform)
+                ?? throw new InvalidOperationException("A integração selecionada não foi encontrada.");
+
+            if (!provider.IsInstalled())
+                throw new InvalidOperationException($"{provider.Name} não foi encontrado neste computador.");
+
+            await provider.StartClientAsync();
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException($"Could not open integration client: {item.Name}", ex);
+            MessageBox.Show(this,
+                $"Não foi possível abrir {item.Name}.\n\n{ex.Message}",
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            button.IsEnabled = true;
+        }
+    }
+
     private void ExportBackup_Click(object sender, RoutedEventArgs e)
     {
+        var estimatedBytes = BackupService.GetEstimatedBackupSourceSizeBytes();
+        var estimatedMb = estimatedBytes / 1024d / 1024d;
+        var proceed = MessageBox.Show(this,
+            $"O backup incluirá configurações, favoritos, jogos manuais e artes personalizadas.\n\n" +
+            $"Dados de origem estimados: {estimatedMb:0.0} MB.\n" +
+            "O cache automático de capas não será incluído porque pode ser recriado.\n\nContinuar?",
+            "Backup do LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Information);
+        if (proceed != MessageBoxResult.Yes)
+            return;
+
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Filter = "Backup do LUDARYX (*.zip)|*.zip",
@@ -242,7 +296,7 @@ public partial class SettingsWindow : Window
         {
             BackupService.Import(dialog.FileName);
             MessageBox.Show(this,
-                "Backup importado. Reinicie o LUDARYX para aplicar todos os dados restaurados.",
+                "Backup importado com sucesso.\n\nReinicie o LUDARYX para aplicar configurações, favoritos, jogos manuais e artes personalizadas restauradas. Capas automáticas que não fazem parte do backup serão baixadas novamente quando necessário.",
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;
             Close();
