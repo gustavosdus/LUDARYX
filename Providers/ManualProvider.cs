@@ -27,7 +27,7 @@ public sealed class ManualProvider : IGameProvider
                 LaunchArguments = profile?.Arguments ?? definition.Arguments,
                 LaunchUri = profile?.LaunchUri ?? definition.LaunchUri,
                 InstallPath = profile?.WorkingDirectory ?? definition.WorkingDirectory,
-                CoverImage = definition.CoverPath
+                CoverImage = definition.CoverPath ?? definition.IconPath
             };
         }).ToList();
 
