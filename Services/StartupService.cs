@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 
 namespace UnifiedGameLauncher.Services;
 
@@ -38,7 +37,6 @@ public static class StartupService
     private static string BuildStartupCommand()
     {
         var processPath = Environment.ProcessPath;
-        var entryAssemblyPath = Assembly.GetEntryAssembly()?.Location;
 
         if (!string.IsNullOrWhiteSpace(processPath))
         {
@@ -46,21 +44,23 @@ public static class StartupService
                 throw new InvalidOperationException("O executável atual não está em um caminho local seguro.");
 
             var fileName = Path.GetFileName(processPath);
-            if (fileName.Equals("dotnet.exe", StringComparison.OrdinalIgnoreCase) &&
-                !string.IsNullOrWhiteSpace(entryAssemblyPath))
+            if (fileName.Equals("dotnet.exe", StringComparison.OrdinalIgnoreCase))
             {
-                if (!File.Exists(entryAssemblyPath) || !LaunchTargetValidator.IsSafeLocalFilePath(entryAssemblyPath))
+                var appBaseDirectory = AppContext.BaseDirectory;
+                var entryDll = Path.Combine(appBaseDirectory, "LUDARYX.dll");
+
+                if (!File.Exists(entryDll) || !LaunchTargetValidator.IsSafeLocalFilePath(entryDll))
                     throw new InvalidOperationException("O assembly do LUDARYX não está em um caminho local seguro.");
-                return $"\"{processPath}\" \"{entryAssemblyPath}\"";
+
+                return $"\"{processPath}\" \"{entryDll}\"";
             }
 
             return $"\"{processPath}\"";
         }
 
-        if (!string.IsNullOrWhiteSpace(entryAssemblyPath) &&
-            entryAssemblyPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) &&
-            File.Exists(entryAssemblyPath) && LaunchTargetValidator.IsSafeLocalFilePath(entryAssemblyPath))
-            return $"\"{entryAssemblyPath}\"";
+        var fallbackExe = Path.Combine(AppContext.BaseDirectory, "LUDARYX.exe");
+        if (File.Exists(fallbackExe) && LaunchTargetValidator.IsSafeLocalFilePath(fallbackExe))
+            return $"\"{fallbackExe}\"";
 
         throw new InvalidOperationException("Não foi possível determinar com segurança o executável do LUDARYX.");
     }
