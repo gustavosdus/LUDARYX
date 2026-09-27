@@ -76,7 +76,7 @@ public static class ShortcutGestureService
             "\\" => Key.OemBackslash,
             "-" => Key.OemMinus,
             "=" => Key.OemPlus,
-            "\`" => Key.OemTilde,
+            "`" => Key.OemTilde,
             _ => Key.None
         };
 
