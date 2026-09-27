@@ -488,6 +488,81 @@ public sealed class MetadataService
         return !IsLowQualityDescription(englishFallback) ? englishFallback : null;
     }
 
+    public async Task EnsureLocalizedAgeRatingAsync(
+        Game game,
+        LauncherSettings settings,
+        CancellationToken token = default)
+    {
+        var appId = 0;
+        if (game.Platform == GamePlatform.Steam)
+            int.TryParse(game.Id, out appId);
+        else if (game.Metadata.Source?.Contains("Steam Store", StringComparison.OrdinalIgnoreCase) == true)
+            int.TryParse(game.Metadata.ExternalId, out appId);
+
+        if (appId <= 0)
+            return;
+
+        var countryCode = settings.Language switch
+        {
+            "pt-BR" => "BR",
+            "pt-PT" => "PT",
+            "en-US" => "US",
+            "en-GB" => "GB",
+            "es-ES" => "ES",
+            // es-419 é uma região; México é usado apenas para pedir à Steam uma
+            // resposta regional. O LUDARYX nunca converte uma nota de um órgão para outro.
+            "es-419" => "MX",
+            _ => "US"
+        };
+
+        await _steamStoreGate.WaitAsync(token);
+        try
+        {
+            var url = $"https://store.steampowered.com/api/appdetails?appids={appId}&l=english&cc={countryCode}";
+            using var response = await _http.GetAsync(url, token);
+            if (!response.IsSuccessStatusCode)
+                return;
+
+            using var doc = JsonDocument.Parse(
+                await SafeHttpResponseService.ReadTextAsync(response, cancellationToken: token));
+
+            var appIdText = appId.ToString(CultureInfo.InvariantCulture);
+            if (!doc.RootElement.TryGetProperty(appIdText, out var entry) ||
+                !entry.TryGetProperty("success", out var success) ||
+                !success.GetBoolean() ||
+                !entry.TryGetProperty("data", out var data) ||
+                !data.TryGetProperty("ratings", out var ratings) ||
+                ratings.ValueKind != JsonValueKind.Object)
+            {
+                return;
+            }
+
+            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+            foreach (var ratingProperty in ratings.EnumerateObject())
+            {
+                var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
+                if (!string.IsNullOrWhiteSpace(ratingValue))
+                    game.Metadata.AgeRatings[ratingProperty.Name] = ratingValue;
+            }
+
+            lock (_cacheSync)
+                _cache[game.ProviderId] = game.Metadata;
+            SaveCache();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // Classificação indicativa é metadado opcional. Mantém o cache existente.
+        }
+        finally
+        {
+            _steamStoreGate.Release();
+        }
+    }
+
     private static string? GetCachedEnglishDescription(GameMetadata metadata)
     {
         metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
