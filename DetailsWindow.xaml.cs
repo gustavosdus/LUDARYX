@@ -65,6 +65,21 @@ public partial class DetailsWindow : Window
         ManualDeveloperBox.Text = _game.Metadata.Developer ?? "";
         ManualPublisherBox.Text = _game.Metadata.Publisher ?? "";
         ManualDescriptionBox.Text = displayDescription ?? "";
+        EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
+        MakePrimaryDuplicateButton.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
+
+        if (_game.IsDuplicate &&
+            _settings.PreferredDuplicateProviders.TryGetValue(_game.CanonicalGameId, out var preferred) &&
+            preferred.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase))
+        {
+            MakePrimaryDuplicateButton.Content = "VERSÃO PRINCIPAL";
+            MakePrimaryDuplicateButton.IsEnabled = false;
+        }
+        else
+        {
+            MakePrimaryDuplicateButton.Content = "TORNAR ESTA VERSÃO PRINCIPAL";
+            MakePrimaryDuplicateButton.IsEnabled = true;
+        }
     }
 
     private static void SetImage(System.Windows.Controls.Image image, string path)
@@ -93,6 +108,47 @@ public partial class DetailsWindow : Window
         catch (Exception ex) { MessageBox.Show(ex.Message, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
 
+    private void EditManualLaunch_Click(object sender, RoutedEventArgs e)
+    {
+        if (_game.Platform != GamePlatform.Manual)
+            return;
+
+        var definition = _settings.ManualGames.FirstOrDefault(x =>
+            x.Id.Equals(_game.Id, StringComparison.OrdinalIgnoreCase));
+        if (definition is null)
+        {
+            MessageBox.Show("A definição deste jogo manual não foi encontrada.", "LUDARYX",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var window = new AddGameWindow(definition) { Owner = this };
+        if (window.ShowDialog() != true || window.Result is null)
+            return;
+
+        var index = _settings.ManualGames.FindIndex(x =>
+            x.Id.Equals(definition.Id, StringComparison.OrdinalIgnoreCase));
+        if (index >= 0)
+            _settings.ManualGames[index] = window.Result;
+
+        _game.Name = window.Result.Name;
+        _game.Executable = window.Result.Executable;
+        _game.LaunchArguments = window.Result.Arguments;
+        _game.LaunchUri = window.Result.LaunchUri;
+        _game.InstallPath = window.Result.WorkingDirectory;
+        _settingsServiceSave();
+        LoadData();
+    }
+
+    private void MakePrimaryDuplicate_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_game.IsDuplicate || string.IsNullOrWhiteSpace(_game.CanonicalGameId))
+            return;
+
+        _settings.PreferredDuplicateProviders[_game.CanonicalGameId] = _game.ProviderId;
+        _settingsServiceSave();
+        LoadData();
+    }
 
     private void ChooseVerticalArtwork_Click(object sender, RoutedEventArgs e)
     {
