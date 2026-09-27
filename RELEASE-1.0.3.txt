@@ -1,0 +1,61 @@
+# LUDARYX 1.0.3
+
+Atualização focada em biblioteca, estatísticas locais, jogos manuais, filtros avançados, diagnóstico e detalhes de jogos.
+
+## Biblioteca e pesquisa
+- Pesquisa sem distinção de acentos e também por plataforma, gênero, desenvolvedora, publicadora e ano.
+- Filtros combináveis de coleção, plataforma, gênero e pesquisa.
+- Ordenação por nome, recentes, mais jogados, tempo jogado e plataforma.
+- Atualização de metadados para um único jogo, para o filtro atual ou para toda a biblioteca.
+- Melhor retorno de foco para navegação em tela cheia/TV após fechar diálogos.
+
+## Jogos em execução e estatísticas
+- Detecção local, quando o executável pode ser identificado, para indicar jogos em execução.
+- Proteção contra inicialização duplicada do mesmo jogo quando ele já está detectado como aberto.
+- Registro local de tempo de sessão e tempo total jogado.
+- Estatísticas locais com jogos mais jogados, uso por plataforma e tempo registrado por mês.
+- Nenhum desses dados é enviado para um servidor do projeto.
+
+## Detalhes dos jogos
+- Tempo jogado, número de execuções e última execução.
+- Caminho de instalação e botão para abrir a pasta do jogo.
+- Atualização individual de metadados.
+- Classificação indicativa regional quando a fonte disponibiliza o dado:
+  - ClassInd priorizada em Português (Brasil);
+  - PEGI priorizada em Português (Portugal), English (UK) e Español (España);
+  - ESRB priorizada em English (US);
+  - Español (Latinoamérica) usa uma classificação realmente disponibilizada pela fonte, sem converter notas entre órgãos.
+- Quando não existe classificação apropriada na fonte, o LUDARYX informa que o dado não está disponível.
+
+## Jogos manuais
+- Múltiplos perfis de inicialização por jogo.
+- Cada perfil pode ter executável, argumentos, URI, pasta de trabalho e opção de administrador próprios.
+- Perfil padrão selecionável.
+- Ícone personalizado.
+- Duplicação de entradas manuais.
+- Aviso para executável ausente.
+
+## Duplicatas
+- Opção para mostrar somente a versão principal.
+- Prioridade automática configurável por plataforma.
+- Seleção manual da versão principal continua disponível.
+
+## Integrações e diagnóstico
+- Status de execução do cliente.
+- Caminho e versão detectados quando disponíveis.
+- Botão para atualizar os diagnósticos.
+- Botão para abrir/testar o cliente detectado.
+
+## Configurações e backup
+- Atalhos configuráveis para pesquisa, tela cheia, atualização da biblioteca e Configurações.
+- Backup seletivo de configurações/biblioteca, artes personalizadas e cache de metadados.
+- Cache automático de capas continua excluído do backup por ser regenerável.
+
+## Compatibilidade
+- Windows 10/11 x64
+- Mouse e teclado
+- Controles Xbox compatíveis com XInput
+- PlayStation 5 DualSense
+
+## Atualização
+A versão 1.0.3 usa o mesmo AppId das versões anteriores e pode ser instalada por cima da 1.0.2.
