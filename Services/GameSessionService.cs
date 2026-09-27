@@ -25,10 +25,14 @@ public sealed class GameSessionService : IDisposable
         }
     }
 
-    public void RefreshRunningState(IEnumerable<Game> games)
+    public async Task RefreshRunningStateAsync(IEnumerable<Game> games)
     {
-        foreach (var game in games)
-            SetRunning(game, IsRunning(game));
+        var snapshot = games.ToList();
+        var states = await Task.Run(() =>
+            snapshot.Select(game => (Game: game, Running: IsRunning(game))).ToList());
+
+        foreach (var state in states)
+            SetRunning(state.Game, state.Running);
     }
 
     public void TrackAfterLaunch(Game game, LauncherSettings settings)
