@@ -23,13 +23,14 @@ public sealed class GogProvider : IGameProvider
 
     public Task StartClientAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         if (IsRunning()) return Task.CompletedTask;
-        var root = GalaxyRoot;
-        if (root is not null)
-        {
-            var exe = Path.Combine(root, "GalaxyClient.exe");
-            if (File.Exists(exe)) ProcessService.Start(exe);
-        }
+
+        var exe = FindGalaxyClientExecutable();
+        if (string.IsNullOrWhiteSpace(exe))
+            throw new InvalidOperationException("O GOG Galaxy não foi encontrado neste computador.");
+
+        ProcessService.StartTrustedDetectedLocalReparse(exe);
         return Task.CompletedTask;
     }
 
