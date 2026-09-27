@@ -8,6 +8,7 @@ LUDARYX uses third-party services only to identify installed games and enrich th
 - **Wikipedia**: short summaries may be used as a fallback. Wikipedia text is generally CC BY-SA; attribution should include the article/source and license when redistributed.
 - **PCGamingWiki**: only structured/factual fields are consumed by LUDARYX (developer, publisher, release year, genres, store IDs). PCGamingWiki content is CC BY-NC-SA unless otherwise noted. Re-review this source before any commercial distribution.
 - **Steam / GOG / IGDB**: used to query game metadata when available. Full storefront pages are not bundled with the installer. Descriptions are sanitized and capped to a short excerpt in the local library.
+- **Age ratings**: LUDARYX may display regional age-rating data actually returned by a metadata source such as Steam. The UI prefers ClassInd for pt-BR, PEGI for pt-PT/en-GB/es-ES, and ESRB for en-US. `es-419` represents a region rather than one country, so the application displays an available source rating without converting one rating board's classification into another. If no appropriate source rating exists, the UI reports that the value is unavailable.
 - **SteamGridDB / Steam CDN**: artwork is downloaded on the user's machine and is not pre-bundled with the LUDARYX installer. Artwork rights remain with their respective owners.
 
 ## Storefront scraping
