@@ -1,4 +1,4 @@
-﻿using UnifiedGameLauncher.Models;
+using UnifiedGameLauncher.Models;
 using UnifiedGameLauncher.Services;
 
 namespace UnifiedGameLauncher.Providers;
@@ -15,35 +15,66 @@ public sealed class ManualProvider : IGameProvider
     public Task<List<Game>> GetGamesAsync(CancellationToken cancellationToken = default)
     {
         var settings = _settingsService.Load();
-        var result = settings.ManualGames.Select(x => new Game
+        var result = settings.ManualGames.Select(definition =>
         {
-            Id = x.Id,
-            Name = x.Name,
-            Platform = GamePlatform.Manual,
-            Executable = x.Executable,
-            LaunchArguments = x.Arguments,
-            LaunchUri = x.LaunchUri,
-            InstallPath = x.WorkingDirectory,
-            CoverImage = x.CoverPath
+            var profile = GetPreferredProfile(definition);
+            return new Game
+            {
+                Id = definition.Id,
+                Name = definition.Name,
+                Platform = GamePlatform.Manual,
+                Executable = profile?.Executable ?? definition.Executable,
+                LaunchArguments = profile?.Arguments ?? definition.Arguments,
+                LaunchUri = profile?.LaunchUri ?? definition.LaunchUri,
+                InstallPath = profile?.WorkingDirectory ?? definition.WorkingDirectory,
+                CoverImage = definition.CoverPath
+            };
         }).ToList();
+
         return Task.FromResult(result);
     }
 
     public Task LaunchGameAsync(Game game, CancellationToken cancellationToken = default)
     {
-        LaunchTargetValidator.ValidateForLaunch(game);
-        if (!string.IsNullOrWhiteSpace(game.LaunchUri)) ProcessService.StartUri(game.LaunchUri);
-        else if (!string.IsNullOrWhiteSpace(game.Executable))
+        var definition = _settingsService.Load().ManualGames
+            .FirstOrDefault(x => x.Id.Equals(game.Id, StringComparison.OrdinalIgnoreCase));
+        var profile = definition is null ? null : GetPreferredProfile(definition);
+
+        var launchUri = profile?.LaunchUri ?? game.LaunchUri;
+        var executable = profile?.Executable ?? game.Executable;
+        var arguments = profile?.Arguments ?? game.LaunchArguments;
+        var workingDirectory = profile?.WorkingDirectory ?? definition?.WorkingDirectory;
+        var runAsAdministrator = profile?.RunAsAdministrator ?? definition?.RunAsAdministrator == true;
+
+        if (!string.IsNullOrWhiteSpace(launchUri))
         {
-            var definition = _settingsService.Load().ManualGames
-                .FirstOrDefault(x => x.Id.Equals(game.Id, StringComparison.OrdinalIgnoreCase));
-            ProcessService.Start(
-                game.Executable,
-                game.LaunchArguments,
-                definition?.WorkingDirectory,
-                definition?.RunAsAdministrator == true);
+            ProcessService.StartUri(launchUri);
         }
-        else throw new InvalidOperationException("O jogo manual não possui executável ou URI de inicialização.");
+        else if (!string.IsNullOrWhiteSpace(executable))
+        {
+            ProcessService.Start(
+                executable,
+                arguments,
+                workingDirectory,
+                runAsAdministrator);
+        }
+        else
+        {
+            throw new InvalidOperationException("O perfil de inicialização selecionado não possui executável ou URI.");
+        }
+
         return Task.CompletedTask;
+    }
+
+    private static ManualLaunchProfile? GetPreferredProfile(ManualGameDefinition definition)
+    {
+        definition.LaunchProfiles ??= new();
+
+        if (definition.LaunchProfiles.Count == 0)
+            return null;
+
+        return definition.LaunchProfiles.FirstOrDefault(profile =>
+                   profile.Id.Equals(definition.PreferredLaunchProfileId, StringComparison.OrdinalIgnoreCase))
+               ?? definition.LaunchProfiles[0];
     }
 }
