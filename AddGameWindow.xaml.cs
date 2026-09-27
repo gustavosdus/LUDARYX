@@ -56,8 +56,31 @@ public partial class AddGameWindow : Window
         }
 
         LocalizationService.Apply(this);
-        Loaded += (_, _) => LocalizationService.Apply(this);
+        Loaded += (_, _) =>
+        {
+            LocalizationService.Apply(this);
+            WindowPlacementService.FitToWorkingArea(this, Owner, margin: 18, center: true);
+        };
     }
+
+    private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            return;
+        }
+
+        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            DragMove();
+    }
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void MaximizeWindow_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e) => DialogResult = false;
 
     private void RefreshProfiles(string? selectedId)
     {
