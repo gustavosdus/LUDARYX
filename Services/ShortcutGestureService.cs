@@ -6,7 +6,7 @@ public static class ShortcutGestureService
 {
     public static bool IsValid(string? shortcut) => TryParse(shortcut, out _, out _);
 
-    public static bool Matches(KeyEventArgs e, string? shortcut)
+    public static bool Matches(System.Windows.Input.KeyEventArgs e, string? shortcut)
     {
         if (!TryParse(shortcut, out var expectedKey, out var expectedModifiers))
             return false;
