@@ -29,9 +29,10 @@ public partial class StatisticsWindow : Window
             .GroupBy(game => game.PlatformDisplay)
             .Select(group => new PlatformStat(
                 group.Key,
-                $"{group.Sum(game => game.PlayCount)} inicializações",
-                FormatDuration(group.Sum(game => game.TotalPlayTimeSeconds))))
-            .OrderByDescending(item => ParseDurationWeight(item.PlayTime))
+                group.Sum(game => game.PlayCount),
+                group.Sum(game => game.TotalPlayTimeSeconds)))
+            .OrderByDescending(item => item.TotalSeconds)
+            .ThenByDescending(item => item.LaunchCount)
             .ThenBy(item => item.Platform, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
@@ -47,14 +48,11 @@ public partial class StatisticsWindow : Window
         return $"{Math.Max(1, duration.Minutes)} min";
     }
 
-    private static long ParseDurationWeight(string text)
-    {
-        // A ordenação principal já foi determinada a partir dos grupos antes da exibição;
-        // esta função existe apenas para manter o view-model simples.
-        return 0;
-    }
-
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
-    private sealed record PlatformStat(string Platform, string Launches, string PlayTime);
+    private sealed record PlatformStat(string Platform, int LaunchCount, long TotalSeconds)
+    {
+        public string Launches => LaunchCount == 1 ? "1 inicialização" : $"{LaunchCount} inicializações";
+        public string PlayTime => FormatDuration(TotalSeconds);
+    }
 }
