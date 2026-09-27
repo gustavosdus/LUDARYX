@@ -29,21 +29,36 @@
                     <Button Content="OCULTAR" Click="Hide_Click" Margin="0,0,8,0"/>
                     <Button Content="EXCLUIR DA BIBLIOTECA" Click="Exclude_Click" Margin="0,0,8,0"/>
                     <Button x:Name="EditManualLaunchButton" Content="EDITAR INICIALIZAÇÃO" Click="EditManualLaunch_Click" Visibility="Collapsed" Margin="0,0,8,0"/>
+                    <Button x:Name="DuplicateManualGameButton" Content="DUPLICAR ENTRADA" Click="DuplicateManualGame_Click" Visibility="Collapsed" Margin="0,0,8,0"/>
+                    <Button x:Name="OpenInstallFolderButton" Content="ABRIR PASTA DO JOGO" Click="OpenInstallFolder_Click" Margin="0,0,8,0"/>
+                    <Button Content="ATUALIZAR METADADOS" Click="RefreshMetadata_Click" Margin="0,0,8,0"/>
                     <Button x:Name="MakePrimaryDuplicateButton" Content="TORNAR ESTA VERSÃO PRINCIPAL" Click="MakePrimaryDuplicate_Click" Visibility="Collapsed"/>
                 </WrapPanel>
                 <Border Background="#151923" CornerRadius="10" Padding="16">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Classificação" Foreground="#9BA3B4"/>
+                        <TextBlock Text="Gêneros" Foreground="#9BA3B4"/>
                         <TextBlock x:Name="GenreText" Grid.Row="1" Foreground="White" FontSize="16" Margin="0,4,0,12" TextWrapping="Wrap"/>
                         <TextBlock Text="Desenvolvedor / Publicadora" Grid.Row="2" Foreground="#9BA3B4"/>
                         <TextBlock x:Name="CompanyText" Grid.Row="3" Foreground="White" Margin="0,4,0,12" TextWrapping="Wrap"/>
                         <TextBlock Text="Lançamento" Grid.Row="4" Foreground="#9BA3B4"/>
                         <TextBlock x:Name="ReleaseText" Grid.Row="5" Foreground="White" Margin="0,4,0,12"/>
-                        <TextBlock x:Name="DuplicateText" Grid.Row="6" Foreground="#D7B46A" TextWrapping="Wrap"/>
+                        <TextBlock Text="Classificação indicativa" Grid.Row="6" Foreground="#9BA3B4"/>
+                        <TextBlock x:Name="AgeRatingText" Grid.Row="7" Foreground="White" Margin="0,4,0,12"/>
+                        <TextBlock Text="Uso local" Grid.Row="8" Foreground="#9BA3B4"/>
+                        <TextBlock x:Name="UsageText" Grid.Row="9" Foreground="White" Margin="0,4,0,12" TextWrapping="Wrap"/>
+                        <TextBlock Text="Instalação" Grid.Row="10" Foreground="#9BA3B4"/>
+                        <TextBlock x:Name="InstallPathText" Grid.Row="11" Foreground="White" Margin="0,4,0,12" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="RunningText" Grid.Row="12" Foreground="#66F5FF" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock x:Name="DuplicateText" Grid.Row="13" Foreground="#D7B46A" TextWrapping="Wrap"/>
                     </Grid>
                 </Border>
                 <TextBlock Text="Descrição" Foreground="White" FontSize="19" FontWeight="SemiBold" Margin="0,18,0,7"/>
@@ -51,12 +66,14 @@
                 <TextBlock x:Name="MetadataSourceText" Foreground="#7F8AA3" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
                 <TextBlock Text="Classificação manual" Foreground="White" FontSize="19" FontWeight="SemiBold" Margin="0,22,0,8"/>
                 <Grid>
-                    <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                    <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
                     <TextBox x:Name="ManualNameBox" Grid.Row="0" Margin="0,3" ToolTip="Nome"/>
                     <TextBox x:Name="ManualGenresBox" Grid.Row="1" Margin="0,3" ToolTip="Gêneros separados por vírgula"/>
                     <TextBox x:Name="ManualDeveloperBox" Grid.Row="2" Margin="0,3" ToolTip="Desenvolvedor"/>
                     <TextBox x:Name="ManualPublisherBox" Grid.Row="3" Margin="0,3" ToolTip="Publicadora"/>
-                    <TextBox x:Name="ManualDescriptionBox" Grid.Row="4" Margin="0,3" Height="80" TextWrapping="Wrap" AcceptsReturn="True" ToolTip="Descrição"/>
+                    <TextBox x:Name="ManualReleaseYearBox" Grid.Row="4" Margin="0,3" ToolTip="Ano de lançamento"/>
+                    <TextBox x:Name="ManualAgeRatingBox" Grid.Row="5" Margin="0,3" ToolTip="Classificação indicativa do sistema correspondente ao idioma atual"/>
+                    <TextBox x:Name="ManualDescriptionBox" Grid.Row="6" Margin="0,3" Height="80" TextWrapping="Wrap" AcceptsReturn="True" ToolTip="Descrição"/>
                 </Grid>
                 <TextBlock Text="Artes personalizadas" Foreground="White" FontSize="19" FontWeight="SemiBold" Margin="0,8,0,8"/>
                 <TextBlock Text="As imagens escolhidas são copiadas para a pasta do LUDARYX e não dependem do arquivo original." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,0,0,8"/>
