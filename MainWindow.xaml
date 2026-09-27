@@ -422,6 +422,7 @@
                         </ComboBox>
                         <Button x:Name="AddGameButton" Content="ADICIONAR JOGO" Style="{StaticResource NavButton}" Click="AddGame_Click"/>
                         <Button x:Name="RefreshButton" Content="ATUALIZAR" Style="{StaticResource NavButton}" Click="Refresh_Click"/>
+                        <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
                         <Button x:Name="SettingsButton" Content="CONFIGURAÇÕES" Style="{StaticResource NavButton}" Click="Settings_Click"/>
                         <Button x:Name="StatisticsButton" Content="ESTATÍSTICAS" Style="{StaticResource NavButton}" Click="Statistics_Click"/>
 
