@@ -38,6 +38,13 @@ public sealed class GameStateService
             ? current + seconds
             : seconds;
         game.TotalPlayTimeSeconds = settings.TotalPlayTimeSeconds[id];
+
+        var monthKey = DateTime.Now.ToString("yyyy-MM", System.Globalization.CultureInfo.InvariantCulture);
+        settings.MonthlyPlayTimeSeconds[monthKey] =
+            settings.MonthlyPlayTimeSeconds.TryGetValue(monthKey, out var monthSeconds)
+                ? monthSeconds + seconds
+                : seconds;
+
         if (save)
             _settingsService.Save(settings);
     }
