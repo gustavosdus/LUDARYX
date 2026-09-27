@@ -67,6 +67,7 @@ public sealed class JsonSettingsService
             settings.LastPlayedUtc ??= new();
             settings.PlayCounts ??= new();
             settings.TotalPlayTimeSeconds ??= new();
+            settings.MonthlyPlayTimeSeconds ??= new();
             settings.ManualMetadata ??= new();
             settings.ManualGames ??= new();
             settings.SteamGridDbGameIds ??= new();
