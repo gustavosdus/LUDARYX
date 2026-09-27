@@ -14,3 +14,8 @@ This project documentation is a compliance aid, not legal advice. Before a comme
 ## Open-source license
 
 The LUDARYX source code is distributed under the MIT License. Third-party trademarks, game artwork, descriptions, metadata content, and other third-party materials are not relicensed by the MIT License.
+
+
+## Controller compatibility
+
+References to Xbox, PlayStation 5, DualSense, XInput, mouse, and keyboard describe technical compatibility only. Xbox and related marks are trademarks of Microsoft and/or its affiliates. PlayStation and DualSense are trademarks of Sony Interactive Entertainment Inc. Their mention does not imply affiliation, sponsorship, endorsement, certification, or partnership with LUDARYX.
