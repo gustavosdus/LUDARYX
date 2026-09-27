@@ -108,7 +108,7 @@ public sealed class MetadataService
         // Mantemos um identificador estável para as consultas de metadados.
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 LUDARYX/1.0.2");
+            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 LUDARYX/1.0.3");
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/json,text/html;q=0.9,*/*;q=0.8");
         _http.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-US,en;q=0.9");
 
@@ -777,6 +777,7 @@ public sealed class MetadataService
         // Limpa caches antigos e normaliza os gêneros antes de qualquer exibição.
         metadata.Description = SanitizeDescription(metadata.Description);
         metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
+        metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
         metadata.Source = NormalizeMetadataSources(metadata.Source);
         GenreService.NormalizeInPlace(metadata);
         game.Metadata = metadata;
@@ -1039,6 +1040,16 @@ public sealed class MetadataService
                         {
                             if (genre.TryGetProperty("description", out var value))
                                 AddGenre(value.GetString(), metadata.Genres);
+                        }
+                    }
+
+                    if (data.TryGetProperty("ratings", out var ratings) && ratings.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var ratingProperty in ratings.EnumerateObject())
+                        {
+                            var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
+                            if (!string.IsNullOrWhiteSpace(ratingValue))
+                                metadata.AgeRatings[ratingProperty.Name] = ratingValue;
                         }
                     }
 
@@ -2362,6 +2373,36 @@ public sealed class MetadataService
         UpdatedAtUtc = DateTime.MinValue
     };
 
+    private static string? ReadSteamAgeRatingValue(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.String)
+            return element.GetString();
+
+        if (element.ValueKind == JsonValueKind.Number)
+            return element.ToString();
+
+        if (element.ValueKind != JsonValueKind.Object)
+            return null;
+
+        foreach (var propertyName in new[] { "rating", "display_online_notice", "age" })
+        {
+            if (!element.TryGetProperty(propertyName, out var value))
+                continue;
+
+            if (value.ValueKind == JsonValueKind.String)
+            {
+                var textValue = value.GetString();
+                if (!string.IsNullOrWhiteSpace(textValue) && textValue.Length <= 32)
+                    return textValue.Trim();
+            }
+
+            if (value.ValueKind == JsonValueKind.Number)
+                return value.ToString();
+        }
+
+        return null;
+    }
+
     private static GameMetadata? MergeMetadata(GameMetadata? primary, GameMetadata? secondary)
     {
         if (primary is null) return secondary;
@@ -2384,6 +2425,14 @@ public sealed class MetadataService
         foreach (var platform in secondary.Platforms)
             if (!primary.Platforms.Contains(platform, StringComparer.OrdinalIgnoreCase))
                 primary.Platforms.Add(platform);
+
+        primary.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+        if (secondary.AgeRatings is not null)
+        {
+            foreach (var pair in secondary.AgeRatings)
+                if (!primary.AgeRatings.ContainsKey(pair.Key) && !string.IsNullOrWhiteSpace(pair.Value))
+                    primary.AgeRatings[pair.Key] = pair.Value;
+        }
 
         MergeLocalizedDescriptions(primary, secondary);
         primary.Source = CombineMetadataSources(primary.Source, secondary.Source);
@@ -2451,6 +2500,14 @@ public sealed class MetadataService
             usedCacheText = true;
         }
 
+        current.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+        if (cached.AgeRatings is not null)
+        {
+            foreach (var pair in cached.AgeRatings)
+                if (!current.AgeRatings.ContainsKey(pair.Key) && !string.IsNullOrWhiteSpace(pair.Value))
+                    current.AgeRatings[pair.Key] = pair.Value;
+        }
+
         MergeLocalizedDescriptions(current, cached);
 
         // Artes já obtidas continuam válidas independentemente da resposta textual.
@@ -2496,6 +2553,14 @@ public sealed class MetadataService
         foreach (var genre in secondary.Genres)
             if (!primary.Genres.Contains(genre, StringComparer.OrdinalIgnoreCase))
                 primary.Genres.Add(genre);
+
+        primary.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+        if (secondary.AgeRatings is not null)
+        {
+            foreach (var pair in secondary.AgeRatings)
+                if (!primary.AgeRatings.ContainsKey(pair.Key) && !string.IsNullOrWhiteSpace(pair.Value))
+                    primary.AgeRatings[pair.Key] = pair.Value;
+        }
 
         MergeLocalizedDescriptions(primary, secondary);
         primary.Source = CombineMetadataSources(primary.Source, secondary.Source);
