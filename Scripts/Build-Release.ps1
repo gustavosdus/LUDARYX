@@ -27,14 +27,18 @@ if ($runningLudaryx) {
 $programFilesX86 = [Environment]::GetFolderPath("ProgramFilesX86")
 $programFiles = [Environment]::GetFolderPath("ProgramFiles")
 $isccCandidates = @(
-    (Join-Path $programFilesX86 "Inno Setup 6\ISCC.exe"),
-    (Join-Path $programFiles "Inno Setup 6\ISCC.exe")
+    (Join-Path $programFiles "Inno Setup 7\ISCC.exe"),
+    (Join-Path $programFilesX86 "Inno Setup 7\ISCC.exe"),
+    (Join-Path $programFiles "Inno Setup 6\ISCC.exe"),
+    (Join-Path $programFilesX86 "Inno Setup 6\ISCC.exe")
 ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 
 $iscc = $isccCandidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
 if (-not $iscc) {
-    throw "Inno Setup 6 não foi encontrado. Instale o Inno Setup ou compile manualmente: $InstallerScript"
+    throw "Inno Setup não foi encontrado. O script procura automaticamente pelas versões 7 e 6. Compile manualmente se necessário: $InstallerScript"
 }
+
+Write-Host "Inno Setup encontrado em: $iscc" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "Compilando instalador LUDARYX $Version..." -ForegroundColor Cyan
