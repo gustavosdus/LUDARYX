@@ -17,17 +17,17 @@ public static class IntegrationStatusService
                 try { available = provider.IsInstalled(); } catch { }
                 return new IntegrationStatusItem(
                     provider.Name,
-                    available ? "Detectado" : "Não encontrado",
+                    LocalizationService.Translate(available ? "Detectado" : "Não encontrado"),
                     available);
             })
             .ToList();
 
         items.Add(new IntegrationStatusItem(
             "SteamGridDB",
-            string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey) ? "API não configurada" : "API configurada",
+            LocalizationService.Translate(string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey) ? "API não configurada" : "API configurada"),
             !string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey)));
 
-        items.Add(new IntegrationStatusItem("GitHub Updates", "Disponível", true));
+        items.Add(new IntegrationStatusItem("GitHub Updates", LocalizationService.Translate("Disponível"), true));
         return items;
     }
 }
