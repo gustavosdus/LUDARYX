@@ -339,7 +339,7 @@
                         <TextBlock Text="⌕" Foreground="#7E8798" FontSize="17" VerticalAlignment="Center" Margin="10,0,0,0"/>
                         <TextBox x:Name="SearchBox" Margin="32,0,8,0"
                                  Background="Transparent" Foreground="#E8ECF5" CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
-                                 VerticalContentAlignment="Center" FontSize="12"
+                                 Padding="0" MinHeight="0" VerticalContentAlignment="Center" FontSize="12"
                                  TextChanged="SearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                     </Grid>
                 </Border>
@@ -444,7 +444,7 @@
                             <TextBox x:Name="FullscreenSearchBox" Margin="32,1,10,1"
                                      Background="Transparent" Foreground="#E8ECF5"
                                      CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
-                                     Padding="2,0" VerticalContentAlignment="Center" FontSize="12"
+                                     Padding="0" MinHeight="0" VerticalContentAlignment="Center" FontSize="12"
                                      TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                         </Grid>
                     </Border>
