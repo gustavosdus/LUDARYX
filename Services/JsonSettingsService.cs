@@ -11,7 +11,8 @@ public sealed class JsonSettingsService
 
     public JsonSettingsService()
     {
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UnifiedGameLauncher");
+        AppDataService.EnsureMigrated();
+        var dir = AppDataService.RootDirectory;
         Directory.CreateDirectory(dir);
         _file = Path.Combine(dir, "settings.json");
         _backupFile = Path.Combine(dir, "settings.backup.json");
@@ -61,6 +62,8 @@ public sealed class JsonSettingsService
             settings.ManualMetadata ??= new();
             settings.ManualGames ??= new();
             settings.SteamGridDbGameIds ??= new();
+            settings.PreferredDuplicateProviders ??= new(StringComparer.OrdinalIgnoreCase);
+            settings.MaxCacheSizeMb = Math.Clamp(settings.MaxCacheSizeMb <= 0 ? 1024 : settings.MaxCacheSizeMb, 128, 16384);
 
             settings.IgdbClientId = SecretProtectionService.Unprotect(settings.ProtectedIgdbClientId);
             settings.IgdbClientSecret = SecretProtectionService.Unprotect(settings.ProtectedIgdbClientSecret);
