@@ -39,6 +39,11 @@ public sealed class LauncherSettings
     public string Language { get; set; } = "pt-BR";
     public bool CheckForUpdatesOnStartup { get; set; } = true;
     public DateTime? LastUpdateCheckUtc { get; set; }
+    public string? SkippedUpdateVersion { get; set; }
+    public bool AutoCleanupCache { get; set; } = true;
+    public int MaxCacheSizeMb { get; set; } = 1024;
+    public bool AutoHideDuplicateSecondary { get; set; } = false;
+    public Dictionary<string, string> PreferredDuplicateProviders { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, int> SteamGridDbGameIds { get; set; } = new();
 }
 
@@ -63,5 +68,7 @@ public sealed class ManualGameDefinition
     public string? Executable { get; set; }
     public string? Arguments { get; set; }
     public string? LaunchUri { get; set; }
+    public string? WorkingDirectory { get; set; }
+    public bool RunAsAdministrator { get; set; }
     public string? CoverPath { get; set; }
 }
