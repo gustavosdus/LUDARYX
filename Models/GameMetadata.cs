@@ -10,6 +10,7 @@ public sealed class GameMetadata
     public string? Developer { get; set; }
     public string? Publisher { get; set; }
     public int? ReleaseYear { get; set; }
+    public Dictionary<string, string> AgeRatings { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public string? CoverUrl { get; set; }
     public string? CoverLocalPath { get; set; }
     public string? HorizontalCoverUrl { get; set; }
