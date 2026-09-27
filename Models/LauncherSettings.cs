@@ -16,6 +16,7 @@ public sealed class LauncherSettings
     public Dictionary<string, DateTime> LastPlayedUtc { get; set; } = new();
     public Dictionary<string, int> PlayCounts { get; set; } = new();
     public Dictionary<string, long> TotalPlayTimeSeconds { get; set; } = new();
+    public Dictionary<string, long> MonthlyPlayTimeSeconds { get; set; } = new();
     public Dictionary<string, ManualGameMetadata> ManualMetadata { get; set; } = new();
     public string CoverMode { get; set; } = "Auto";
     public bool EnrichMetadataAutomatically { get; set; } = true;
