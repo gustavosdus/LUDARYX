@@ -394,11 +394,14 @@
                 </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="14,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <ComboBox x:Name="LibraryFilterCombo" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="LibraryFilterCombo_SelectionChanged">
+                        <ComboBox x:Name="LibraryFilterCombo" Width="150" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="LibraryFilterCombo_SelectionChanged" ToolTip="Filtrar biblioteca">
                             <ComboBoxItem Content="TODOS" Tag="all"/>
                             <ComboBoxItem Content="FAVORITOS" Tag="favorites"/>
                             <ComboBoxItem Content="RECENTES" Tag="recent"/>
                             <ComboBoxItem Content="DUPLICADOS" Tag="duplicates"/>
+                        </ComboBox>
+                        <ComboBox x:Name="PlatformFilterCombo" Width="150" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="PlatformFilterCombo_SelectionChanged" ToolTip="Filtrar por plataforma">
+                            <ComboBoxItem Content="TODAS PLATAFORMAS" Tag="all"/>
                             <ComboBoxItem Content="STEAM" Tag="Steam"/>
                             <ComboBoxItem Content="EPIC" Tag="Epic"/>
                             <ComboBoxItem Content="GOG" Tag="GOG"/>
@@ -410,9 +413,17 @@
                             <ComboBoxItem Content="MANUAIS" Tag="Manual"/>
                         </ComboBox>
                         <ComboBox x:Name="GenreFilter" Width="156" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="GenreFilter_SelectionChanged" ToolTip="Filtrar por gênero"/>
+                        <ComboBox x:Name="SortCombo" Width="145" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="SortCombo_SelectionChanged" ToolTip="Ordenar">
+                            <ComboBoxItem Content="NOME" Tag="Name"/>
+                            <ComboBoxItem Content="RECENTES" Tag="Recent"/>
+                            <ComboBoxItem Content="MAIS JOGADOS" Tag="MostPlayed"/>
+                            <ComboBoxItem Content="TEMPO JOGADO" Tag="PlayTime"/>
+                            <ComboBoxItem Content="PLATAFORMA" Tag="Platform"/>
+                        </ComboBox>
                         <Button x:Name="AddGameButton" Content="ADICIONAR JOGO" Style="{StaticResource NavButton}" Click="AddGame_Click"/>
                         <Button x:Name="RefreshButton" Content="ATUALIZAR" Style="{StaticResource NavButton}" Click="Refresh_Click"/>
                         <Button x:Name="SettingsButton" Content="CONFIGURAÇÕES" Style="{StaticResource NavButton}" Click="Settings_Click"/>
+                        <Button x:Name="StatisticsButton" Content="ESTATÍSTICAS" Style="{StaticResource NavButton}" Click="Statistics_Click"/>
 
                         <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed" Width="260" Height="32" Margin="7,0,3,0"
                                 Background="{DynamicResource SearchFieldBackground}" BorderBrush="#293242" BorderThickness="1" CornerRadius="5">
@@ -475,6 +486,19 @@
                                 </Border.Style>
                                 <Grid ClipToBounds="True">
                                     <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}" Stretch="Uniform" SnapsToDevicePixels="True"/>
+                                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8" Padding="7,3" CornerRadius="5" Background="#CC0E7490">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="JOGANDO" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                    </Border>
                                 </Grid>
                             </Border>
                         </DataTemplate>
