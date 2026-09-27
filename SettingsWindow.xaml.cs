@@ -411,16 +411,21 @@ public partial class SettingsWindow : Window
         var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Backup do LUDARYX (*.zip)|*.zip" };
         if (dialog.ShowDialog(this) != true) return;
 
+        var optionsWindow = new BackupOptionsWindow(importMode: true, sourceZip: dialog.FileName) { Owner = this };
+        if (optionsWindow.ShowDialog() != true)
+            return;
+
+        var selection = optionsWindow.Selection;
         if (MessageBox.Show(this,
-                "O backup substituirá configurações e dados locais existentes. Continuar?",
+                "Somente as categorias selecionadas serão restauradas e poderão substituir os dados locais correspondentes. Continuar?",
                 "LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
         try
         {
-            BackupService.Import(dialog.FileName);
+            BackupService.Import(dialog.FileName, selection);
             MessageBox.Show(this,
-                "Backup importado com sucesso.\n\nReinicie o LUDARYX para aplicar configurações, favoritos, jogos manuais e artes personalizadas restauradas. Capas automáticas que não fazem parte do backup serão baixadas novamente quando necessário.",
+                "Backup restaurado com sucesso para as categorias selecionadas.\n\nReinicie o LUDARYX para aplicar os dados restaurados. O cache automático de capas continua sendo recriado quando necessário.",
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;
             Close();
