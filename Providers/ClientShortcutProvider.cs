@@ -18,11 +18,19 @@ public abstract class ClientShortcutProvider : IGameProvider
     public virtual bool IsInstalled() => FindLauncherExecutable() is not null || ShortcutRoots().Any(Directory.Exists);
     public bool IsRunning() => ProcessService.IsRunning(ProcessName);
 
-    public Task StartClientAsync(CancellationToken cancellationToken = default)
+    public virtual Task StartClientAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         if (IsRunning()) return Task.CompletedTask;
+
         var exe = FindLauncherExecutable();
-        if (exe is not null) ProcessService.Start(exe);
+        if (string.IsNullOrWhiteSpace(exe))
+            throw new InvalidOperationException($"{Name} não foi encontrado neste computador.");
+
+        // Alguns clientes oficiais são instalados abaixo de junctions/reparse points
+        // do próprio Windows/instalador. O mesmo validador restrito já usado pelo EA
+        // aceita somente um executável local existente e confiável.
+        ProcessService.StartTrustedDetectedLocalReparse(exe);
         return Task.CompletedTask;
     }
 
