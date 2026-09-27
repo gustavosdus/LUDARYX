@@ -95,6 +95,8 @@ public sealed class ManualLaunchProfile
     public string? LaunchUri { get; set; }
     public string? WorkingDirectory { get; set; }
     public bool RunAsAdministrator { get; set; }
+
+    public override string ToString() => string.IsNullOrWhiteSpace(Name) ? "Perfil" : Name;
 }
 
 public sealed class ShortcutSettings
