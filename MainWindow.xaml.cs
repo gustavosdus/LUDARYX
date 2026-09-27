@@ -717,6 +717,45 @@ public partial class MainWindow : Window
     private void CloseWindow_Click(object sender, RoutedEventArgs e) => Close();
 
     private async void Refresh_Click(object sender, RoutedEventArgs e) => await RefreshLibrary("ATUALIZANDO BIBLIOTECA...", forceArtworkRefresh: true);
+
+    private async void RefreshVisible_Click(object sender, RoutedEventArgs e)
+    {
+        if (_visibleGames.Count == 0)
+            return;
+
+        await SetLibraryLoadingAsync(true, "ATUALIZANDO BIBLIOTECA...");
+        try
+        {
+            using var gate = new SemaphoreSlim(3);
+            var tasks = _visibleGames.ToList().Select(async game =>
+            {
+                await gate.WaitAsync();
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(45));
+                    await _metadata.EnrichGameAsync(game, _settings, forceArtworkRefresh: true, cts.Token);
+                }
+                catch
+                {
+                }
+                finally
+                {
+                    gate.Release();
+                }
+            });
+            await Task.WhenAll(tasks);
+            _metadata.SaveCacheSnapshot();
+            ApplyCoverMode();
+            BuildGenreFilter();
+            ApplyFilter();
+            ShowToast($"{_visibleGames.Count} jogos visíveis atualizados.");
+        }
+        finally
+        {
+            await SetLibraryLoadingAsync(false);
+        }
+    }
+
     private async void Settings_Click(object sender, RoutedEventArgs e)
     {
         var window = new SettingsWindow(_games, _settings) { Owner = this };
