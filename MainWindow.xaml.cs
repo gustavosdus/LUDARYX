@@ -72,7 +72,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SourceInitialized += MainWindow_SourceInitialized;
-        Microsoft.Win32.SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         _navigationSound = LoadSoundResource("Assets/Navigation.wav");
         _powerOnSound = LoadSoundResource("Assets/PowerOn.wav");
         _launchSound = LoadSoundResource("Assets/Launch.wav");
@@ -122,7 +121,6 @@ public partial class MainWindow : Window
         {
             _trayIcon?.Dispose();
             _gamepad.Dispose();
-            Microsoft.Win32.SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
         };
         _gamepad.StateChanged += Gamepad_StateChanged;
     }
@@ -1327,20 +1325,16 @@ public partial class MainWindow : Window
         WindowPlacementService.FitToWorkingArea(this, margin: 8, center: true);
     }
 
-    private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
-    {
-        if (!_fullscreen)
-            return;
-
-        Dispatcher.BeginInvoke(ApplyFullscreenBounds, DispatcherPriority.Background);
-    }
-
     private IntPtr MainWindow_WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         if (msg == WM_GETMINMAXINFO && !_fullscreen)
         {
             ApplyMaximizedWorkArea(hwnd, lParam);
             handled = true;
+        }
+        else if (msg == WM_DISPLAYCHANGE && _fullscreen)
+        {
+            Dispatcher.BeginInvoke(new Action(ApplyFullscreenBounds), DispatcherPriority.Background);
         }
 
         return IntPtr.Zero;
@@ -1370,6 +1364,7 @@ public partial class MainWindow : Window
     }
 
     private const int WM_GETMINMAXINFO = 0x0024;
+    private const int WM_DISPLAYCHANGE = 0x007E;
 
     [StructLayout(LayoutKind.Sequential)]
     private struct POINT
