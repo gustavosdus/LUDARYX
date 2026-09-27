@@ -33,6 +33,7 @@ public partial class MainWindow : Window
     private readonly JsonSettingsService _settingsService = new();
     private readonly GameStateService _state = new();
     private readonly DuplicateDetectionService _duplicates = new();
+    private readonly GameSessionService _sessions = new();
     private readonly GamepadService _gamepad;
     private LauncherSettings _settings = new();
     private List<Game> _games = new();
@@ -121,6 +122,7 @@ public partial class MainWindow : Window
         {
             _trayIcon?.Dispose();
             _gamepad.Dispose();
+            _sessions.Dispose();
         };
         _gamepad.StateChanged += Gamepad_StateChanged;
     }
@@ -398,6 +400,15 @@ public partial class MainWindow : Window
         BuildGenreFilter();
         if (LibraryFilterCombo.SelectedItem is null)
             LibraryFilterCombo.SelectedIndex = 0;
+        if (PlatformFilterCombo.SelectedItem is null)
+            PlatformFilterCombo.SelectedIndex = 0;
+        if (SortCombo.SelectedItem is null)
+        {
+            var sortItem = SortCombo.Items.OfType<ComboBoxItem>()
+                .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortMode, StringComparison.OrdinalIgnoreCase));
+            SortCombo.SelectedItem = sortItem ?? SortCombo.Items[0];
+        }
+        _sessions.RefreshRunningState(_games);
         ApplyFilter();
     }
 
@@ -712,6 +723,12 @@ public partial class MainWindow : Window
         if (window.ShowDialog() == true) await RefreshLibrary("ATUALIZANDO BIBLIOTECA...");
     }
 
+    private void Statistics_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new StatisticsWindow(_games) { Owner = this };
+        window.ShowDialog();
+    }
+
 
     #endregion
 
@@ -720,24 +737,40 @@ public partial class MainWindow : Window
     private void LibraryFilterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!IsLoaded || LibraryFilterCombo.SelectedItem is not ComboBoxItem item) return;
-        var tag = item.Tag?.ToString() ?? "all";
-        _platformFilter = null;
-        _specialFilter = "";
-        switch (tag)
+        _specialFilter = item.Tag?.ToString() switch
         {
-            case "favorites": _specialFilter = "favorites"; break;
-            case "recent": _specialFilter = "recent"; break;
-            case "duplicates": _specialFilter = "duplicates"; break;
-            case "Steam": _platformFilter = GamePlatform.Steam; break;
-            case "Epic": _platformFilter = GamePlatform.Epic; break;
-            case "GOG": _platformFilter = GamePlatform.GOG; break;
-            case "Xbox": _platformFilter = GamePlatform.Xbox; break;
-            case "EAApp": _platformFilter = GamePlatform.EAApp; break;
-            case "UbisoftConnect": _platformFilter = GamePlatform.UbisoftConnect; break;
-            case "BattleNet": _platformFilter = GamePlatform.BattleNet; break;
-            case "RiotClient": _platformFilter = GamePlatform.RiotClient; break;
-            case "Manual": _platformFilter = GamePlatform.Manual; break;
-        }
+            "favorites" => "favorites",
+            "recent" => "recent",
+            "duplicates" => "duplicates",
+            _ => ""
+        };
+        ApplyFilter();
+    }
+
+    private void PlatformFilterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || PlatformFilterCombo.SelectedItem is not ComboBoxItem item) return;
+        _platformFilter = item.Tag?.ToString() switch
+        {
+            "Steam" => GamePlatform.Steam,
+            "Epic" => GamePlatform.Epic,
+            "GOG" => GamePlatform.GOG,
+            "Xbox" => GamePlatform.Xbox,
+            "EAApp" => GamePlatform.EAApp,
+            "UbisoftConnect" => GamePlatform.UbisoftConnect,
+            "BattleNet" => GamePlatform.BattleNet,
+            "RiotClient" => GamePlatform.RiotClient,
+            "Manual" => GamePlatform.Manual,
+            _ => null
+        };
+        ApplyFilter();
+    }
+
+    private void SortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || SortCombo.SelectedItem is not ComboBoxItem item) return;
+        _settings.LibrarySortMode = item.Tag?.ToString() ?? "Name";
+        _settingsService.Save(_settings);
         ApplyFilter();
     }
 
@@ -774,7 +807,8 @@ public partial class MainWindow : Window
         var query = SearchBox.Text.Trim();
         var genre = (GenreFilter.SelectedItem as GenreFilterOption)?.CanonicalGenre;
         var showHidden = _settings.ShowHiddenApps;
-        _visibleGames = _games.Where(g =>
+
+        IEnumerable<Game> filtered = _games.Where(g =>
             !g.IsExcluded &&
             (showHidden || !g.IsHidden) &&
             (!_platformFilter.HasValue || g.Platform == _platformFilter.Value) &&
@@ -786,10 +820,30 @@ public partial class MainWindow : Window
              !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var preferredProvider) ||
              g.ProviderId.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase) ||
              _specialFilter == "duplicates") &&
+            (!_settings.ShowOnlyPrimaryDuplicates ||
+             !g.IsDuplicate ||
+             !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var primaryProvider) ||
+             g.ProviderId.Equals(primaryProvider, StringComparison.OrdinalIgnoreCase) ||
+             _specialFilter == "duplicates") &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
-            (string.IsNullOrWhiteSpace(query) || g.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
-            .OrderByDescending(g => _specialFilter == "recent" ? g.LastPlayedUtc : null)
-            .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            SearchNormalizationService.Matches(g, query));
+
+        filtered = (_settings.LibrarySortMode ?? "Name") switch
+        {
+            "Recent" => filtered.OrderByDescending(g => g.LastPlayedUtc ?? DateTime.MinValue)
+                                .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+            "MostPlayed" => filtered.OrderByDescending(g => g.PlayCount)
+                                    .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+            "PlayTime" => filtered.OrderByDescending(g => g.TotalPlayTimeSeconds)
+                                  .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+            "Platform" => filtered.OrderBy(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
+                                  .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+            _ when _specialFilter == "recent" => filtered.OrderByDescending(g => g.LastPlayedUtc ?? DateTime.MinValue)
+                                                         .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+            _ => filtered.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+        };
+
+        _visibleGames = filtered.ToList();
 
         _selectedIndex = Math.Clamp(_selectedIndex, 0, Math.Max(0, _visibleGames.Count - 1));
         UpdateControllerSelection();
@@ -805,12 +859,19 @@ public partial class MainWindow : Window
             return;
 
         var changed = false;
-        var priority = new[]
-        {
-            GamePlatform.Steam, GamePlatform.GOG, GamePlatform.Epic, GamePlatform.Xbox,
-            GamePlatform.EAApp, GamePlatform.UbisoftConnect, GamePlatform.BattleNet,
-            GamePlatform.RiotClient, GamePlatform.Manual
-        };
+        var priority = _settings.DuplicatePlatformPriority
+            .Select(value => Enum.TryParse<GamePlatform>(value, true, out var platform) ? platform : (GamePlatform?)null)
+            .Where(value => value.HasValue)
+            .Select(value => value!.Value)
+            .ToArray();
+
+        if (priority.Length == 0)
+            priority = new[]
+            {
+                GamePlatform.Steam, GamePlatform.GOG, GamePlatform.Epic, GamePlatform.Xbox,
+                GamePlatform.EAApp, GamePlatform.UbisoftConnect, GamePlatform.BattleNet,
+                GamePlatform.RiotClient, GamePlatform.Manual
+            };
 
         foreach (var group in games.Where(g => g.IsDuplicate)
                      .GroupBy(g => g.CanonicalGameId, StringComparer.OrdinalIgnoreCase))
@@ -1292,10 +1353,19 @@ public partial class MainWindow : Window
     {
         try
         {
+            if (game.IsRunning || _sessions.IsRunning(game))
+            {
+                game.IsRunning = true;
+                StatusText.Text = $"{game.Name} já está em execução";
+                ShowToast($"{game.Name} já está em execução.");
+                return;
+            }
+
             PlayLaunchSound();
             StatusText.Text = $"Iniciando {game.Name}...";
             await _launcher.LaunchAsync(game);
             _state.MarkPlayed(game, _settings);
+            _sessions.TrackAfterLaunch(game, _settings);
             StatusText.Text = $"Executando: {game.Name}";
             ApplyFilter();
         }
@@ -1304,6 +1374,14 @@ public partial class MainWindow : Window
             StatusText.Text = "Falha ao iniciar o jogo";
             MessageBox.Show($"Não foi possível iniciar {game.Name}.\n\n{ex.Message}", "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private async void ShowToast(string message)
+    {
+        StatusText.Text = message;
+        await Task.Delay(2800);
+        if (StatusText.Text == message)
+            StatusText.Text = $"{_games.Count} jogos na biblioteca";
     }
 
     #endregion
@@ -1641,8 +1719,52 @@ public partial class MainWindow : Window
         else if (e.Key == Key.Escape && _fullscreen) ToggleFullscreen();
     }
 
+    private static bool MatchesShortcut(KeyEventArgs e, string? shortcut)
+    {
+        if (string.IsNullOrWhiteSpace(shortcut))
+            return false;
+
+        try
+        {
+            if (new KeyGestureConverter().ConvertFromInvariantString(shortcut) is not KeyGesture gesture)
+                return false;
+
+            return gesture.Key == e.Key && gesture.Modifiers == Keyboard.Modifiers;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
+        if (MatchesShortcut(e, _settings.Shortcuts.FocusSearch))
+        {
+            SearchBox.Focus();
+            SearchBox.SelectAll();
+            e.Handled = true;
+            return;
+        }
+        if (MatchesShortcut(e, _settings.Shortcuts.ToggleFullscreen))
+        {
+            ToggleFullscreen();
+            e.Handled = true;
+            return;
+        }
+        if (MatchesShortcut(e, _settings.Shortcuts.RefreshLibrary))
+        {
+            _ = RefreshLibrary("ATUALIZANDO BIBLIOTECA...", forceArtworkRefresh: true);
+            e.Handled = true;
+            return;
+        }
+        if (MatchesShortcut(e, _settings.Shortcuts.OpenSettings))
+        {
+            Settings_Click(this, new RoutedEventArgs());
+            e.Handled = true;
+            return;
+        }
+
         // Qualquer uso do teclado torna as dicas Enter/Espaço as dicas ativas.
         SetFooterInputMode(FooterInputMode.Keyboard);
 
