@@ -11,18 +11,21 @@
 ## Recursos
 
 - Biblioteca unificada para Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Connect, Battle.net e Riot Client.
-- Adição manual de jogos.
+- Adição manual de jogos, com edição posterior de executável, argumentos, URI, pasta de trabalho e execução como administrador.
 - Capas vertical/horizontal, arte personalizada e integração opcional com SteamGridDB.
 - Metadados, gêneros, desenvolvedora, publicadora e descrições localizadas com fallback em inglês.
-- Favoritos, itens ocultos, recentes, duplicados e classificação manual.
+- Favoritos, itens ocultos, recentes, duplicados, seleção da versão principal e classificação manual.
 - Navegação por mouse e teclado, controles Xbox compatíveis com XInput e controle PlayStation 5 DualSense.
 - Modo tela cheia e interface adequada para uso a distância.
+- Configurações em `%LOCALAPPDATA%\LUDARYX`, com migração automática do caminho legado.
+- Status das integrações, backup/restauração, manutenção de cache e relatório de diagnóstico por sessão.
 - Configurações e segredos locais; API keys persistidas protegidas com Windows DPAPI.
+- Atualizador com changelog, opção de lembrar mais tarde, progresso e validação SHA-256.
 - Sem telemetria própria nesta versão.
 
 ## Versão
 
-**LUDARYX 1.0.1** — atualização de manutenção com filtro aprimorado da Microsoft Store e atualizador seguro via GitHub.
+**LUDARYX 1.0.2** — atualização de manutenção com diagnóstico, backup, cache inteligente, gerenciamento de duplicatas e edição avançada de jogos manuais.
 
 ## Requisitos para desenvolvimento
 
@@ -52,7 +55,7 @@ Use o script de publicação para gerar o launcher e o updater auxiliar juntos:
 powershell -ExecutionPolicy Bypass -File Scripts\Publish-Release.ps1
 ```
 
-O script publica `LUDARYX.exe` e `LUDARYX.Updater.exe` na mesma pasta. Depois, compile `LUDARYX-Installer-1.0.1.iss` no Inno Setup para criar o instalador.
+O script publica `LUDARYX.exe` e `LUDARYX.Updater.exe` na mesma pasta. Depois, compile `LUDARYX-Installer-1.0.2.iss` no Inno Setup para criar o instalador.
 
 ## SteamGridDB
 
