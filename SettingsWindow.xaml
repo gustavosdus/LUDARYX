@@ -89,10 +89,12 @@
                                         <TextBox x:Name="MaxCacheSizeBox" Width="90" Height="28"/>
                                         <TextBlock x:Name="CacheSizeText" Foreground="#9BA3B4" VerticalAlignment="Center" Margin="12,0,0,0"/>
                                     </StackPanel>
+                                    <TextBlock Text="O backup inclui configurações, favoritos, jogos manuais e artes personalizadas. O cache automático de capas não é incluído porque pode ser recriado." Foreground="#9BA3B4" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                     <WrapPanel>
                                         <Button Content="LIMPAR CACHE AGORA" Padding="10,5" Click="ClearCache_Click" Margin="0,0,8,8"/>
                                         <Button Content="EXPORTAR BACKUP" Padding="10,5" Click="ExportBackup_Click" Margin="0,0,8,8"/>
                                         <Button Content="IMPORTAR BACKUP" Padding="10,5" Click="ImportBackup_Click" Margin="0,0,8,8"/>
+                                        <Button Content="ABRIR PASTA DE DADOS" Padding="10,5" Click="OpenDataFolder_Click" Margin="0,0,8,8"/>
                                         <Button Content="COPIAR DIAGNÓSTICO" Padding="10,5" Click="CopyDiagnostic_Click" Margin="0,0,8,8"/>
                                     </WrapPanel>
                                 </StackPanel>
@@ -104,9 +106,21 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid Margin="0,2">
-                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                                                     <TextBlock Text="{Binding Name}" Foreground="#D9DDE7"/>
                                                     <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="#9BA3B4"/>
+                                                    <Button Grid.Column="2" Content="ABRIR CLIENTE" Tag="{Binding}" Click="OpenIntegrationClient_Click" Padding="8,3" Margin="8,0,0,0">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding CanOpenClient}" Value="False">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
