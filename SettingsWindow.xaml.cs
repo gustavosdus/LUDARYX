@@ -300,21 +300,8 @@ public partial class SettingsWindow : Window
         }
     }
 
-    private static bool IsValidShortcut(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return false;
-
-        try
-        {
-            return new System.Windows.Input.KeyGestureConverter()
-                .ConvertFromInvariantString(value) is System.Windows.Input.KeyGesture;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    private static bool IsValidShortcut(string value) =>
+        ShortcutGestureService.IsValid(value);
 
     private void RefreshIntegrationStatus_Click(object sender, RoutedEventArgs e)
     {
