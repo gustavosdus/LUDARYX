@@ -36,7 +36,7 @@
                 </ItemsControl>
 
                 <TextBlock Text="Uso por plataforma" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
-                <ItemsControl x:Name="PlatformStatsList" Margin="0,8,0,0">
+                <ItemsControl x:Name="PlatformStatsList" Margin="0,8,0,18">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,4">
@@ -48,6 +48,22 @@
                                 <TextBlock Text="{Binding Platform}" Foreground="#D9DDE7"/>
                                 <TextBlock Grid.Column="1" Text="{Binding Launches}" Foreground="#9BA3B4"/>
                                 <TextBlock Grid.Column="2" Text="{Binding PlayTime}" Foreground="#9BA3B4"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="Tempo jogado por mês" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                <ItemsControl x:Name="MonthlyStatsList" Margin="0,8,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="160"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Month}" Foreground="#D9DDE7"/>
+                                <TextBlock Grid.Column="1" Text="{Binding PlayTime}" Foreground="#9BA3B4"/>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
