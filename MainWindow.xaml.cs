@@ -1801,23 +1801,8 @@ public partial class MainWindow : Window
         else if (e.Key == Key.Escape && _fullscreen) ToggleFullscreen();
     }
 
-    private static bool MatchesShortcut(System.Windows.Input.KeyEventArgs e, string? shortcut)
-    {
-        if (string.IsNullOrWhiteSpace(shortcut))
-            return false;
-
-        try
-        {
-            if (new KeyGestureConverter().ConvertFromInvariantString(shortcut) is not KeyGesture gesture)
-                return false;
-
-            return gesture.Key == e.Key && gesture.Modifiers == Keyboard.Modifiers;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    private static bool MatchesShortcut(System.Windows.Input.KeyEventArgs e, string? shortcut) =>
+        ShortcutGestureService.Matches(e, shortcut);
 
     private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
