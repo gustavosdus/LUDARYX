@@ -1608,3 +1608,118 @@ public partial class MainWindow : Window
                     GameList.Items.Refresh();
                     FocusToolbarControl();
                     PlayNavigationSound();
+                    e.Handled = true;
+                    return;
+                case Key.Right when _fullscreen &&
+                                        ReferenceEquals(focusedTextBox, FullscreenSearchBox) &&
+                                        focusedTextBox.SelectionLength == 0 &&
+                                        focusedTextBox.SelectionStart >= focusedTextBox.Text.Length:
+                    // No fim da pesquisa em tela cheia, a seta direita continua
+                    // a navegação da barra e leva ao botão de sair da tela cheia.
+                    _controllerToolbarMode = true;
+                    var rightControls = GetToolbarControls();
+                    var fullscreenButtonIndex = rightControls.Count - 1;
+                    if (fullscreenButtonIndex >= 0 && ReferenceEquals(rightControls[fullscreenButtonIndex], FullscreenToolbarButton))
+                    {
+                        _toolbarIndex = fullscreenButtonIndex;
+                        FocusToolbarControl();
+                        PlayNavigationSound();
+                        e.Handled = true;
+                    }
+                    return;
+                case Key.Left when _fullscreen &&
+                                       ReferenceEquals(focusedTextBox, FullscreenSearchBox) &&
+                                       focusedTextBox.SelectionLength == 0 &&
+                                       focusedTextBox.SelectionStart == 0:
+                    // No início da pesquisa, a seta esquerda volta ao item anterior
+                    // da barra. Dentro do texto, esquerda/direita seguem editando.
+                    _controllerToolbarMode = true;
+                    var leftControls = GetToolbarControls();
+                    var searchIndex = leftControls.Count - 2;
+                    if (searchIndex > 0 && ReferenceEquals(leftControls[searchIndex], FullscreenSearchBox))
+                    {
+                        _toolbarIndex = searchIndex;
+                        MoveToolbarSelection(-1);
+                        e.Handled = true;
+                    }
+                    return;
+                // Enquanto houver texto para percorrer, esquerda/direita, Home/End,
+                // Backspace/Delete e caracteres continuam disponíveis para edição.
+                default:
+                    return;
+            }
+        }
+
+        // Quando a barra está ativa, o teclado usa a mesma navegação do controle.
+        if (_controllerToolbarMode)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    MoveToolbarSelection(-1);
+                    e.Handled = true;
+                    return;
+                case Key.Right:
+                    MoveToolbarSelection(1);
+                    e.Handled = true;
+                    return;
+                case Key.Up:
+                    AdjustToolbarValue(-1);
+                    e.Handled = true;
+                    return;
+                case Key.Down:
+                    AdjustToolbarValue(1);
+                    e.Handled = true;
+                    return;
+                case Key.Enter:
+                    ActivateToolbarControl();
+                    e.Handled = true;
+                    return;
+                case Key.Escape:
+                    ExitToolbarMode();
+                    e.Handled = true;
+                    return;
+            }
+        }
+
+        if (_visibleGames.Count == 0)
+        {
+            if (e.Key == Key.Up)
+            {
+                EnterToolbarMode();
+                e.Handled = true;
+            }
+            return;
+        }
+
+        switch (e.Key)
+        {
+            case Key.Left:
+                MoveSelection(-1);
+                e.Handled = true;
+                break;
+            case Key.Right:
+                MoveSelection(1);
+                e.Handled = true;
+                break;
+            case Key.Up:
+                if (_selectedIndex < GetColumns()) EnterToolbarMode();
+                else MoveSelection(-GetColumns());
+                e.Handled = true;
+                break;
+            case Key.Down:
+                MoveSelection(GetColumns());
+                e.Handled = true;
+                break;
+            case Key.Enter:
+                _ = LaunchSelectedAsync();
+                e.Handled = true;
+                break;
+            case Key.Space:
+                OpenSelectedDetails();
+                e.Handled = true;
+                break;
+        }
+    }
+    #endregion
+}
