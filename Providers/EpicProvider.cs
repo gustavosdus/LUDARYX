@@ -8,10 +8,9 @@ public sealed class EpicProvider : IGameProvider
 {
     public string Name => "Epic Games";
     public GamePlatform Platform => GamePlatform.Epic;
-    private const string LauncherExe = @"C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe";
     private const string ManifestDirectory = @"C:\ProgramData\Epic\EpicGamesLauncher\Data\Manifests";
 
-    public bool IsInstalled() => File.Exists(LauncherExe) || Directory.Exists(ManifestDirectory);
+    public bool IsInstalled() => !string.IsNullOrWhiteSpace(IntegrationDiagnosticService.FindExecutable(Platform)) || Directory.Exists(ManifestDirectory);
     public bool IsRunning() => ProcessService.IsRunning("EpicGamesLauncher");
 
     public Task StartClientAsync(CancellationToken cancellationToken = default)
@@ -19,10 +18,11 @@ public sealed class EpicProvider : IGameProvider
         cancellationToken.ThrowIfCancellationRequested();
         if (IsRunning()) return Task.CompletedTask;
 
-        if (!File.Exists(LauncherExe))
+        var launcherExe = IntegrationDiagnosticService.FindExecutable(Platform);
+        if (string.IsNullOrWhiteSpace(launcherExe))
             throw new InvalidOperationException("O Epic Games Launcher não foi encontrado no caminho detectado.");
 
-        ProcessService.StartTrustedDetectedLocalReparse(LauncherExe);
+        ProcessService.StartTrustedDetectedLocalReparse(launcherExe);
         return Task.CompletedTask;
     }
 
