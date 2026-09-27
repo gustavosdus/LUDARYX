@@ -43,6 +43,7 @@ public static class GitHubUpdateService
         var tagName = ReadString(root, "tag_name") ?? string.Empty;
         var releaseName = ReadString(root, "name") ?? tagName;
         var htmlUrl = ReadString(root, "html_url");
+        var releaseNotes = ReadString(root, "body");
 
         var latestVersionDisplay = NormalizeVersionDisplay(tagName);
         var currentVersionDisplay = NormalizeVersionDisplay(GetCurrentVersionDisplay());
@@ -84,6 +85,7 @@ public static class GitHubUpdateService
             CurrentVersionDisplay: currentVersionDisplay,
             LatestVersionDisplay: latestVersionDisplay,
             ReleaseName: releaseName,
+            ReleaseNotes: releaseNotes,
             ReleasePageUrl: htmlUrl,
             InstallerName: installerName,
             InstallerDownloadUrl: installerDownloadUrl,
@@ -98,12 +100,21 @@ public static class GitHubUpdateService
         if (!updateInfo.IsUpdateAvailable)
             return false;
 
+        var notes = BuildReleaseNotesPreview(updateInfo.ReleaseNotes);
         var initialChoice = MessageBox.Show(
             owner,
-            $"A versão {updateInfo.LatestVersionDisplay} está disponível no GitHub.\n\nDeseja baixar e instalar agora?",
+            $"A versão {updateInfo.LatestVersionDisplay} está disponível no GitHub.\n\n" +
+            (string.IsNullOrWhiteSpace(notes) ? "" : $"Novidades:\n{notes}\n\n") +
+            "Sim: baixar e instalar agora.\nNão: lembrar mais tarde.\nCancelar: abrir as novidades no GitHub.",
             "Atualização do LUDARYX",
-            MessageBoxButton.YesNo,
+            MessageBoxButton.YesNoCancel,
             MessageBoxImage.Information);
+
+        if (initialChoice == MessageBoxResult.Cancel)
+        {
+            OpenReleasePageIfAvailable(updateInfo);
+            return false;
+        }
 
         if (initialChoice != MessageBoxResult.Yes)
             return false;
@@ -196,8 +207,7 @@ public static class GitHubUpdateService
             throw new InvalidDataException($"SHA-256 do arquivo {updateInfo.InstallerName} não foi encontrado em SHA256SUMS.txt.");
 
         var updatesDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "UnifiedGameLauncher",
+            AppDataService.RootDirectory,
             "Updates",
             updateInfo.LatestVersionDisplay);
         Directory.CreateDirectory(updatesDir);
@@ -412,6 +422,23 @@ public static class GitHubUpdateService
         return $"{value:0.##} {units[unit]}";
     }
 
+    private static string BuildReleaseNotesPreview(string? notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes))
+            return string.Empty;
+
+        var lines = notes
+            .Replace("\r", string.Empty)
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(line => !line.StartsWith("#"))
+            .Take(5)
+            .Select(line => line.TrimStart('-', '*', ' '))
+            .Where(line => !string.IsNullOrWhiteSpace(line));
+
+        var preview = string.Join(Environment.NewLine, lines);
+        return preview.Length <= 700 ? preview : preview[..700] + "…";
+    }
+
     private static string? ReadString(JsonElement element, string propertyName) =>
         element.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
             ? property.GetString()
@@ -423,6 +450,7 @@ public sealed record GitHubUpdateInfo(
     string CurrentVersionDisplay,
     string LatestVersionDisplay,
     string ReleaseName,
+    string? ReleaseNotes,
     string? ReleasePageUrl,
     string? InstallerName,
     string? InstallerDownloadUrl,
