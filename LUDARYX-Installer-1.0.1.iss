@@ -87,6 +87,31 @@ begin
     ) and (ResultCode = 0);
 end;
 
+procedure StopAppForUninstall();
+var
+  ResultCode: Integer;
+begin
+  { O LUDARYX pode estar invisível na System Tray e intercepta WM_CLOSE para se ocultar.
+    Durante a desinstalação precisamos encerrar o processo antes de remover os arquivos. }
+  if IsAppRunning() then
+  begin
+    Exec(
+      ExpandConstant('{cmd}'),
+      '/C taskkill /IM "{#MyAppExeName}" /T /F >nul 2>&1',
+      '',
+      SW_HIDE,
+      ewWaitUntilTerminated,
+      ResultCode
+    );
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    StopAppForUninstall();
+end;
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   Result := '';
