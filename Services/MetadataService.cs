@@ -3485,18 +3485,72 @@ public sealed class MetadataService
         CancellationToken token,
         bool forceRefresh = false)
     {
+        // Atualizar metadados também pode forçar uma nova tentativa de baixar arte.
+        // Porém, uma falha de rede/CDN nunca deve apagar a capa que já estava válida.
         if (!string.IsNullOrWhiteSpace(metadata.HorizontalCoverUrl))
-            metadata.HorizontalCoverLocalPath = await DownloadCoverAsync(metadata.HorizontalCoverUrl, game.ProviderId + "_horizontal", token, forceRefresh);
+        {
+            var refreshed = await DownloadCoverAsync(
+                metadata.HorizontalCoverUrl,
+                game.ProviderId + "_horizontal",
+                token,
+                forceRefresh);
+
+            if (!string.IsNullOrWhiteSpace(refreshed) && File.Exists(refreshed))
+                metadata.HorizontalCoverLocalPath = refreshed;
+        }
+
         if (!string.IsNullOrWhiteSpace(metadata.VerticalCoverUrl))
-            metadata.VerticalCoverLocalPath = await DownloadCoverAsync(metadata.VerticalCoverUrl, game.ProviderId + "_vertical", token, forceRefresh);
+        {
+            var refreshed = await DownloadCoverAsync(
+                metadata.VerticalCoverUrl,
+                game.ProviderId + "_vertical",
+                token,
+                forceRefresh);
+
+            if (!string.IsNullOrWhiteSpace(refreshed) && File.Exists(refreshed))
+                metadata.VerticalCoverLocalPath = refreshed;
+        }
+
         // O header/cover genérico costuma ser horizontal. Nunca o reutiliza como capa
         // vertical da Steam; a Steam possui uma Library Capsule 600x900 específica.
         if (game.Platform != GamePlatform.Steam &&
-            string.IsNullOrWhiteSpace(metadata.VerticalCoverUrl) && !string.IsNullOrWhiteSpace(metadata.CoverUrl))
-            metadata.VerticalCoverLocalPath = await DownloadCoverAsync(metadata.CoverUrl, game.ProviderId + "_vertical", token, forceRefresh);
-        if (string.IsNullOrWhiteSpace(metadata.HorizontalCoverUrl) && !string.IsNullOrWhiteSpace(metadata.CoverUrl))
-            metadata.HorizontalCoverLocalPath = await DownloadCoverAsync(metadata.CoverUrl, game.ProviderId + "_horizontal", token, forceRefresh);
-        metadata.CoverLocalPath = metadata.HorizontalCoverLocalPath ?? metadata.VerticalCoverLocalPath;
+            string.IsNullOrWhiteSpace(metadata.VerticalCoverUrl) &&
+            !string.IsNullOrWhiteSpace(metadata.CoverUrl))
+        {
+            var refreshed = await DownloadCoverAsync(
+                metadata.CoverUrl,
+                game.ProviderId + "_vertical",
+                token,
+                forceRefresh);
+
+            if (!string.IsNullOrWhiteSpace(refreshed) && File.Exists(refreshed))
+                metadata.VerticalCoverLocalPath = refreshed;
+        }
+
+        if (string.IsNullOrWhiteSpace(metadata.HorizontalCoverUrl) &&
+            !string.IsNullOrWhiteSpace(metadata.CoverUrl))
+        {
+            var refreshed = await DownloadCoverAsync(
+                metadata.CoverUrl,
+                game.ProviderId + "_horizontal",
+                token,
+                forceRefresh);
+
+            if (!string.IsNullOrWhiteSpace(refreshed) && File.Exists(refreshed))
+                metadata.HorizontalCoverLocalPath = refreshed;
+        }
+
+        // Mantém o caminho genérico somente apontando para uma arte realmente existente.
+        if (!string.IsNullOrWhiteSpace(metadata.HorizontalCoverLocalPath) &&
+            File.Exists(metadata.HorizontalCoverLocalPath))
+        {
+            metadata.CoverLocalPath = metadata.HorizontalCoverLocalPath;
+        }
+        else if (!string.IsNullOrWhiteSpace(metadata.VerticalCoverLocalPath) &&
+                 File.Exists(metadata.VerticalCoverLocalPath))
+        {
+            metadata.CoverLocalPath = metadata.VerticalCoverLocalPath;
+        }
     }
 
     /// <summary>
@@ -3572,11 +3626,13 @@ public sealed class MetadataService
                 if (vertical is not null)
                 {
                     metadata.VerticalCoverUrl = vertical.Url;
-                    metadata.VerticalCoverLocalPath = await DownloadCoverAsync(
+                    var refreshedVertical = await DownloadCoverAsync(
                         vertical.Url,
                         game.ProviderId + "_steamgriddb_vertical",
                         token,
                         forceRefresh);
+                    if (!string.IsNullOrWhiteSpace(refreshedVertical) && File.Exists(refreshedVertical))
+                        metadata.VerticalCoverLocalPath = refreshedVertical;
                 }
             }
 
@@ -3586,11 +3642,13 @@ public sealed class MetadataService
                 if (horizontal is not null)
                 {
                     metadata.HorizontalCoverUrl = horizontal.Url;
-                    metadata.HorizontalCoverLocalPath = await DownloadCoverAsync(
+                    var refreshedHorizontal = await DownloadCoverAsync(
                         horizontal.Url,
                         game.ProviderId + "_steamgriddb_horizontal",
                         token,
                         forceRefresh);
+                    if (!string.IsNullOrWhiteSpace(refreshedHorizontal) && File.Exists(refreshedHorizontal))
+                        metadata.HorizontalCoverLocalPath = refreshedHorizontal;
                 }
             }
 
