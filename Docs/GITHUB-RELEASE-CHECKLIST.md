@@ -11,10 +11,11 @@
 
 ## Antes da release
 
-- [ ] Gerar a publicação com `dotnet publish`.
-- [ ] Testar instalação, primeira abertura, atualização da biblioteca, abertura de jogo e desinstalação.
-- [ ] Criar o instalador Inno Setup.
-- [ ] Gerar `SHA256SUMS.txt` com `Scripts/Generate-ReleaseHashes.ps1`.
+- [ ] Encerrar completamente o LUDARYX, inclusive pela System Tray.
+- [ ] Executar `Scripts/Validate-Release.ps1` para conferir versão do projeto, updater, instalador e notas.
+- [ ] Testar instalação, primeira abertura, atualização da biblioteca, abertura de jogo, backup/restauração, atualização sobre a versão anterior e desinstalação.
+- [ ] Preferencialmente executar `Scripts/Build-Release.ps1`, que publica o app, compila o instalador e gera `SHA256SUMS.txt` automaticamente.
+- [ ] Se o fluxo for manual, gerar a publicação, compilar o Inno Setup e executar `Scripts/Generate-ReleaseHashes.ps1`.
 - [ ] Publicar binários apenas em GitHub Releases.
 - [ ] Informar claramente se a build não possui assinatura digital.
 - [ ] Nunca incluir API keys de desenvolvimento em assets, exemplos ou logs.
