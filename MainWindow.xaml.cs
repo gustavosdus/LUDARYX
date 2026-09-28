@@ -923,10 +923,27 @@ public partial class MainWindow : Window
         TvPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "A  JOGAR";
         TvPlayButton.IsEnabled = !game.IsRunning;
 
-        var image = LoadHomeArtwork(game.HeroArtwork);
-        SelectedArtworkImage.Source = image;
-        TvHeroArtwork.Source = image;
-        TvHeroPreviewImage.Source = image;
+        var heroImage = LoadHomeArtwork(game.HeroArtwork);
+        var coverImage = LoadHomeArtwork(game.DisplayCover);
+        ApplyArtworkWithFade(SelectedArtworkImage, heroImage ?? coverImage);
+        ApplyArtworkWithFade(TvHeroArtwork, heroImage ?? coverImage);
+        ApplyArtworkWithFade(TvHeroPreviewImage, coverImage ?? heroImage);
+    }
+
+    private static void ApplyArtworkWithFade(System.Windows.Controls.Image image, ImageSource? source)
+    {
+        if (ReferenceEquals(image.Source, source))
+            return;
+
+        image.BeginAnimation(OpacityProperty, null);
+        image.Opacity = 0.15;
+        image.Source = source;
+        image.BeginAnimation(
+            OpacityProperty,
+            new DoubleAnimation(0.15, 1, TimeSpan.FromMilliseconds(180))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            });
     }
 
     private ImageSource? LoadHomeArtwork(string? path)
