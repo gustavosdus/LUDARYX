@@ -57,9 +57,21 @@ public sealed class EpicProvider : IGameProvider
 
     private static string? StringProp(JsonElement root, string name) => root.TryGetProperty(name, out var v) ? v.GetString() : null;
 
-    public async Task LaunchGameAsync(Game game, CancellationToken cancellationToken = default)
+    public Task LaunchGameAsync(Game game, CancellationToken cancellationToken = default)
     {
-        await StartClientAsync(cancellationToken);
-        if (!string.IsNullOrWhiteSpace(game.LaunchUri)) ProcessService.StartUri(game.LaunchUri);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (string.IsNullOrWhiteSpace(game.LaunchUri))
+            throw new InvalidOperationException("A URI de inicialização do jogo da Epic não foi encontrada.");
+
+        // Não abra EpicGamesLauncher.exe antes da URI. Quando o cliente está fechado,
+        // iniciar o executável e logo em seguida acionar o protocolo faz o Windows/Epic
+        // processar duas solicitações independentes; em algumas instalações isso gera
+        // duas confirmações e a ação de launch se perde enquanto o cliente ainda inicia.
+        //
+        // O protocolo oficial com.epicgames.launcher:// é responsável por abrir o
+        // cliente (se necessário) e enfileirar a abertura do jogo em uma única ação.
+        ProcessService.StartUri(game.LaunchUri);
+        return Task.CompletedTask;
     }
 }
