@@ -492,7 +492,9 @@
                     BorderBrush="#19324A" BorderThickness="0,0,0,1"
                     ClipToBounds="True">
                 <Grid>
-                    <Image x:Name="TvHeroArtwork" Stretch="UniformToFill" Opacity="0.34"/>
+                    <Image x:Name="TvHeroArtwork" Stretch="UniformToFill" Opacity="0.34">
+                        <Image.Effect><BlurEffect Radius="16"/></Image.Effect>
+                    </Image>
                     <Border Background="#B807101B"/>
                     <Rectangle>
                         <Rectangle.Fill>
@@ -681,7 +683,7 @@
                         <TextBlock x:Name="XboxSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
                         <Border Padding="7,3" CornerRadius="4" Background="#17314C" Margin="15,0,5,0"><TextBlock Text="X" Foreground="#75B9FF" FontWeight="Bold"/></Border>
                         <TextBlock x:Name="XboxCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock Text="Y  FAVORITO   B  VOLTAR" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="XboxExtraHintText" Text="Y  FAVORITO" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel x:Name="PlayStationFooterHints" Orientation="Horizontal" Visibility="Collapsed">
@@ -689,7 +691,7 @@
                         <TextBlock x:Name="PlayStationSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
                         <Border Padding="7,3" CornerRadius="4" Background="#30203A" Margin="15,0,5,0"><TextBlock Text="□" Foreground="#E7A8FF" FontWeight="Bold"/></Border>
                         <TextBlock x:Name="PlayStationCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock Text="△  FAVORITO   ○  VOLTAR" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="PlayStationExtraHintText" Text="△  FAVORITO" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel x:Name="KeyboardFooterHints" Orientation="Horizontal">
@@ -697,7 +699,7 @@
                         <TextBlock x:Name="KeyboardSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
                         <Border Padding="7,3" CornerRadius="4" Background="#111923" BorderBrush="#34475D" BorderThickness="1" Margin="15,0,5,0"><TextBlock Text="SPACE" Foreground="White" FontSize="8"/></Border>
                         <TextBlock x:Name="KeyboardCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock Text="F  FAVORITO   F11  TELA CHEIA" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="KeyboardExtraHintText" Text="F  FAVORITO   F11  TELA CHEIA" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
