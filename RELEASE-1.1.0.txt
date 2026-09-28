@@ -1,0 +1,80 @@
+# LUDARYX 1.1.0
+
+A versão 1.1.0 representa uma evolução maior da interface e da experiência de biblioteca do LUDARYX, além de consolidar as melhorias funcionais preparadas após a série 1.0.x.
+
+## Nova tela principal
+- Cabeçalho mais compacto, com identidade LUDARYX, busca central e ações globais.
+- Barra de filtros dedicada para coleção, plataforma, gênero e ordenação.
+- Chips de filtros ativos com remoção rápida.
+- Estado vazio com ação para limpar filtros.
+- Grid de capas com badges discretos de plataforma, favorito, duplicata e jogo em execução.
+- Painel lateral do jogo selecionado no desktop, com arte, metadados, descrição, classificação, tempo jogado e ações rápidas.
+- Layout responsivo: o painel lateral é ocultado automaticamente em janelas estreitas.
+- Toasts integrados para avisos não críticos.
+
+## Novo modo tela cheia / TV
+- Hero panel dedicado ao jogo selecionado.
+- Backdrop derivado da arte disponível do jogo.
+- Informações de plataforma, gênero, classificação indicativa, tempo jogado e última execução.
+- Ações rápidas Jogar, Detalhes e Favorito.
+- Navegação por zonas com controle entre filtros, hero e biblioteca.
+- Rodapé adaptado para teclado, controles Xbox/XInput e DualSense.
+- Busca e filtros mantidos acessíveis no modo TV.
+- Fullscreen continua cobrindo o monitor inteiro, incluindo a área da barra de tarefas.
+
+## Biblioteca e busca
+- Pesquisa sem distinção de acentos por nome, plataforma, gênero, desenvolvedora, publicadora e ano.
+- Filtros combináveis.
+- Ordenação por nome, recentes, mais jogados, tempo jogado e plataforma.
+- Atualização de metadados por jogo, filtro atual ou biblioteca inteira.
+- Preservação de capas existentes quando uma atualização de arte falha.
+
+## Metadados e classificação indicativa
+- Classificação indicativa regional quando a fonte realmente disponibiliza o dado.
+- ClassInd priorizada em Português (Brasil).
+- PEGI priorizada em Português (Portugal), English (UK) e Español (España).
+- ESRB priorizada em English (US).
+- Sem conversão inventada entre órgãos de classificação.
+- Fallback adicional da própria página regional da Steam quando a API estruturada omite classificação ou ano.
+
+## Jogos manuais
+- Múltiplos perfis de inicialização.
+- Nome de perfil exibido corretamente no seletor.
+- Executável, argumentos, URI, pasta de trabalho e administrador por perfil.
+- Ícone personalizado.
+- Duplicação de entrada preservando metadados, capas e associação do SteamGridDB.
+- Edição das configurações de inicialização após o jogo já ter sido adicionado.
+
+## Jogos em execução e estatísticas
+- Detecção local de jogo em execução quando o executável pode ser identificado.
+- Bloqueio de uma segunda inicialização do mesmo jogo.
+- Bloqueio de iniciar outro jogo enquanto uma sessão acompanhada está ativa.
+- Tempo de sessão, tempo total e estatísticas por plataforma e por mês.
+- Os dados permanecem locais.
+
+## Duplicatas
+- Detecção de versões repetidas mesmo dentro da mesma plataforma.
+- Reconhecimento de cópias manuais.
+- Reprocessamento de duplicatas após atualização de metadados.
+- Prioridade configurável por plataforma.
+- Opção de mostrar somente a versão principal.
+
+## Integrações
+- Diagnóstico com caminho, versão e estado do cliente detectado.
+- Correções para abrir GOG Galaxy, Epic Games Launcher e EA app pelas Configurações.
+- Jogos da Epic são iniciados com uma única solicitação ao protocolo do launcher para evitar dupla confirmação e perda da ação de lançamento.
+
+## Backup
+- Novo formato de backup seletivo versionado.
+- Categorias independentes para configurações/biblioteca, artes personalizadas e cache de metadados.
+- A restauração respeita a seleção feita no momento da importação.
+- Compatibilidade mantida para backups antigos.
+
+## Controles e atalhos
+- Configurações, detalhes/personalização e editor de inicialização navegáveis por controle.
+- Atalhos de teclado configuráveis.
+- Parser próprio para atalhos com pontuação, incluindo Ctrl+, em layouts como pt-BR.
+- Mouse, teclado, controles Xbox/XInput e DualSense continuam suportados.
+
+## Atualização
+A versão 1.1.0 usa o mesmo AppId das versões anteriores e pode ser instalada por cima da 1.0.x, preservando os dados locais compatíveis.
