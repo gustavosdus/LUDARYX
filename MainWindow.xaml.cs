@@ -993,6 +993,9 @@ public partial class MainWindow : Window
 
     private async void Gamepad_StateChanged(object? sender, GamepadState state)
     {
+        if (!IsActive)
+            return;
+
         // O controle só comanda o launcher quando esta janela está em primeiro plano.
         if (!IsActive || !IsVisible || WindowState == WindowState.Minimized)
         {
