@@ -368,10 +368,10 @@
 
             <StackPanel Grid.Column="2" Orientation="Horizontal"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
-                <Button Content="↻" Style="{StaticResource LudaryxIconButton}" Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0"/>
-                <Button Content="⚙" Style="{StaticResource LudaryxIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
-                <Button Content="▥" Style="{StaticResource LudaryxIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
-                <Button Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
+                <Button x:Name="GlobalRefreshButton" Content="↻" Style="{StaticResource LudaryxIconButton}" Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalSettingsButton" Content="⚙" Style="{StaticResource LudaryxIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalStatisticsButton" Content="▥" Style="{StaticResource LudaryxIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalFullscreenButton" Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
                     <Viewbox Width="19" Height="19">
                         <Canvas Width="24" Height="24">
                             <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
@@ -427,11 +427,6 @@
                         <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
                         <Button x:Name="ClearFiltersButton" Content="LIMPAR" Style="{StaticResource NavButton}" Click="ClearFilters_Click"/>
                         <Button x:Name="AddGameButton" Content="+ JOGO MANUAL" Style="{StaticResource NavButton}" Click="AddGame_Click"/>
-
-                        <!-- Kept for controller toolbar compatibility; desktop actions live in header. -->
-                        <Button x:Name="RefreshButton" Visibility="Collapsed" Content="ATUALIZAR" Click="Refresh_Click"/>
-                        <Button x:Name="SettingsButton" Visibility="Collapsed" Content="CONFIGURAÇÕES" Click="Settings_Click"/>
-                        <Button x:Name="StatisticsButton" Visibility="Collapsed" Content="ESTATÍSTICAS" Click="Statistics_Click"/>
 
                         <TextBlock x:Name="FullscreenLibraryLoadingText" Text="CARREGANDO..."
                                    Visibility="Collapsed" Foreground="#8EBAD5" FontSize="9"
@@ -705,6 +700,27 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
+        </Border>
+
+        <Border x:Name="ToastBorder"
+                Grid.RowSpan="6"
+                Panel.ZIndex="5000"
+                Visibility="Collapsed"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Margin="24"
+                Padding="16,10"
+                MaxWidth="680"
+                Background="#F20A1420"
+                BorderBrush="#39759A"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsHitTestVisible="False">
+            <TextBlock x:Name="ToastText"
+                       Foreground="White"
+                       FontSize="11"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"/>
         </Border>
 
         <!-- Startup overlay remains unchanged in behavior. -->
