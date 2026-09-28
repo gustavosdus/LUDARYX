@@ -62,6 +62,8 @@ public partial class MainWindow : Window
     private bool _startupAnimationPlayed;
     private bool _controllerToolbarMode;
     private int _toolbarIndex;
+    private bool _tvHeroMode;
+    private int _tvHeroActionIndex;
     private bool _syncingSearchBoxes;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
 
@@ -851,6 +853,192 @@ public partial class MainWindow : Window
         if (IsLoaded) ApplyFilter();
     }
 
+    private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateResponsiveLayout();
+    }
+
+    private void UpdateResponsiveLayout()
+    {
+        if (!IsLoaded)
+            return;
+
+        if (_fullscreen)
+        {
+            SelectedPanelColumn.Width = new GridLength(0);
+            SelectedGamePanel.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var showSidePanel = ActualWidth >= 1120;
+        SelectedPanelColumn.Width = showSidePanel ? new GridLength(330) : new GridLength(0);
+        SelectedGamePanel.Visibility = showSidePanel ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void UpdateSelectedGamePresentation()
+    {
+        var game = _visibleGames.ElementAtOrDefault(_selectedIndex);
+        EmptyStatePanel.Visibility = game is null ? Visibility.Visible : Visibility.Collapsed;
+
+        if (game is null)
+        {
+            SelectedGameNameText.Text = LocalizationService.Translate("Nenhum jogo");
+            SelectedGameMetaText.Text = string.Empty;
+            SelectedGameUsageText.Text = string.Empty;
+            SelectedGameDescriptionText.Text = string.Empty;
+            SelectedArtworkImage.Source = null;
+            TvHeroArtwork.Source = null;
+            TvHeroPreviewImage.Source = null;
+            TvHeroTitle.Text = "LUDARYX";
+            TvHeroMeta.Text = string.Empty;
+            TvHeroUsage.Text = string.Empty;
+            TvHeroDescription.Text = string.Empty;
+            return;
+        }
+
+        var genres = string.IsNullOrWhiteSpace(game.GenresDisplay)
+            ? LocalizationService.Translate("Não informado")
+            : game.GenresDisplay;
+        var rating = AgeRatingService.GetDisplay(game.Metadata, _settings.Language);
+        var description = string.IsNullOrWhiteSpace(game.Metadata.Description)
+            ? LocalizationService.Translate("Sem descrição.")
+            : game.Metadata.Description;
+
+        SelectedGameNameText.Text = game.Name;
+        SelectedGameMetaText.Text = $"{game.PlatformDisplay}  •  {genres}";
+        SelectedGameUsageText.Text =
+            $"{game.PlayCountDisplay}  •  {game.TotalPlayTimeDisplay}\n" +
+            $"{LocalizationService.Translate("Última execução")}: {game.LastPlayedDisplay}\n" +
+            $"{LocalizationService.Translate("Classificação indicativa")}: {rating}";
+        SelectedGameDescriptionText.Text = description;
+        SelectedFavoriteButton.Content = game.IsFavorite ? "★ FAVORITO" : "☆ FAVORITO";
+        SelectedPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "JOGAR";
+        SelectedPlayButton.IsEnabled = !game.IsRunning;
+
+        TvHeroTitle.Text = game.Name;
+        TvHeroMeta.Text = $"{game.PlatformDisplay}  •  {genres}  •  {rating}";
+        TvHeroUsage.Text = $"{game.TotalPlayTimeDisplay}  •  {game.PlayCountDisplay}  •  {game.LastPlayedDisplay}";
+        TvHeroDescription.Text = description;
+        TvFavoriteButton.Content = game.IsFavorite ? "Y  ★ FAVORITO" : "Y  ☆ FAVORITO";
+        TvPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "A  JOGAR";
+        TvPlayButton.IsEnabled = !game.IsRunning;
+
+        var image = LoadHomeArtwork(game.HeroArtwork);
+        SelectedArtworkImage.Source = image;
+        TvHeroArtwork.Source = image;
+        TvHeroPreviewImage.Source = image;
+    }
+
+    private ImageSource? LoadHomeArtwork(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return null;
+
+        try
+        {
+            if (FindResource("CoverImageConverter") is CoverImageConverter converter)
+                return converter.Convert(
+                    path,
+                    typeof(ImageSource),
+                    null!,
+                    System.Globalization.CultureInfo.CurrentCulture) as ImageSource;
+        }
+        catch
+        {
+        }
+
+        return null;
+    }
+
+    private void UpdateFilterChips()
+    {
+        var collectionItem = LibraryFilterCombo.SelectedItem as ComboBoxItem;
+        var collectionTag = collectionItem?.Tag?.ToString() ?? "all";
+        CollectionFilterChip.Visibility = collectionTag == "all" ? Visibility.Collapsed : Visibility.Visible;
+        CollectionFilterChip.Content = collectionTag == "all" ? null : $"{collectionItem?.Content}  ×";
+
+        var platformItem = PlatformFilterCombo.SelectedItem as ComboBoxItem;
+        var platformTag = platformItem?.Tag?.ToString() ?? "all";
+        PlatformFilterChip.Visibility = platformTag == "all" ? Visibility.Collapsed : Visibility.Visible;
+        PlatformFilterChip.Content = platformTag == "all" ? null : $"{platformItem?.Content}  ×";
+
+        if (GenreFilter.SelectedItem is GenreFilterOption genre && genre.CanonicalGenre is not null)
+        {
+            GenreFilterChip.Visibility = Visibility.Visible;
+            GenreFilterChip.Content = $"{genre.DisplayName}  ×";
+        }
+        else
+        {
+            GenreFilterChip.Visibility = Visibility.Collapsed;
+        }
+
+        var sortItem = SortCombo.SelectedItem as ComboBoxItem;
+        var sortTag = sortItem?.Tag?.ToString() ?? "Name";
+        SortFilterChip.Visibility = sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase)
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+        SortFilterChip.Content = sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase)
+            ? null
+            : $"{sortItem?.Content}  ×";
+    }
+
+    private void ClearFilters_Click(object sender, RoutedEventArgs e)
+    {
+        _syncingSearchBoxes = true;
+        SearchBox.Text = string.Empty;
+        FullscreenSearchBox.Text = string.Empty;
+        _syncingSearchBoxes = false;
+
+        LibraryFilterCombo.SelectedIndex = 0;
+        PlatformFilterCombo.SelectedIndex = 0;
+        GenreFilter.SelectedIndex = 0;
+        SortCombo.SelectedIndex = 0;
+        _specialFilter = string.Empty;
+        _platformFilter = null;
+        ApplyFilter();
+    }
+
+    private void ClearCollectionFilter_Click(object sender, RoutedEventArgs e)
+    {
+        LibraryFilterCombo.SelectedIndex = 0;
+    }
+
+    private void ClearPlatformFilter_Click(object sender, RoutedEventArgs e)
+    {
+        PlatformFilterCombo.SelectedIndex = 0;
+    }
+
+    private void ClearGenreFilter_Click(object sender, RoutedEventArgs e)
+    {
+        GenreFilter.SelectedIndex = 0;
+        ApplyFilter();
+    }
+
+    private void ResetSortFilter_Click(object sender, RoutedEventArgs e)
+    {
+        SortCombo.SelectedIndex = 0;
+    }
+
+    private async void SelectedPlay_Click(object sender, RoutedEventArgs e)
+    {
+        var game = _visibleGames.ElementAtOrDefault(_selectedIndex);
+        if (game is not null)
+            await LaunchGameAsync(game);
+    }
+
+    private void SelectedDetails_Click(object sender, RoutedEventArgs e)
+    {
+        var game = _visibleGames.ElementAtOrDefault(_selectedIndex);
+        if (game is not null)
+            OpenDetails(game);
+    }
+
+    private void SelectedFavorite_Click(object sender, RoutedEventArgs e)
+    {
+        ToggleSelectedFavorite();
+        UpdateSelectedGamePresentation();
+    }
+
     private void ApplyFilter()
     {
         var query = SearchBox.Text.Trim();
@@ -900,6 +1088,8 @@ public partial class MainWindow : Window
         GameList.ItemsSource = _visibleGames;
         UpdateControllerSelection();
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
+        UpdateFilterChips();
+        UpdateSelectedGamePresentation();
     }
 
     private void EnsureDuplicatePrimarySelections(IEnumerable<Game> games)
@@ -965,12 +1155,16 @@ public partial class MainWindow : Window
             _visibleGames[_selectedIndex].IsControllerSelected = true;
 
         ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
+        UpdateSelectedGamePresentation();
     }
 
     private string GetControllerStatusText(bool includeSelectedGame = false)
     {
         if (!_controllerConnected)
             return LocalizationService.Translate("Controle: procurando...");
+
+        if (_tvHeroMode && _fullscreen)
+            return $"{LocalizationService.Translate("MODO TV")} • {LocalizationService.Translate("Ações do jogo")}";
 
         if (_controllerToolbarMode)
         {
@@ -1042,7 +1236,38 @@ public partial class MainWindow : Window
         // B retorna à biblioteca quando a barra está ativa.
         if (_gamepad.WasPressed(GamepadButtons.RightShoulder, state))
         {
+            _tvHeroMode = false;
             EnterToolbarMode();
+            return;
+        }
+
+        if (_tvHeroMode && _fullscreen)
+        {
+            if (_gamepad.WasPressed(GamepadButtons.B, state) || down)
+            {
+                ExitTvHeroMode();
+                return;
+            }
+
+            if (up)
+            {
+                _tvHeroMode = false;
+                EnterToolbarMode();
+                return;
+            }
+
+            if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
+            {
+                if (left) MoveTvHeroSelection(-1);
+                else if (right) MoveTvHeroSelection(1);
+                if (left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.A, state)) ActivateTvHeroControl();
+            else if (_gamepad.WasPressed(GamepadButtons.X, state)) OpenSelectedDetails();
+            else if (_gamepad.WasPressed(GamepadButtons.Y, state)) ToggleSelectedFavorite();
+            else if (_gamepad.WasPressed(GamepadButtons.Start, state)) Settings_Click(this, new RoutedEventArgs());
+            else if (_gamepad.WasPressed(GamepadButtons.Back, state)) ToggleFullscreen();
             return;
         }
 
@@ -1081,7 +1306,10 @@ public partial class MainWindow : Window
         if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
         {
             if (up && _selectedIndex < GetColumns())
-                EnterToolbarMode();
+            {
+                if (_fullscreen) EnterTvHeroMode();
+                else EnterToolbarMode();
+            }
             else if (up) MoveSelection(-GetColumns());
             else if (down) MoveSelection(GetColumns());
             else if (left) MoveSelection(-1);
@@ -1090,10 +1318,22 @@ public partial class MainWindow : Window
         }
 
         if (_gamepad.WasPressed(GamepadButtons.A, state)) await LaunchSelectedAsync();
-        else if (_gamepad.WasPressed(GamepadButtons.B, state)) OpenSelectedDetails();
-        else if (_gamepad.WasPressed(GamepadButtons.X, state)) ToggleFullscreen();
+        else if (_gamepad.WasPressed(GamepadButtons.B, state))
+        {
+            if (_fullscreen) ToggleFullscreen();
+            else OpenSelectedDetails();
+        }
+        else if (_gamepad.WasPressed(GamepadButtons.X, state))
+        {
+            if (_fullscreen) OpenSelectedDetails();
+            else ToggleFullscreen();
+        }
         else if (_gamepad.WasPressed(GamepadButtons.Y, state)) ToggleSelectedFavorite();
-        else if (_gamepad.WasPressed(GamepadButtons.Start, state)) ToggleFullscreen();
+        else if (_gamepad.WasPressed(GamepadButtons.Start, state))
+        {
+            if (_fullscreen) Settings_Click(this, new RoutedEventArgs());
+            else ToggleFullscreen();
+        }
         else if (_gamepad.WasPressed(GamepadButtons.Back, state) && _fullscreen) ToggleFullscreen();
     }
 
@@ -1186,21 +1426,86 @@ public partial class MainWindow : Window
             PlatformFilterCombo,
             GenreFilter,
             SortCombo,
-            AddGameButton,
-            RefreshButton,
             RefreshVisibleButton,
-            SettingsButton,
-            StatisticsButton
+            ClearFiltersButton,
+            AddGameButton
         };
 
-        // Estes controles só existem visualmente na barra durante o modo tela cheia.
         if (_fullscreen)
         {
             controls.Add(FullscreenSearchBox);
             controls.Add(FullscreenToolbarButton);
         }
 
-        return controls;
+        return controls
+            .Where(control => control.Visibility == Visibility.Visible && control.IsEnabled)
+            .ToList();
+    }
+
+    private IReadOnlyList<Button> GetTvHeroControls() => new[]
+    {
+        TvPlayButton,
+        TvDetailsButton,
+        TvFavoriteButton
+    }.Where(button => button.Visibility == Visibility.Visible && button.IsEnabled).ToList();
+
+    private void EnterTvHeroMode()
+    {
+        if (!_fullscreen)
+        {
+            EnterToolbarMode();
+            return;
+        }
+
+        var controls = GetTvHeroControls();
+        if (controls.Count == 0)
+        {
+            EnterToolbarMode();
+            return;
+        }
+
+        _tvHeroMode = true;
+        _controllerToolbarMode = false;
+        _tvHeroActionIndex = Math.Clamp(_tvHeroActionIndex, 0, controls.Count - 1);
+        FocusTvHeroControl();
+        PlayNavigationSound();
+        ControllerStatusText.Text = $"{LocalizationService.Translate("MODO TV")} • {LocalizationService.Translate("Ações do jogo")}";
+    }
+
+    private void ExitTvHeroMode()
+    {
+        _tvHeroMode = false;
+        Keyboard.ClearFocus();
+        GameList.Focus();
+        Keyboard.Focus(GameList);
+        UpdateControllerSelection();
+        PlayNavigationSound();
+    }
+
+    private void MoveTvHeroSelection(int delta)
+    {
+        var controls = GetTvHeroControls();
+        if (controls.Count == 0) return;
+        var next = Math.Clamp(_tvHeroActionIndex + delta, 0, controls.Count - 1);
+        if (next == _tvHeroActionIndex) return;
+        _tvHeroActionIndex = next;
+        FocusTvHeroControl();
+        PlayNavigationSound();
+    }
+
+    private void FocusTvHeroControl()
+    {
+        var controls = GetTvHeroControls();
+        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count) return;
+        controls[_tvHeroActionIndex].Focus();
+        Keyboard.Focus(controls[_tvHeroActionIndex]);
+    }
+
+    private void ActivateTvHeroControl()
+    {
+        var controls = GetTvHeroControls();
+        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count) return;
+        controls[_tvHeroActionIndex].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     }
 
     private void EnterToolbarMode()
@@ -1680,12 +1985,21 @@ public partial class MainWindow : Window
     private void UpdateFullscreenUi()
     {
         HeaderGrid.Visibility = _fullscreen ? Visibility.Collapsed : Visibility.Visible;
-        HeaderRow.Height = new GridLength(_fullscreen ? 0 : 112);
+        HeaderRow.Height = new GridLength(_fullscreen ? 0 : 78);
+
+        TvHeroPanel.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
 
-        // O indicador acompanha o layout atual: abaixo da logo no modo padrão e
-        // ao lado da pesquisa na fileira quando estiver em tela cheia.
+        FilterSummaryBorder.Visibility = _fullscreen ? Visibility.Collapsed : Visibility.Visible;
+        FilterSummaryRow.Height = new GridLength(_fullscreen ? 0 : 32);
+
+        if (!_fullscreen)
+            _tvHeroMode = false;
+
+        UpdateResponsiveLayout();
+        UpdateSelectedGamePresentation();
+
         var loadingVisible = LibraryLoadingText.Visibility == Visibility.Visible ||
                              FullscreenLibraryLoadingText.Visibility == Visibility.Visible;
         LibraryLoadingText.Visibility = !_fullscreen && loadingVisible
@@ -1705,7 +2019,7 @@ public partial class MainWindow : Window
             }
         }
 
-        ControllerStatusText.Text = GetControllerStatusText();
+        ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
     }
 
     #endregion
@@ -1725,6 +2039,8 @@ public partial class MainWindow : Window
         // Alguns textos são gerados em tempo de execução e precisam ser refeitos
         // após uma troca de idioma.
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
+        UpdateFilterChips();
+        UpdateSelectedGamePresentation();
         UpdateFooterInputHints();
 
         if (_trayIcon?.ContextMenuStrip is { } menu && menu.Items.Count >= 3)
