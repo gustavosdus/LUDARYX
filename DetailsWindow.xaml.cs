@@ -8,6 +8,7 @@ namespace UnifiedGameLauncher;
 
 public partial class DetailsWindow : Window
 {
+    private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly Game _game;
     private readonly LauncherSettings _settings;
     private readonly GameStateService _state = new();
@@ -19,6 +20,14 @@ public partial class DetailsWindow : Window
     public DetailsWindow(Game game, LauncherSettings settings, GameLaunchService launcher, MetadataService metadata)
     {
         InitializeComponent();
+        _controllerNavigation = new WindowGamepadNavigationService(this, () =>
+        {
+            if (IsVisible)
+            {
+                DialogResult = true;
+                Close();
+            }
+        });
         _game = game;
         _settings = settings;
         _launcher = launcher;
