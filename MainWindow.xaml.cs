@@ -1686,7 +1686,7 @@ public partial class MainWindow : Window
         ApplyFilter();
     }
 
-    private void Cover_MouseEnter(object sender, MouseEventArgs e)
+    private void Cover_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
     {
         if (_fullscreen)
             return;
