@@ -1436,6 +1436,13 @@ public partial class MainWindow : Window
             controls.Add(FullscreenSearchBox);
             controls.Add(FullscreenToolbarButton);
         }
+        else
+        {
+            controls.Add(GlobalRefreshButton);
+            controls.Add(GlobalSettingsButton);
+            controls.Add(GlobalStatisticsButton);
+            controls.Add(GlobalFullscreenButton);
+        }
 
         return controls
             .Where(control => control.Visibility == Visibility.Visible && control.IsEnabled)
@@ -1778,7 +1785,26 @@ public partial class MainWindow : Window
     private async void ShowToast(string message)
     {
         StatusText.Text = message;
-        await Task.Delay(2800);
+        ToastText.Text = message;
+        ToastBorder.Visibility = Visibility.Visible;
+        ToastBorder.Opacity = 0;
+
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(120));
+        ToastBorder.BeginAnimation(OpacityProperty, fadeIn);
+
+        await Task.Delay(2600);
+
+        if (ToastText.Text == message)
+        {
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180));
+            fadeOut.Completed += (_, _) =>
+            {
+                if (ToastText.Text == message)
+                    ToastBorder.Visibility = Visibility.Collapsed;
+            };
+            ToastBorder.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
         if (StatusText.Text == message)
             StatusText.Text = $"{_games.Count} jogos na biblioteca";
     }
