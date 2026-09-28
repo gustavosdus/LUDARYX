@@ -1389,7 +1389,7 @@ public partial class MainWindow : Window
     private void OpenDetails(Game game)
     {
         var manualCountBefore = _settings.ManualGames.Count;
-        var window = new DetailsWindow(game, _settings, _launcher, _metadata) { Owner = this };
+        var window = new DetailsWindow(game, _settings, _launcher, _metadata, _sessions, _games) { Owner = this };
         window.ShowDialog();
         _settings = _settingsService.Load();
 
@@ -1443,6 +1443,15 @@ public partial class MainWindow : Window
                 game.IsRunning = true;
                 StatusText.Text = $"{game.Name} já está em execução";
                 ShowToast($"{game.Name} já está em execução.");
+                return;
+            }
+
+            var activeGame = _sessions.GetActiveGame(_games, game);
+            if (activeGame is not null)
+            {
+                activeGame.IsRunning = true;
+                StatusText.Text = $"{activeGame.Name} já está em execução";
+                ShowToast($"Feche {activeGame.Name} antes de iniciar outro jogo.");
                 return;
             }
 
