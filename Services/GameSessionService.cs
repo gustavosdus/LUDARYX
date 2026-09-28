@@ -9,6 +9,37 @@ public sealed class GameSessionService : IDisposable
     private readonly object _sync = new();
     private readonly GameStateService _state = new();
 
+    public bool HasTrackedSession
+    {
+        get
+        {
+            lock (_sync)
+                return _tracking.Count > 0;
+        }
+    }
+
+    public Game? GetActiveGame(IEnumerable<Game> games, Game? exclude = null)
+    {
+        var list = games.ToList();
+
+        lock (_sync)
+        {
+            foreach (var providerId in _tracking.Keys)
+            {
+                var tracked = list.FirstOrDefault(game =>
+                    game.ProviderId.Equals(providerId, StringComparison.OrdinalIgnoreCase));
+
+                if (tracked is not null &&
+                    (exclude is null || !tracked.ProviderId.Equals(exclude.ProviderId, StringComparison.OrdinalIgnoreCase)))
+                    return tracked;
+            }
+        }
+
+        return list.FirstOrDefault(game =>
+            game.IsRunning &&
+            (exclude is null || !game.ProviderId.Equals(exclude.ProviderId, StringComparison.OrdinalIgnoreCase)));
+    }
+
     public bool IsRunning(Game game)
     {
         var processName = GetProcessName(game);
