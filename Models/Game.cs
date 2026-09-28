@@ -60,6 +60,15 @@ public sealed class Game : INotifyPropertyChanged
     public string PlatformDisplay => Platform.ToString();
     public string ProviderId => $"{Platform}:{Id}";
     public string DisplayCover => CoverImage ?? "";
+    public string HeroArtwork => Metadata.CustomHorizontalCoverLocalPath
+        ?? Metadata.HorizontalCoverLocalPath
+        ?? Metadata.CustomVerticalCoverLocalPath
+        ?? Metadata.VerticalCoverLocalPath
+        ?? Metadata.CoverLocalPath
+        ?? CoverImage
+        ?? "";
+    public bool IsManual => Platform == GamePlatform.Manual;
+    public string FavoriteGlyph => IsFavorite ? "★" : "☆";
     public bool HasHorizontalCover => !string.IsNullOrWhiteSpace(HorizontalCover);
     public bool HasVerticalCover => !string.IsNullOrWhiteSpace(VerticalCover);
     public string HorizontalCover => Metadata.CustomHorizontalCoverLocalPath
