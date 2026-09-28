@@ -9,6 +9,7 @@ namespace UnifiedGameLauncher;
 
 public partial class AddGameWindow : Window
 {
+    private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly ManualGameDefinition? _existing;
     private readonly List<ManualLaunchProfile> _profiles = new();
     private ManualLaunchProfile? _currentProfile;
@@ -20,6 +21,11 @@ public partial class AddGameWindow : Window
     public AddGameWindow(ManualGameDefinition? existing = null)
     {
         InitializeComponent();
+        _controllerNavigation = new WindowGamepadNavigationService(this, () =>
+        {
+            if (IsVisible)
+                DialogResult = false;
+        });
         _existing = existing;
 
         if (existing is not null)
