@@ -1669,6 +1669,15 @@ public partial class MainWindow : Window
         ApplyFilter();
     }
 
+    private void Cover_MouseEnter(object sender, MouseEventArgs e)
+    {
+        if (_fullscreen)
+            return;
+
+        if (sender is Border border && border.DataContext is Game game)
+            SelectGameWithMouse(game);
+    }
+
     private void Cover_Click(object sender, MouseButtonEventArgs e)
     {
         if (sender is Border border && border.DataContext is Game game)
@@ -2162,8 +2171,9 @@ public partial class MainWindow : Window
     {
         if (MatchesShortcut(e, _settings.Shortcuts.FocusSearch))
         {
-            SearchBox.Focus();
-            SearchBox.SelectAll();
+            var targetSearch = _fullscreen ? FullscreenSearchBox : SearchBox;
+            targetSearch.Focus();
+            targetSearch.SelectAll();
             e.Handled = true;
             return;
         }
@@ -2251,6 +2261,35 @@ public partial class MainWindow : Window
             }
         }
 
+        if (_tvHeroMode && _fullscreen)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    MoveTvHeroSelection(-1);
+                    e.Handled = true;
+                    return;
+                case Key.Right:
+                    MoveTvHeroSelection(1);
+                    e.Handled = true;
+                    return;
+                case Key.Up:
+                    _tvHeroMode = false;
+                    EnterToolbarMode();
+                    e.Handled = true;
+                    return;
+                case Key.Down:
+                case Key.Escape:
+                    ExitTvHeroMode();
+                    e.Handled = true;
+                    return;
+                case Key.Enter:
+                    ActivateTvHeroControl();
+                    e.Handled = true;
+                    return;
+            }
+        }
+
         // Quando a barra está ativa, o teclado usa a mesma navegação do controle.
         if (_controllerToolbarMode)
         {
@@ -2304,7 +2343,11 @@ public partial class MainWindow : Window
                 e.Handled = true;
                 break;
             case Key.Up:
-                if (_selectedIndex < GetColumns()) EnterToolbarMode();
+                if (_selectedIndex < GetColumns())
+                {
+                    if (_fullscreen) EnterTvHeroMode();
+                    else EnterToolbarMode();
+                }
                 else MoveSelection(-GetColumns());
                 e.Handled = true;
                 break;
@@ -2318,6 +2361,10 @@ public partial class MainWindow : Window
                 break;
             case Key.Space:
                 OpenSelectedDetails();
+                e.Handled = true;
+                break;
+            case Key.F:
+                ToggleSelectedFavorite();
                 e.Handled = true;
                 break;
         }
