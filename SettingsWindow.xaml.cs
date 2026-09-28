@@ -9,6 +9,7 @@ namespace UnifiedGameLauncher;
 
 public partial class SettingsWindow : Window
 {
+    private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly JsonSettingsService _settingsService = new();
     private readonly LauncherSettings _settings;
     private readonly ObservableCollection<GameVisibilityItem> _items = new();
@@ -17,6 +18,14 @@ public partial class SettingsWindow : Window
     public SettingsWindow(IEnumerable<Game> games, LauncherSettings settings)
     {
         InitializeComponent();
+        _controllerNavigation = new WindowGamepadNavigationService(this, () =>
+        {
+            if (IsVisible)
+            {
+                DialogResult = false;
+                Close();
+            }
+        });
         _games = games.ToList();
         _settings = Clone(settings);
         ShowStoreAppsCheck.IsChecked = _settings.ShowStoreApps;
