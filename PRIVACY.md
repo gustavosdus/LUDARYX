@@ -1,6 +1,6 @@
-# Privacy Notice — LUDARYX 1.0.3
+# Privacy Notice — LUDARYX 1.1.0
 
-This notice describes the current LUDARYX 1.0.3 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
+This notice describes the current LUDARYX 1.1.0 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
 
 ## Local data
 
@@ -35,7 +35,7 @@ When an update is downloaded, LUDARYX validates the installer against the releas
 
 ## No first-party telemetry
 
-LUDARYX 1.0.3 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
+LUDARYX 1.1.0 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
 
 ## Diagnostics
 
