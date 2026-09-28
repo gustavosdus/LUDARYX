@@ -8,7 +8,7 @@
         WindowStyle="None" ResizeMode="CanResize"
         MinWidth="800" MinHeight="500"
         KeyDown="Window_KeyDown" PreviewKeyDown="Window_PreviewKeyDown"
-        SnapsToDevicePixels="True">
+        SnapsToDevicePixels="True" SizeChanged="MainWindow_SizeChanged">
 
     <shell:WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40"
@@ -316,59 +316,63 @@
 
     <Grid x:Name="MainRoot" Background="{StaticResource BlackChrome}">
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="HeaderRow" Height="112"/>
+            <RowDefinition x:Name="HeaderRow" Height="78"/>
             <RowDefinition Height="3"/>
-            <RowDefinition Height="58"/>
+            <RowDefinition Height="56"/>
+            <RowDefinition x:Name="FilterSummaryRow" Height="32"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="38"/>
         </Grid.RowDefinitions>
 
-        <!-- Cabeçalho preto integrado -->
-        <Grid x:Name="HeaderGrid" Grid.Row="0" Background="{StaticResource BlackChrome}"
+        <!-- Desktop header: compact identity, central search and global actions. -->
+        <Grid x:Name="HeaderGrid" Grid.Row="0" Background="#05070B"
               MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="310"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Pesquisa + quantidade no canto superior esquerdo -->
-            <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="22,0,0,0">
-                <Border Width="290" Height="32" Background="{DynamicResource SearchFieldBackground}" BorderBrush="#293242" BorderThickness="1" CornerRadius="5">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+                <Image Source="pack://application:,,,/Assets/LUDARYX.png"
+                       Width="170" Height="46" Stretch="Uniform" SnapsToDevicePixels="True"/>
+                <TextBlock Text="BIBLIOTECA" Foreground="#6F8197" FontSize="10"
+                           FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border Width="440" MaxWidth="520" Height="38"
+                        Background="{DynamicResource SearchFieldBackground}"
+                        BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7">
                     <Grid>
-                        <TextBlock Text="⌕" Foreground="#7E8798" FontSize="17" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                        <TextBox x:Name="SearchBox" Margin="32,0,8,0"
-                                 Background="Transparent" Foreground="#E8ECF5" CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
-                                 Padding="0" MinHeight="0" VerticalContentAlignment="Center" FontSize="12"
-                                 TextChanged="SearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
+                        <TextBlock Text="⌕" Foreground="#7E9AB4" FontSize="18"
+                                   VerticalAlignment="Center" Margin="11,0,0,0"/>
+                        <TextBox x:Name="SearchBox" Margin="34,1,58,1"
+                                 Background="Transparent" Foreground="#E8ECF5"
+                                 CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
+                                 Padding="0" MinHeight="0" VerticalContentAlignment="Center"
+                                 FontSize="12" TextChanged="SearchBox_TextChanged"
+                                 ToolTip="Buscar jogos, gêneros, plataformas, desenvolvedoras e publicadoras"/>
+                        <Border HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Margin="0,0,8,0" Padding="7,3" CornerRadius="4"
+                                Background="#0D1724" BorderBrush="#263A50" BorderThickness="1">
+                            <TextBlock Text="Ctrl+F" Foreground="#7D91A9" FontSize="9"/>
+                        </Border>
                     </Grid>
                 </Border>
-                <TextBlock x:Name="GameCountText" Text="0 jogos exibidos"
-                           Foreground="{StaticResource TextSecondary}" FontSize="10"
-                           Margin="4,4,0,0"/>
+                <TextBlock x:Name="LibraryLoadingText" Text="CARREGANDO BIBLIOTECA..."
+                           Visibility="Collapsed" Foreground="#8EBAD5"
+                           FontSize="9" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" Margin="0,3,0,0"/>
             </StackPanel>
 
-            <!-- Logo centralizada da identidade LUDARYX. -->
-            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Image Source="pack://application:,,,/Assets/LUDARYX.png"
-                       Width="250" Height="60"
-                       Stretch="Uniform"
-                       SnapsToDevicePixels="True"
-                       HorizontalAlignment="Center"/>
-                <TextBlock x:Name="LibraryLoadingText"
-                           Text="CARREGANDO BIBLIOTECA..."
-                           Visibility="Collapsed"
-                           Foreground="#E8ECF5"
-                           FontSize="10" FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Margin="0,2,0,0"
-                           Panel.ZIndex="20"/>
-            </StackPanel>
-
-            <!-- Tela cheia + controles da janela no canto superior direito -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0">
-                <Button Style="{StaticResource FullscreenIconButton}" Margin="0,0,8,0" Click="Fullscreen_Click" ToolTip="Tela cheia">
-                    <Viewbox Width="20" Height="20">
+            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
+                <Button Content="↻" Style="{StaticResource LudaryxIconButton}" Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0"/>
+                <Button Content="⚙" Style="{StaticResource LudaryxIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
+                <Button Content="▥" Style="{StaticResource LudaryxIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
+                <Button Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
+                    <Viewbox Width="19" Height="19">
                         <Canvas Width="24" Height="24">
                             <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
                                   Data="M3,4 L21,4 L21,17 L3,17 Z M9,21 L15,21 M12,17 L12,21"/>
@@ -381,18 +385,17 @@
             </StackPanel>
         </Grid>
 
-        <!-- Separador neon -->
         <Border x:Name="NeonSeparator" Grid.Row="1" Background="{StaticResource NeonRed}"/>
 
-        <!-- Filtros e ações compactos. No fullscreen a pesquisa entra nesta fileira
-             e o botão de tela cheia fica ancorado no extremo direito. -->
-        <Border x:Name="ToolbarBorder" Grid.Row="2" Background="{StaticResource BlackChrome}">
-            <Grid>
+        <!-- Filters are kept separate from administrative actions. -->
+        <Border x:Name="ToolbarBorder" Grid.Row="2" Background="#070A10"
+                BorderBrush="#152131" BorderThickness="0,0,0,1">
+            <Grid Margin="14,0,10,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="14,0">
+                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <ComboBox x:Name="LibraryFilterCombo" Width="150" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="LibraryFilterCombo_SelectionChanged" ToolTip="Filtrar biblioteca">
                             <ComboBoxItem Content="TODOS" Tag="all"/>
@@ -400,7 +403,7 @@
                             <ComboBoxItem Content="RECENTES" Tag="recent"/>
                             <ComboBoxItem Content="DUPLICADOS" Tag="duplicates"/>
                         </ComboBox>
-                        <ComboBox x:Name="PlatformFilterCombo" Width="150" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="PlatformFilterCombo_SelectionChanged" ToolTip="Filtrar por plataforma">
+                        <ComboBox x:Name="PlatformFilterCombo" Width="160" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="PlatformFilterCombo_SelectionChanged" ToolTip="Filtrar por plataforma">
                             <ComboBoxItem Content="TODAS PLATAFORMAS" Tag="all"/>
                             <ComboBoxItem Content="STEAM" Tag="Steam"/>
                             <ComboBoxItem Content="EPIC" Tag="Epic"/>
@@ -412,226 +415,325 @@
                             <ComboBoxItem Content="RIOT" Tag="RiotClient"/>
                             <ComboBoxItem Content="MANUAIS" Tag="Manual"/>
                         </ComboBox>
-                        <ComboBox x:Name="GenreFilter" Width="156" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="GenreFilter_SelectionChanged" ToolTip="Filtrar por gênero"/>
-                        <ComboBox x:Name="SortCombo" Width="145" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="SortCombo_SelectionChanged" ToolTip="Ordenar">
+                        <ComboBox x:Name="GenreFilter" Width="160" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="GenreFilter_SelectionChanged" ToolTip="Filtrar por gênero"/>
+                        <ComboBox x:Name="SortCombo" Width="150" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="SortCombo_SelectionChanged" ToolTip="Ordenar">
                             <ComboBoxItem Content="NOME" Tag="Name"/>
                             <ComboBoxItem Content="RECENTES" Tag="Recent"/>
                             <ComboBoxItem Content="MAIS JOGADOS" Tag="MostPlayed"/>
                             <ComboBoxItem Content="TEMPO JOGADO" Tag="PlayTime"/>
                             <ComboBoxItem Content="PLATAFORMA" Tag="Platform"/>
                         </ComboBox>
-                        <Button x:Name="AddGameButton" Content="ADICIONAR JOGO" Style="{StaticResource NavButton}" Click="AddGame_Click"/>
-                        <Button x:Name="RefreshButton" Content="ATUALIZAR" Style="{StaticResource NavButton}" Click="Refresh_Click"/>
-                        <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
-                        <Button x:Name="SettingsButton" Content="CONFIGURAÇÕES" Style="{StaticResource NavButton}" Click="Settings_Click"/>
-                        <Button x:Name="StatisticsButton" Content="ESTATÍSTICAS" Style="{StaticResource NavButton}" Click="Statistics_Click"/>
 
-                        <TextBlock x:Name="FullscreenLibraryLoadingText"
-                                   Text="CARREGANDO BIBLIOTECA..."
-                                   Visibility="Collapsed"
-                                   Foreground="#E8ECF5"
-                                   FontSize="10" FontWeight="SemiBold"
-                                   VerticalAlignment="Center"
-                                   Margin="10,0,3,0"/>
+                        <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
+                        <Button x:Name="ClearFiltersButton" Content="LIMPAR" Style="{StaticResource NavButton}" Click="ClearFilters_Click"/>
+                        <Button x:Name="AddGameButton" Content="+ JOGO MANUAL" Style="{StaticResource NavButton}" Click="AddGame_Click"/>
+
+                        <!-- Kept for controller toolbar compatibility; desktop actions live in header. -->
+                        <Button x:Name="RefreshButton" Visibility="Collapsed" Content="ATUALIZAR" Click="Refresh_Click"/>
+                        <Button x:Name="SettingsButton" Visibility="Collapsed" Content="CONFIGURAÇÕES" Click="Settings_Click"/>
+                        <Button x:Name="StatisticsButton" Visibility="Collapsed" Content="ESTATÍSTICAS" Click="Statistics_Click"/>
+
+                        <TextBlock x:Name="FullscreenLibraryLoadingText" Text="CARREGANDO..."
+                                   Visibility="Collapsed" Foreground="#8EBAD5" FontSize="9"
+                                   FontWeight="SemiBold" VerticalAlignment="Center" Margin="10,0,3,0"/>
                     </StackPanel>
                 </ScrollViewer>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,10,0">
-                    <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed" Width="280" Height="34" Margin="0,0,8,0"
-                            Background="{DynamicResource SearchFieldBackground}" BorderBrush="#293242" BorderThickness="1" CornerRadius="5">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed"
+                            Width="300" Height="36" Margin="8,0,7,0"
+                            Background="{DynamicResource SearchFieldBackground}"
+                            BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7">
                         <Grid>
-                            <TextBlock Text="⌕" Foreground="#7E8798" FontSize="17" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            <TextBox x:Name="FullscreenSearchBox" Margin="32,1,10,1"
+                            <TextBlock Text="⌕" Foreground="#7E9AB4" FontSize="18" VerticalAlignment="Center" Margin="11,0,0,0"/>
+                            <TextBox x:Name="FullscreenSearchBox" Margin="34,1,10,1"
                                      Background="Transparent" Foreground="#E8ECF5"
                                      CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
-                                     Padding="0" MinHeight="0" VerticalContentAlignment="Center" FontSize="12"
-                                     TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
+                                     Padding="0" MinHeight="0" VerticalContentAlignment="Center"
+                                     FontSize="12" TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                         </Grid>
                     </Border>
-
                     <Button x:Name="FullscreenToolbarButton" Visibility="Collapsed"
-                            Style="{StaticResource FullscreenIconButton}" Margin="0,0,4,0" Click="Fullscreen_Click" ToolTip="Sair da tela cheia">
-                        <Viewbox Width="20" Height="20">
-                            <Canvas Width="24" Height="24">
-                                <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
-                                      Data="M3,4 L21,4 L21,17 L3,17 Z M9,21 L15,21 M12,17 L12,21"/>
-                            </Canvas>
-                        </Viewbox>
+                            Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click"
+                            ToolTip="Sair da tela cheia">
+                        <TextBlock Text="⛶" Foreground="#E8ECF5" FontSize="17"/>
                     </Button>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Área dos jogos em azul escuro -->
-        <Border x:Name="LibraryAreaBorder" Grid.Row="3" Background="{StaticResource GameAreaBlue}">
-            <ScrollViewer x:Name="LibraryScroll" Padding="14,12,14,16">
-                <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="6"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="8"
-                                    Background="#0B1423" BorderThickness="3" CornerRadius="8"
-                                    MouseLeftButtonUp="Cover_Click" MouseRightButtonUp="Cover_RightClick"
-                                    ToolTip="Clique esquerdo: jogar • clique direito: personalizar">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="BorderBrush" Value="Transparent"/>
-                                        <Setter Property="Background" Value="#0B1423"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsControllerSelected}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
-                                                <Setter Property="Background" Value="{DynamicResource SelectionAccentGameFill}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <Grid ClipToBounds="True">
-                                    <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}" Stretch="Uniform" SnapsToDevicePixels="True"/>
-                                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8" Padding="7,3" CornerRadius="5" Background="#CC0E7490">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBlock Text="JOGANDO" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+        <!-- Active filters / context strip. -->
+        <Border x:Name="FilterSummaryBorder" Grid.Row="3" Background="#070C13"
+                BorderBrush="#172437" BorderThickness="0,0,0,1">
+            <Grid Margin="17,3,16,3">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="FILTROS" Foreground="#657B94" FontSize="9" FontWeight="Bold"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Button x:Name="CollectionFilterChip" Style="{StaticResource LudaryxFilterChip}"
+                            Visibility="Collapsed" Click="ClearCollectionFilter_Click" Margin="0,0,6,0"/>
+                    <Button x:Name="PlatformFilterChip" Style="{StaticResource LudaryxFilterChip}"
+                            Visibility="Collapsed" Click="ClearPlatformFilter_Click" Margin="0,0,6,0"/>
+                    <Button x:Name="GenreFilterChip" Style="{StaticResource LudaryxFilterChip}"
+                            Visibility="Collapsed" Click="ClearGenreFilter_Click" Margin="0,0,6,0"/>
+                    <Button x:Name="SortFilterChip" Style="{StaticResource LudaryxFilterChip}"
+                            Visibility="Collapsed" Click="ResetSortFilter_Click" Margin="0,0,6,0"/>
+                </StackPanel>
+                <TextBlock x:Name="GameCountText" Text="0 jogos exibidos"
+                           Foreground="#8DA0B7" FontSize="10"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </Grid>
         </Border>
 
-        <!-- Rodapé: status à esquerda e dicas do método de entrada à direita. -->
-        <Border x:Name="FooterBorder" Grid.Row="4" Background="{StaticResource BlackChrome}">
-            <Grid Margin="16,0,16,0">
+        <!-- Shared library. Desktop adds a side panel; TV adds a hero above the same grid. -->
+        <Grid Grid.Row="4" Background="{StaticResource GameAreaBlue}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- TV hero. Visible only in fullscreen. -->
+            <Border x:Name="TvHeroPanel" Grid.Row="0" Height="250"
+                    Visibility="Collapsed" Background="#07111D"
+                    BorderBrush="#19324A" BorderThickness="0,0,0,1"
+                    ClipToBounds="True">
+                <Grid>
+                    <Image x:Name="TvHeroArtwork" Stretch="UniformToFill" Opacity="0.34"/>
+                    <Border Background="#B807101B"/>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                <GradientStop Color="#F0060B12" Offset="0"/>
+                                <GradientStop Color="#D00A1420" Offset="0.55"/>
+                                <GradientStop Color="#900A1420" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+
+                    <Grid Margin="46,26,46,24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="360"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" MaxWidth="760" HorizontalAlignment="Left">
+                            <TextBlock x:Name="TvHeroTitle" Text="LUDARYX" Foreground="White"
+                                       FontSize="32" FontWeight="Bold" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="TvHeroMeta" Foreground="#9EDBFF" FontSize="12" Margin="0,7,0,0"/>
+                            <TextBlock x:Name="TvHeroUsage" Foreground="#A9B6C7" FontSize="11" Margin="0,5,0,0"/>
+                            <TextBlock x:Name="TvHeroDescription" Foreground="#D8E0EA"
+                                       FontSize="12" TextWrapping="Wrap" MaxHeight="58" Margin="0,12,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button x:Name="TvPlayButton" Content="A  JOGAR"
+                                        Style="{StaticResource LudaryxHeroPrimaryButton}"
+                                        Click="SelectedPlay_Click" Margin="0,0,8,0"/>
+                                <Button x:Name="TvDetailsButton" Content="X  DETALHES"
+                                        Style="{StaticResource LudaryxHeroButton}"
+                                        Click="SelectedDetails_Click" Margin="0,0,8,0"/>
+                                <Button x:Name="TvFavoriteButton" Content="Y  FAVORITO"
+                                        Style="{StaticResource LudaryxHeroButton}"
+                                        Click="SelectedFavorite_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Grid.Column="1" Width="340" Height="190"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Background="#33101C29" BorderBrush="#31506D"
+                                BorderThickness="1" CornerRadius="10">
+                            <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"/>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition x:Name="SelectedPanelColumn" Width="330"/>
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{StaticResource GameAreaBlue}">
+                    <Grid>
+                        <ScrollViewer x:Name="LibraryScroll" Padding="18,12,12,18">
+                            <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="6"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="8"
+                                                Background="#0B1423" BorderThickness="2" CornerRadius="8"
+                                                RenderTransformOrigin="0.5,0.5"
+                                                MouseLeftButtonUp="Cover_Click" MouseRightButtonUp="Cover_RightClick"
+                                                ToolTip="Clique esquerdo: jogar • clique direito: personalizar">
+                                            <Border.RenderTransform>
+                                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                            </Border.RenderTransform>
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="BorderBrush" Value="Transparent"/>
+                                                    <Setter Property="Background" Value="#0B1423"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsControllerSelected}" Value="True">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
+                                                            <Setter Property="Background" Value="#10283A"/>
+                                                            <Setter Property="RenderTransform">
+                                                                <Setter.Value><ScaleTransform ScaleX="1.035" ScaleY="1.035"/></Setter.Value>
+                                                            </Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid ClipToBounds="True">
+                                                <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}"
+                                                       Stretch="Uniform" SnapsToDevicePixels="True"/>
+
+                                                <Border Style="{StaticResource LudaryxGameBadge}"
+                                                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7">
+                                                    <TextBlock Text="{Binding PlatformDisplay}" Foreground="#D9E9F8"
+                                                               FontSize="8" FontWeight="SemiBold"/>
+                                                </Border>
+
+                                                <Border Style="{StaticResource LudaryxGameBadge}"
+                                                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7"
+                                                        Visibility="{Binding IsFavorite, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="★" Foreground="#FFD86A" FontSize="10"/>
+                                                </Border>
+
+                                                <Border Style="{StaticResource LudaryxGameBadge}"
+                                                        HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7"
+                                                        Visibility="{Binding IsDuplicate, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="DUPLICATA" Foreground="#E4C576" FontSize="8" FontWeight="Bold"/>
+                                                </Border>
+
+                                                <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="7"
+                                                        Padding="7,3" CornerRadius="5" Background="#D90E7490"
+                                                        Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="● JOGANDO" Foreground="White" FontSize="8" FontWeight="Bold"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <StackPanel x:Name="EmptyStatePanel" Visibility="Collapsed"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Nenhum jogo encontrado" Foreground="White"
+                                       FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Nenhum item corresponde aos filtros atuais."
+                                       Foreground="#8294AA" Margin="0,7,0,14" HorizontalAlignment="Center"/>
+                            <Button Content="LIMPAR FILTROS" Click="ClearFilters_Click" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Desktop selected-game panel. -->
+                <Border x:Name="SelectedGamePanel" Grid.Column="1"
+                        Style="{StaticResource LudaryxSelectedPanel}" Margin="0,12,14,14">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel>
+                            <Border Height="160" Background="#07111C" CornerRadius="8" ClipToBounds="True">
+                                <Image x:Name="SelectedArtworkImage" Stretch="UniformToFill"/>
+                            </Border>
+                            <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
+                                       Foreground="White" FontSize="20" FontWeight="Bold"
+                                       TextWrapping="Wrap" Margin="0,14,0,0"/>
+                            <TextBlock x:Name="SelectedGameMetaText" Foreground="#82D8FF"
+                                       FontSize="11" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="SelectedGameUsageText" Foreground="#9AAABD"
+                                       FontSize="10" Margin="0,7,0,0" TextWrapping="Wrap"/>
+
+                            <Border Height="1" Background="#1B3147" Margin="0,13"/>
+
+                            <TextBlock Text="Descrição" Foreground="#788DA5" FontSize="10" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="SelectedGameDescriptionText" Foreground="#D4DCE7"
+                                       FontSize="11" TextWrapping="Wrap" MaxHeight="94" Margin="0,5,0,0"/>
+
+                            <StackPanel Margin="0,16,0,0">
+                                <Button x:Name="SelectedPlayButton" Content="JOGAR"
+                                        Style="{StaticResource LudaryxHeroPrimaryButton}"
+                                        Click="SelectedPlay_Click" Margin="0,0,0,7"/>
+                                <Button Content="DETALHES / PERSONALIZAR"
+                                        Click="SelectedDetails_Click" Margin="0,0,0,7"/>
+                                <Button x:Name="SelectedFavoriteButton" Content="☆ FAVORITO"
+                                        Click="SelectedFavorite_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Adaptive footer. -->
+        <Border x:Name="FooterBorder" Grid.Row="5" Background="#05070B"
+                BorderBrush="#1B293A" BorderThickness="0,1,0,0">
+            <Grid Margin="16,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Mantido apenas para o código de status interno. Não é exibido na interface. -->
                 <TextBlock x:Name="StatusText" Visibility="Collapsed"/>
                 <TextBlock x:Name="ControllerStatusText" Grid.Column="0"
-                           Text="Controle: procurando..."
-                           Foreground="White" VerticalAlignment="Center"/>
+                           Text="Controle: procurando..." Foreground="#DCE6F3"
+                           FontSize="10" VerticalAlignment="Center"/>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal"
-                            HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <!-- Xbox: A verde para selecionar; B vermelho para personalizar. -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <StackPanel x:Name="XboxFooterHints" Orientation="Horizontal" Visibility="Collapsed">
-                        <Grid Width="22" Height="22" Margin="0,0,6,0">
-                            <Ellipse Fill="#2FA84F"/>
-                            <TextBlock Text="A" Foreground="White" FontWeight="Bold" FontSize="12"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <TextBlock x:Name="XboxSelectHintText" Text="SELECIONAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-
-                        <Grid Width="22" Height="22" Margin="20,0,6,0">
-                            <Ellipse Fill="#D64545"/>
-                            <TextBlock Text="B" Foreground="White" FontWeight="Bold" FontSize="12"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <TextBlock x:Name="XboxCustomizeHintText" Text="PERSONALIZAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#183C27" Margin="0,0,5,0"><TextBlock Text="A" Foreground="#8AF0A2" FontWeight="Bold"/></Border>
+                        <TextBlock x:Name="XboxSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#17314C" Margin="15,0,5,0"><TextBlock Text="X" Foreground="#75B9FF" FontWeight="Bold"/></Border>
+                        <TextBlock x:Name="XboxCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBlock Text="Y  FAVORITO   B  VOLTAR" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- PlayStation: X azul e círculo vermelho sobre base escura. -->
                     <StackPanel x:Name="PlayStationFooterHints" Orientation="Horizontal" Visibility="Collapsed">
-                        <Grid Width="22" Height="22" Margin="0,0,6,0">
-                            <Ellipse Fill="#20242D"/>
-                            <TextBlock Text="X" Foreground="#4AA3FF" FontWeight="Bold" FontSize="12"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <TextBlock x:Name="PlayStationSelectHintText" Text="SELECIONAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-
-                        <Grid Width="22" Height="22" Margin="20,0,6,0">
-                            <Ellipse Fill="#20242D"/>
-                            <Ellipse Width="10" Height="10" Stroke="#FF5B67" StrokeThickness="2" Fill="Transparent"
-                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <TextBlock x:Name="PlayStationCustomizeHintText" Text="PERSONALIZAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#172A3C" Margin="0,0,5,0"><TextBlock Text="X" Foreground="#5BB3FF" FontWeight="Bold"/></Border>
+                        <TextBlock x:Name="PlayStationSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#30203A" Margin="15,0,5,0"><TextBlock Text="□" Foreground="#E7A8FF" FontWeight="Bold"/></Border>
+                        <TextBlock x:Name="PlayStationCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBlock Text="△  FAVORITO   ○  VOLTAR" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Teclado: keycaps representando Enter e Espaço. -->
                     <StackPanel x:Name="KeyboardFooterHints" Orientation="Horizontal">
-                        <Border Width="48" Height="22" Margin="0,0,6,0" Background="#171A21"
-                                BorderBrush="#DCE2EC" BorderThickness="1" CornerRadius="3">
-                            <TextBlock Text="ENTER" Foreground="White" FontSize="8" FontWeight="SemiBold"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock x:Name="KeyboardSelectHintText" Text="SELECIONAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-
-                        <Border Width="58" Height="22" Margin="20,0,6,0" Background="#171A21"
-                                BorderBrush="#DCE2EC" BorderThickness="1" CornerRadius="3">
-                            <Grid>
-                                <TextBlock Text="SPACE" Foreground="White" FontSize="8" FontWeight="SemiBold"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <Border Height="2" Width="34" Background="#DCE2EC"
-                                        VerticalAlignment="Bottom" Margin="0,0,0,3"/>
-                            </Grid>
-                        </Border>
-                        <TextBlock x:Name="KeyboardCustomizeHintText" Text="PERSONALIZAR" Foreground="White"
-                                   FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#111923" BorderBrush="#34475D" BorderThickness="1" Margin="0,0,5,0"><TextBlock Text="ENTER" Foreground="White" FontSize="8"/></Border>
+                        <TextBlock x:Name="KeyboardSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Padding="7,3" CornerRadius="4" Background="#111923" BorderBrush="#34475D" BorderThickness="1" Margin="15,0,5,0"><TextBlock Text="SPACE" Foreground="White" FontSize="8"/></Border>
+                        <TextBlock x:Name="KeyboardCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBlock Text="F  FAVORITO   F11  TELA CHEIA" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Animação de inicialização com a logo transparente LUDARYX.
-             Permanece por aproximadamente 5 segundos acima da interface. -->
-        <Grid x:Name="StartupOverlay" Grid.RowSpan="5" Panel.ZIndex="9999"
+        <!-- Startup overlay remains unchanged in behavior. -->
+        <Grid x:Name="StartupOverlay" Grid.RowSpan="6" Panel.ZIndex="9999"
               Background="#02050C" Opacity="1" IsHitTestVisible="True">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="1240" Height="380">
                 <Ellipse x:Name="StartupGlowHalo" Width="900" Height="150" Fill="#1AAEFF" Opacity="0"
                          HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,42,0,0">
-                    <Ellipse.Effect>
-                        <BlurEffect Radius="80"/>
-                    </Ellipse.Effect>
+                    <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
                 </Ellipse>
-
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid x:Name="StartupLogoHost" Opacity="0" RenderTransformOrigin="0.5,0.5">
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="StartupLogoScale" ScaleX="0.92" ScaleY="0.92"/>
                         </Grid.RenderTransform>
                         <Image Source="pack://application:,,,/Assets/LUDARYX.png"
-                               Width="940"
-                               Stretch="Uniform"
-                               SnapsToDevicePixels="True"
+                               Width="940" Stretch="Uniform" SnapsToDevicePixels="True"
                                HorizontalAlignment="Center"/>
                     </Grid>
-
-                    <Rectangle x:Name="StartupAccentLine"
-                               Width="0" Height="3" Opacity="0"
+                    <Rectangle x:Name="StartupAccentLine" Width="0" Height="3" Opacity="0"
                                Fill="#2AB0FF" RadiusX="2" RadiusY="2"
-                               HorizontalAlignment="Center"
-                               Margin="0,12,0,0"/>
-
-                    <TextBlock x:Name="StartupLibraryLoadingText"
-                               Text="CARREGANDO BIBLIOTECA..."
-                               Visibility="Collapsed"
-                               Foreground="#DCE9FF"
+                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="StartupLibraryLoadingText" Text="CARREGANDO BIBLIOTECA..."
+                               Visibility="Collapsed" Foreground="#DCE9FF"
                                FontSize="12" FontWeight="SemiBold"
-                               HorizontalAlignment="Center"
-                               Margin="0,14,0,0"
-                               Panel.ZIndex="10000"/>
+                               HorizontalAlignment="Center" Margin="0,14,0,0" Panel.ZIndex="10000"/>
                 </StackPanel>
             </Grid>
         </Grid>
     </Grid>
+
 </Window>
