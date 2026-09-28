@@ -151,7 +151,7 @@ public sealed class WindowGamepadNavigationService : IDisposable
                 button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 break;
 
-            case CheckBox checkBox when checkBox.IsEnabled:
+            case System.Windows.Controls.CheckBox checkBox when checkBox.IsEnabled:
                 checkBox.IsChecked = !(checkBox.IsChecked == true);
                 break;
 
