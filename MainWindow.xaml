@@ -558,6 +558,7 @@
                                         <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="8"
                                                 Background="#0B1423" BorderThickness="2" CornerRadius="8"
                                                 RenderTransformOrigin="0.5,0.5"
+                                                MouseEnter="Cover_MouseEnter"
                                                 MouseLeftButtonUp="Cover_Click" MouseRightButtonUp="Cover_RightClick"
                                                 ToolTip="Clique esquerdo: jogar • clique direito: personalizar">
                                             <Border.RenderTransform>
