@@ -16,7 +16,8 @@
 - Metadados, gêneros, desenvolvedora, publicadora, descrições localizadas e classificação indicativa regional quando a fonte disponibiliza o dado.
 - Favoritos, itens ocultos, recentes, filtros combináveis, pesquisa sem distinção de acentos, ordenação, duplicados e seleção da versão principal.
 - Navegação por mouse e teclado, controles Xbox compatíveis com XInput e controle PlayStation 5 DualSense.
-- Modo tela cheia e interface adequada para uso a distância.
+- Nova tela principal com painel do jogo selecionado, filtros ativos, badges e layout responsivo.
+- Modo tela cheia/TV dedicado, com hero panel, backdrop do jogo, navegação por zonas e ações rápidas para controle.
 - Configurações em `%LOCALAPPDATA%\LUDARYX`, com migração automática do caminho legado.
 - Status e diagnóstico das integrações, backup/restauração seletivos, manutenção de cache e relatório de diagnóstico por sessão.
 - Configurações e segredos locais; API keys persistidas protegidas com Windows DPAPI.
@@ -27,7 +28,7 @@
 
 ## Versão
 
-**LUDARYX 1.0.3** — atualização focada em biblioteca, estatísticas locais, perfis de inicialização, filtros avançados, diagnóstico e detalhes de jogos.
+**LUDARYX 1.1.0** — evolução maior da experiência de biblioteca, com nova tela principal, novo modo TV, navegação por controle expandida, estatísticas locais, perfis de inicialização, filtros avançados, classificação indicativa regional e backup seletivo versionado.
 
 ## Requisitos para desenvolvimento
 
@@ -57,7 +58,7 @@ Para gerar uma release local completa em um único comando, incluindo validaçã
 powershell -ExecutionPolicy Bypass -File Scripts\Build-Release.ps1
 ```
 
-O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.0.3.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
+O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.1.0.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
 
 Para publicar apenas os executáveis, continue usando `Scripts\Publish-Release.ps1`.
 
