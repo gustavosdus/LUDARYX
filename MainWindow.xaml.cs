@@ -1249,12 +1249,26 @@ public partial class MainWindow : Window
         var right = state.Buttons.HasFlag(GamepadButtons.DPadRight) ||
                     (_pendingAnalogHorizontalDirection == 1 && _pendingAnalogHorizontalSamples >= 2);
 
-        // R1 dá acesso direto à barra tanto no modo padrão quanto em tela cheia.
-        // B retorna à biblioteca quando a barra está ativa.
+        // Atalhos de TV: LB/RB percorrem coleções e LT/RT percorrem plataformas.
+        // A barra de filtros continua acessível subindo a partir do hero/primeira linha.
+        if (_gamepad.WasPressed(GamepadButtons.LeftShoulder, state))
+        {
+            CycleComboSelection(LibraryFilterCombo, -1);
+            return;
+        }
         if (_gamepad.WasPressed(GamepadButtons.RightShoulder, state))
         {
-            _tvHeroMode = false;
-            EnterToolbarMode();
+            CycleComboSelection(LibraryFilterCombo, 1);
+            return;
+        }
+        if (_gamepad.WasPressed(GamepadButtons.LeftTriggerDigital, state))
+        {
+            CycleComboSelection(PlatformFilterCombo, -1);
+            return;
+        }
+        if (_gamepad.WasPressed(GamepadButtons.RightTriggerDigital, state))
+        {
+            CycleComboSelection(PlatformFilterCombo, 1);
             return;
         }
 
@@ -1354,6 +1368,20 @@ public partial class MainWindow : Window
         else if (_gamepad.WasPressed(GamepadButtons.Back, state) && _fullscreen) ToggleFullscreen();
     }
 
+    private void CycleComboSelection(ComboBox combo, int delta)
+    {
+        if (combo.Items.Count == 0)
+            return;
+
+        var current = combo.SelectedIndex < 0 ? 0 : combo.SelectedIndex;
+        var next = (current + delta) % combo.Items.Count;
+        if (next < 0)
+            next += combo.Items.Count;
+
+        combo.SelectedIndex = next;
+        PlayNavigationSound();
+    }
+
     private void SetFooterInputMode(FooterInputMode mode)
     {
         if (_footerInputMode == mode) return;
@@ -1382,8 +1410,23 @@ public partial class MainWindow : Window
         PlayStationSelectHintText.Text = selectText;
 
         KeyboardCustomizeHintText.Text = customizeText;
-        XboxCustomizeHintText.Text = customizeText;
-        PlayStationCustomizeHintText.Text = customizeText;
+
+        if (_fullscreen)
+        {
+            XboxCustomizeHintText.Text = customizeText;
+            PlayStationCustomizeHintText.Text = customizeText;
+            XboxExtraHintText.Text = "Y  FAVORITO   B  VOLTAR   LB/RB  COLEÇÃO   LT/RT  PLATAFORMA";
+            PlayStationExtraHintText.Text = "△  FAVORITO   ○  VOLTAR   L1/R1  COLEÇÃO   L2/R2  PLATAFORMA";
+            KeyboardExtraHintText.Text = "F  FAVORITO   ESC  VOLTAR   F11  TELA CHEIA";
+        }
+        else
+        {
+            XboxCustomizeHintText.Text = LocalizationService.Translate("TELA CHEIA");
+            PlayStationCustomizeHintText.Text = LocalizationService.Translate("TELA CHEIA");
+            XboxExtraHintText.Text = "B  PERSONALIZAR   Y  FAVORITO   LB/RB  COLEÇÃO";
+            PlayStationExtraHintText.Text = "○  PERSONALIZAR   △  FAVORITO   L1/R1  COLEÇÃO";
+            KeyboardExtraHintText.Text = "F  FAVORITO   F11  TELA CHEIA";
+        }
     }
 
     private static bool HasMeaningfulGamepadInput(GamepadState state)
@@ -2072,6 +2115,7 @@ public partial class MainWindow : Window
         }
 
         ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
+        UpdateFooterInputHints();
     }
 
     #endregion
