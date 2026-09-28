@@ -14,10 +14,18 @@ public partial class DetailsWindow : Window
     private readonly GameStateService _state = new();
     private readonly GameLaunchService _launcher;
     private readonly MetadataService _metadata;
+    private readonly GameSessionService _sessions;
+    private readonly IReadOnlyList<Game> _libraryGames;
     private readonly ArtworkService _artwork = new();
     private readonly SteamGridDbService _steamGridDb = new();
 
-    public DetailsWindow(Game game, LauncherSettings settings, GameLaunchService launcher, MetadataService metadata)
+    public DetailsWindow(
+        Game game,
+        LauncherSettings settings,
+        GameLaunchService launcher,
+        MetadataService metadata,
+        GameSessionService sessions,
+        IEnumerable<Game> libraryGames)
     {
         InitializeComponent();
         _controllerNavigation = new WindowGamepadNavigationService(this, () =>
@@ -32,6 +40,8 @@ public partial class DetailsWindow : Window
         _settings = settings;
         _launcher = launcher;
         _metadata = metadata;
+        _sessions = sessions;
+        _libraryGames = libraryGames.ToList();
         LoadData();
         LocalizationService.Apply(this);
         Loaded += async (_, _) =>
@@ -161,8 +171,36 @@ public partial class DetailsWindow : Window
 
     private async void Play_Click(object sender, RoutedEventArgs e)
     {
-        try { await _launcher.LaunchAsync(_game); _state.MarkPlayed(_game, _settings); LoadData(); }
-        catch (Exception ex) { MessageBox.Show(ex.Message, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error); }
+        try
+        {
+            if (_game.IsRunning || _sessions.IsRunning(_game))
+            {
+                _game.IsRunning = true;
+                LoadData();
+                MessageBox.Show(this, $"{_game.Name} já está em execução.", "LUDARYX",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var activeGame = _sessions.GetActiveGame(_libraryGames, _game);
+            if (activeGame is not null)
+            {
+                activeGame.IsRunning = true;
+                MessageBox.Show(this,
+                    $"Feche {activeGame.Name} antes de iniciar outro jogo.",
+                    "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            await _launcher.LaunchAsync(_game);
+            _state.MarkPlayed(_game, _settings);
+            _sessions.TrackAfterLaunch(_game, _settings);
+            LoadData();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private static string? ResolveInstallDirectory(Game game)
