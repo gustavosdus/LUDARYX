@@ -6,7 +6,7 @@
         Title="LUDARYX" Icon="pack://application:,,,/Assets/LUDARYX.ico" Width="1400" Height="900"
         WindowStartupLocation="CenterScreen" Background="#05070B"
         WindowStyle="None" ResizeMode="CanResize"
-        MinWidth="800" MinHeight="500"
+        MinWidth="1100" MinHeight="650"
         KeyDown="Window_KeyDown" PreviewKeyDown="Window_PreviewKeyDown"
         SnapsToDevicePixels="True" SizeChanged="MainWindow_SizeChanged">
 
@@ -283,6 +283,16 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="FooterHintChip" TargetType="Border">
+            <Setter Property="Background" Value="#101923"/>
+            <Setter Property="BorderBrush" Value="#34475D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
         <Storyboard x:Key="StartupStoryboard">
             <!-- Animação de abertura com a logo transparente LUDARYX. -->
             <DoubleAnimation Storyboard.TargetName="StartupLogoHost" Storyboard.TargetProperty="Opacity"
@@ -556,7 +566,7 @@
 
                 <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{StaticResource GameAreaBlue}">
                     <Grid>
-                        <ScrollViewer x:Name="LibraryScroll" Padding="18,12,12,18">
+                        <ScrollViewer x:Name="LibraryScroll" Padding="24,18,18,24">
                             <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -565,7 +575,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="8"
+                                        <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="12"
                                                 Background="#0B1423" BorderThickness="2" CornerRadius="8"
                                                 RenderTransformOrigin="0.5,0.5"
                                                 MouseEnter="Cover_MouseEnter"
@@ -581,10 +591,8 @@
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsControllerSelected}" Value="True">
                                                             <Setter Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
+                                                            <Setter Property="BorderThickness" Value="3"/>
                                                             <Setter Property="Background" Value="#10283A"/>
-                                                            <Setter Property="RenderTransform">
-                                                                <Setter.Value><ScaleTransform ScaleX="1.035" ScaleY="1.035"/></Setter.Value>
-                                                            </Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -687,27 +695,39 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <StackPanel x:Name="XboxFooterHints" Orientation="Horizontal" Visibility="Collapsed">
-                        <Border Padding="7,3" CornerRadius="4" Background="#183C27" Margin="0,0,5,0"><TextBlock Text="A" Foreground="#8AF0A2" FontWeight="Bold"/></Border>
-                        <TextBlock x:Name="XboxSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <Border Padding="7,3" CornerRadius="4" Background="#17314C" Margin="15,0,5,0"><TextBlock Text="X" Foreground="#75B9FF" FontWeight="Bold"/></Border>
-                        <TextBlock x:Name="XboxCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="XboxExtraHintText" Text="Y  FAVORITO" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="XboxSelectHintText" Text="A  JOGAR" Foreground="#DFFFE7" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="XboxCustomizeHintText" Text="X  PERSONALIZAR" Foreground="#DDEEFF" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="XboxExtraHintText" Text="Y  FAVORITO" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
                     </StackPanel>
 
                     <StackPanel x:Name="PlayStationFooterHints" Orientation="Horizontal" Visibility="Collapsed">
-                        <Border Padding="7,3" CornerRadius="4" Background="#172A3C" Margin="0,0,5,0"><TextBlock Text="X" Foreground="#5BB3FF" FontWeight="Bold"/></Border>
-                        <TextBlock x:Name="PlayStationSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <Border Padding="7,3" CornerRadius="4" Background="#30203A" Margin="15,0,5,0"><TextBlock Text="□" Foreground="#E7A8FF" FontWeight="Bold"/></Border>
-                        <TextBlock x:Name="PlayStationCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="PlayStationExtraHintText" Text="△  FAVORITO" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="PlayStationSelectHintText" Text="X  JOGAR" Foreground="#DDEEFF" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="PlayStationCustomizeHintText" Text="□  PERSONALIZAR" Foreground="#F1DEFF" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="PlayStationExtraHintText" Text="△  FAVORITO" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
                     </StackPanel>
 
                     <StackPanel x:Name="KeyboardFooterHints" Orientation="Horizontal">
-                        <Border Padding="7,3" CornerRadius="4" Background="#111923" BorderBrush="#34475D" BorderThickness="1" Margin="0,0,5,0"><TextBlock Text="ENTER" Foreground="White" FontSize="8"/></Border>
-                        <TextBlock x:Name="KeyboardSelectHintText" Text="JOGAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <Border Padding="7,3" CornerRadius="4" Background="#111923" BorderBrush="#34475D" BorderThickness="1" Margin="15,0,5,0"><TextBlock Text="SPACE" Foreground="White" FontSize="8"/></Border>
-                        <TextBlock x:Name="KeyboardCustomizeHintText" Text="PERSONALIZAR" Foreground="White" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="KeyboardExtraHintText" Text="F  FAVORITO   F11  TELA CHEIA" Foreground="#7F91A8" FontSize="9" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="KeyboardSelectHintText" Text="ENTER  JOGAR" Foreground="White" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="KeyboardCustomizeHintText" Text="SPACE  PERSONALIZAR" Foreground="White" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Style="{StaticResource FooterHintChip}">
+                            <TextBlock x:Name="KeyboardExtraHintText" Text="F  FAVORITO   •   F11  TELA CHEIA" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                        </Border>
                     </StackPanel>
                 </StackPanel>
             </Grid>
