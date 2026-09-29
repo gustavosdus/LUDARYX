@@ -65,6 +65,7 @@ public partial class MainWindow : Window
     private bool _tvHeroMode;
     private int _tvHeroActionIndex;
     private bool _syncingSearchBoxes;
+    private CancellationTokenSource? _selectedDescriptionCts;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
 
     #endregion
@@ -123,6 +124,8 @@ public partial class MainWindow : Window
         Closed += (_, _) =>
         {
             _trayIcon?.Dispose();
+            _selectedDescriptionCts?.Cancel();
+            _selectedDescriptionCts?.Dispose();
             _gamepad.Dispose();
             _sessions.Dispose();
         };
@@ -920,9 +923,10 @@ public partial class MainWindow : Window
             ? LocalizationService.Translate("Não informado")
             : game.GenresDisplay;
         var rating = AgeRatingService.GetDisplay(game.Metadata, _settings.Language);
-        var description = string.IsNullOrWhiteSpace(game.Metadata.Description)
+        var description = _metadata.GetDisplayDescription(game, _settings);
+        description = string.IsNullOrWhiteSpace(description)
             ? LocalizationService.Translate("Sem descrição.")
-            : game.Metadata.Description;
+            : description;
 
         SelectedGameNameText.Text = game.Name;
         SelectedGameMetaText.Text = $"{game.PlatformDisplay}  •  {genres}";
@@ -948,6 +952,42 @@ public partial class MainWindow : Window
         ApplyArtworkWithFade(SelectedArtworkImage, heroImage ?? coverImage);
         ApplyArtworkWithFade(TvHeroArtwork, heroImage ?? coverImage);
         ApplyArtworkWithFade(TvHeroPreviewImage, coverImage ?? heroImage);
+
+        RefreshSelectedLocalizedDescriptionAsync(game);
+    }
+
+    private async void RefreshSelectedLocalizedDescriptionAsync(Game game)
+    {
+        _selectedDescriptionCts?.Cancel();
+        _selectedDescriptionCts?.Dispose();
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        _selectedDescriptionCts = cts;
+
+        try
+        {
+            var localized = await _metadata.EnsureLocalizedDescriptionAsync(game, _settings, cts.Token);
+            if (cts.IsCancellationRequested)
+                return;
+
+            var selected = _visibleGames.ElementAtOrDefault(_selectedIndex);
+            if (selected is null ||
+                !selected.ProviderId.Equals(game.ProviderId, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var display = _metadata.GetDisplayDescription(game, _settings) ?? localized;
+            if (string.IsNullOrWhiteSpace(display))
+                display = LocalizationService.Translate("Sem descrição.");
+
+            SelectedGameDescriptionText.Text = display;
+            TvHeroDescription.Text = display;
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            // A descrição já exibida continua válida quando a atualização localizada falha.
+        }
     }
 
     private static void ApplyArtworkWithFade(System.Windows.Controls.Image image, ImageSource? source)
@@ -1429,23 +1469,26 @@ public partial class MainWindow : Window
         XboxSelectHintText.Text = selectText;
         PlayStationSelectHintText.Text = selectText;
 
-        KeyboardCustomizeHintText.Text = customizeText;
+        KeyboardSelectHintText.Text = $"ENTER  {selectText}";
+        KeyboardCustomizeHintText.Text = $"SPACE  {customizeText}";
+        XboxSelectHintText.Text = $"A  {selectText}";
+        PlayStationSelectHintText.Text = $"X  {selectText}";
 
         if (_fullscreen)
         {
-            XboxCustomizeHintText.Text = customizeText;
-            PlayStationCustomizeHintText.Text = customizeText;
-            XboxExtraHintText.Text = "Y  FAVORITO   B  VOLTAR   LB/RB  COLEÇÃO   LT/RT  PLATAFORMA";
-            PlayStationExtraHintText.Text = "△  FAVORITO   ○  VOLTAR   L1/R1  COLEÇÃO   L2/R2  PLATAFORMA";
-            KeyboardExtraHintText.Text = "F  FAVORITO   ESC  VOLTAR   F11  TELA CHEIA";
+            XboxCustomizeHintText.Text = $"X  {customizeText}";
+            PlayStationCustomizeHintText.Text = $"□  {customizeText}";
+            XboxExtraHintText.Text = "Y  FAVORITO   •   B  VOLTAR   •   LB/RB  COLEÇÃO   •   LT/RT  PLATAFORMA";
+            PlayStationExtraHintText.Text = "△  FAVORITO   •   ○  VOLTAR   •   L1/R1  COLEÇÃO   •   L2/R2  PLATAFORMA";
+            KeyboardExtraHintText.Text = "F  FAVORITO   •   ESC  VOLTAR   •   F11  TELA CHEIA";
         }
         else
         {
-            XboxCustomizeHintText.Text = LocalizationService.Translate("TELA CHEIA");
-            PlayStationCustomizeHintText.Text = LocalizationService.Translate("TELA CHEIA");
-            XboxExtraHintText.Text = "B  PERSONALIZAR   Y  FAVORITO   LB/RB  COLEÇÃO";
-            PlayStationExtraHintText.Text = "○  PERSONALIZAR   △  FAVORITO   L1/R1  COLEÇÃO";
-            KeyboardExtraHintText.Text = "F  FAVORITO   F11  TELA CHEIA";
+            XboxCustomizeHintText.Text = $"X  {LocalizationService.Translate("TELA CHEIA")}";
+            PlayStationCustomizeHintText.Text = $"□  {LocalizationService.Translate("TELA CHEIA")}";
+            XboxExtraHintText.Text = "B  PERSONALIZAR   •   Y  FAVORITO   •   LB/RB  COLEÇÃO";
+            PlayStationExtraHintText.Text = "○  PERSONALIZAR   •   △  FAVORITO   •   L1/R1  COLEÇÃO";
+            KeyboardExtraHintText.Text = "F  FAVORITO   •   F11  TELA CHEIA";
         }
     }
 
