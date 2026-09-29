@@ -638,25 +638,44 @@ public partial class MainWindow : Window
     {
         foreach (var game in _games)
         {
-            switch (_settings.CoverMode)
-            {
-                case "Vertical":
-                    game.CoverImage = game.VerticalCover;
-                    game.CoverWidth = 180;
-                    game.CoverHeight = 270;
-                    break;
-                case "Horizontal":
-                    game.CoverImage = game.HorizontalCover;
-                    game.CoverWidth = 196;
-                    game.CoverHeight = 92;
-                    break;
-                default:
-                    game.CoverImage = game.HorizontalCover;
-                    game.CoverWidth = 196;
-                    game.CoverHeight = 92;
-                    break;
-            }
+            game.CoverImage = _settings.CoverMode == "Vertical"
+                ? game.VerticalCover
+                : game.HorizontalCover;
         }
+
+        UpdateCoverDimensions();
+    }
+
+    private void UpdateCoverDimensions()
+    {
+        // A grade usa seis colunas. O painel lateral do redesign reduz a largura
+        // disponível no desktop, então dimensões fixas faziam as capas ultrapassarem
+        // suas células e serem recortadas. Calculamos a largura real por célula e
+        // preservamos a proporção da arte em ambos os modos.
+        var libraryWidth = LibraryAreaBorder?.ActualWidth ?? 0;
+        if (libraryWidth <= 1)
+        {
+            libraryWidth = Math.Max(720, ActualWidth - (_fullscreen ? 36 : 370));
+        }
+
+        const int columns = 6;
+        const double cellHorizontalSpace = 22; // margem do card + folga para seleção/glow
+        var availableCardWidth = Math.Max(96, (libraryWidth / columns) - cellHorizontalSpace);
+
+        var vertical = _settings.CoverMode == "Vertical";
+        var maxWidth = vertical ? 180d : 196d;
+        var width = Math.Min(maxWidth, availableCardWidth);
+        var height = vertical
+            ? width * 1.5                         // 2:3
+            : width * 9.0 / 16.0;                // 16:9
+
+        foreach (var game in _games)
+        {
+            game.CoverWidth = Math.Round(width, 1);
+            game.CoverHeight = Math.Round(height, 1);
+        }
+
+        GameList?.Items.Refresh();
     }
 
     private sealed class GenreFilterOption
@@ -856,6 +875,7 @@ public partial class MainWindow : Window
     private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         UpdateResponsiveLayout();
+        Dispatcher.BeginInvoke(UpdateCoverDimensions, DispatcherPriority.Loaded);
     }
 
     private void UpdateResponsiveLayout()
@@ -2093,6 +2113,7 @@ public partial class MainWindow : Window
             _tvHeroMode = false;
 
         UpdateResponsiveLayout();
+        Dispatcher.BeginInvoke(UpdateCoverDimensions, DispatcherPriority.Loaded);
         UpdateSelectedGamePresentation();
 
         var loadingVisible = LibraryLoadingText.Visibility == Visibility.Visible ||
