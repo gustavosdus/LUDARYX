@@ -328,17 +328,16 @@
         <Grid x:Name="HeaderGrid" Grid.Row="0" Background="#05070B"
               MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="205"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="310"/>
+                <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+            <Grid Grid.Column="0" VerticalAlignment="Center" Margin="18,0,0,0">
                 <Image Source="pack://application:,,,/Assets/LUDARYX.png"
-                       Width="170" Height="46" Stretch="Uniform" SnapsToDevicePixels="True"/>
-                <TextBlock Text="BIBLIOTECA" Foreground="#6F8197" FontSize="10"
-                           FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0"/>
-            </StackPanel>
+                       Width="150" Height="44" Stretch="Uniform" SnapsToDevicePixels="True"
+                       HorizontalAlignment="Left"/>
+            </Grid>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Border Width="440" MaxWidth="520" Height="38"
@@ -368,7 +367,16 @@
 
             <StackPanel Grid.Column="2" Orientation="Horizontal"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
-                <Button x:Name="GlobalRefreshButton" Content="↻" Style="{StaticResource LudaryxIconButton}" Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalRefreshButton" Style="{StaticResource LudaryxIconButton}"
+                        Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0">
+                    <Viewbox Width="17" Height="17">
+                        <Canvas Width="24" Height="24">
+                            <Path Stroke="#E8ECF5" StrokeThickness="2" StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
+                        </Canvas>
+                    </Viewbox>
+                </Button>
                 <Button x:Name="GlobalSettingsButton" Content="⚙" Style="{StaticResource LudaryxIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
                 <Button x:Name="GlobalStatisticsButton" Content="▥" Style="{StaticResource LudaryxIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
                 <Button x:Name="GlobalFullscreenButton" Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
