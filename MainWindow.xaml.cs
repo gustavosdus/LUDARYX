@@ -951,7 +951,9 @@ public partial class MainWindow : Window
         var coverImage = LoadHomeArtwork(game.DisplayCover);
         ApplyArtworkWithFade(SelectedArtworkImage, heroImage ?? coverImage);
         ApplyArtworkWithFade(TvHeroArtwork, heroImage ?? coverImage);
-        ApplyArtworkWithFade(TvHeroPreviewImage, coverImage ?? heroImage);
+        // No hero/header do modo TV, prioriza sempre a arte horizontal.
+        // A capa vertical fica apenas como fallback quando não houver arte horizontal disponível.
+        ApplyArtworkWithFade(TvHeroPreviewImage, heroImage ?? coverImage);
 
         RefreshSelectedLocalizedDescriptionAsync(game);
     }
