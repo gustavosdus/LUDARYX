@@ -48,6 +48,7 @@ public sealed class GamepadService : IDisposable
     private const int MaxHidReportBytes = 4096;
     private const uint ERROR_SUCCESS = 0;
     private const uint ERROR_DEVICE_NOT_CONNECTED = 1167;
+    private const byte DigitalTriggerThreshold = 48;
     private readonly DispatcherTimer _timer;
     private readonly EventHandler _tickHandler;
     private GamepadState _previous = new(false, GamepadButtons.None, 0, 0, 0, 0);
@@ -703,9 +704,13 @@ public sealed class GamepadService : IDisposable
         var result = XInputGetState(0, out var state);
         if (result == ERROR_SUCCESS)
         {
-            var current = new GamepadState(true, (GamepadButtons)state.Gamepad.wButtons,
-                state.Gamepad.sThumbLX, state.Gamepad.sThumbLY,
-                state.Gamepad.bLeftTrigger, state.Gamepad.bRightTrigger);
+            var current = WithDigitalTriggers(new GamepadState(
+                true,
+                (GamepadButtons)state.Gamepad.wButtons,
+                state.Gamepad.sThumbLX,
+                state.Gamepad.sThumbLY,
+                state.Gamepad.bLeftTrigger,
+                state.Gamepad.bRightTrigger));
             ActiveDeviceKind = GamepadDeviceKind.Xbox;
             StateChanged?.Invoke(this, current);
             _previous = current;
@@ -845,9 +850,34 @@ public sealed class GamepadService : IDisposable
         var ly = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
         var lt = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
         var rt = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-        return new GamepadState(true, buttons, lx, ly,
+        return WithDigitalTriggers(new GamepadState(
+            true,
+            buttons,
+            lx,
+            ly,
             (byte)Math.Clamp((lt + 32768) / 256, 0, 255),
-            (byte)Math.Clamp((rt + 32768) / 256, 0, 255));
+            (byte)Math.Clamp((rt + 32768) / 256, 0, 255)));
+    }
+
+    private static GamepadState WithDigitalTriggers(GamepadState state)
+    {
+        var buttons = state.Buttons;
+
+        // Xbox/XInput exposes LT/RT as analog axes rather than bits in wButtons.
+        // Convert a deliberate trigger press into the same digital flags already
+        // produced by the DualSense HID path, so the rest of the launcher can use
+        // one input model for LT/RT and L2/R2.
+        if (state.LeftTrigger >= DigitalTriggerThreshold)
+            buttons |= GamepadButtons.LeftTriggerDigital;
+        else
+            buttons &= ~GamepadButtons.LeftTriggerDigital;
+
+        if (state.RightTrigger >= DigitalTriggerThreshold)
+            buttons |= GamepadButtons.RightTriggerDigital;
+        else
+            buttons &= ~GamepadButtons.RightTriggerDigital;
+
+        return state with { Buttons = buttons };
     }
 
     private static void AddSdlButton(ref GamepadButtons result, GamepadButtons mapped, int sdlButton, IntPtr controller)
@@ -886,9 +916,13 @@ public sealed class GamepadService : IDisposable
         var ly = SDL_JoystickGetAxis(joystick, 1);
         var lt = SDL_JoystickGetAxis(joystick, 4);
         var rt = SDL_JoystickGetAxis(joystick, 5);
-        return new GamepadState(true, buttons, lx, ly,
+        return WithDigitalTriggers(new GamepadState(
+            true,
+            buttons,
+            lx,
+            ly,
             (byte)Math.Clamp((lt + 32768) / 256, 0, 255),
-            (byte)Math.Clamp((rt + 32768) / 256, 0, 255));
+            (byte)Math.Clamp((rt + 32768) / 256, 0, 255)));
     }
 
     private static void AddRawButton(ref GamepadButtons result, GamepadButtons mapped, int button, IntPtr joystick)
