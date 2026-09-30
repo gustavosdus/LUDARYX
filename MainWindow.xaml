@@ -575,7 +575,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="12"
+                                        <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="14"
                                                 Background="#0B1423" BorderThickness="2" CornerRadius="8"
                                                 RenderTransformOrigin="0.5,0.5"
                                                 MouseEnter="Cover_MouseEnter"
@@ -647,8 +647,10 @@
                         Style="{StaticResource LudaryxSelectedPanel}" Margin="0,12,14,14">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
-                            <Border Height="160" Background="#07111C" CornerRadius="8" ClipToBounds="True">
-                                <Image x:Name="SelectedArtworkImage" Stretch="UniformToFill"/>
+                            <Border Height="160" Background="#07111C" CornerRadius="8" ClipToBounds="True"
+                                    BorderBrush="#1C344C" BorderThickness="1">
+                                <Image x:Name="SelectedArtworkImage" Stretch="Uniform"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
                                        Foreground="White" FontSize="20" FontWeight="Bold"
