@@ -662,7 +662,7 @@ public partial class MainWindow : Window
         }
 
         const int columns = 6;
-        const double cellHorizontalSpace = 22; // margem do card + folga para seleção/glow
+        const double cellHorizontalSpace = 38; // 28 px de margem do card + folga para borda/foco
         var availableCardWidth = Math.Max(96, (libraryWidth / columns) - cellHorizontalSpace);
 
         var vertical = _settings.CoverMode == "Vertical";
@@ -1964,7 +1964,7 @@ public partial class MainWindow : Window
     {
         if (msg == WM_GETMINMAXINFO && !_fullscreen)
         {
-            ApplyMaximizedWorkArea(hwnd, lParam);
+            ApplyWindowMinMaxInfo(hwnd, lParam);
             handled = true;
         }
         else if (msg == WM_DISPLAYCHANGE && _fullscreen)
@@ -1975,7 +1975,7 @@ public partial class MainWindow : Window
         return IntPtr.Zero;
     }
 
-    private static void ApplyMaximizedWorkArea(IntPtr hwnd, IntPtr lParam)
+    private void ApplyWindowMinMaxInfo(IntPtr hwnd, IntPtr lParam)
     {
         var monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
         if (monitor == IntPtr.Zero)
@@ -1995,8 +1995,24 @@ public partial class MainWindow : Window
         minMaxInfo.ptMaxSize.Y = workArea.Bottom - workArea.Top;
         minMaxInfo.ptMaxTrackSize = minMaxInfo.ptMaxSize;
 
+        // Como tratamos WM_GETMINMAXINFO manualmente por causa do WindowChrome,
+        // o Windows não aplica sozinho MinWidth/MinHeight do WPF. Define o mínimo
+        // também no nível nativo, respeitando o DPI do monitor atual.
+        var dpi = GetDpiForWindow(hwnd);
+        if (dpi == 0) dpi = 96;
+        var scale = dpi / 96.0;
+        minMaxInfo.ptMinTrackSize.X = Math.Min(
+            minMaxInfo.ptMaxTrackSize.X,
+            (int)Math.Ceiling(MinWidth * scale));
+        minMaxInfo.ptMinTrackSize.Y = Math.Min(
+            minMaxInfo.ptMaxTrackSize.Y,
+            (int)Math.Ceiling(MinHeight * scale));
+
         Marshal.StructureToPtr(minMaxInfo, lParam, true);
     }
+
+    [DllImport("user32.dll")]
+    private static extern uint GetDpiForWindow(IntPtr hwnd);
 
     private const int WM_GETMINMAXINFO = 0x0024;
     private const int WM_DISPLAYCHANGE = 0x007E;
