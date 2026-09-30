@@ -43,6 +43,7 @@ public sealed class DuplicateDetectionService
             if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
         text = sb.ToString().Normalize(NormalizationForm.FormC);
         text = Regex.Replace(text, @"\b(goty|game of the year|deluxe|ultimate|definitive|complete|edition|remastered|remake|hd|collection|bundle)\b", " ");
+        text = Regex.Replace(text, @"\b(copy|copia|cópia|duplicate|duplicado|duplicada)\b", " ");
         text = Regex.Replace(text, @"[^a-z0-9]+", " ");
         return Regex.Replace(text, @"\s+", " ").Trim();
     }
