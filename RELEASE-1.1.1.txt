@@ -1,0 +1,15 @@
+# LUDARYX 1.1.1
+
+A versão 1.1.1 é uma atualização corretiva da série 1.1, focada na estabilidade da interface, no modo tela cheia e na interação por mouse.
+
+## Correções
+- O modo tela cheia não pode mais ser arrastado, destacado ou redimensionado como uma janela comum.
+- As áreas nativas de legenda e redimensionamento do WindowChrome são desativadas enquanto o fullscreen está ativo e restauradas ao sair.
+- A barra de pesquisa voltou a aceitar foco e digitação por clique do mouse, mantendo também os atalhos de teclado.
+- Controles interativos do cabeçalho deixam de iniciar o arraste da janela.
+- O hover das capas não força mais a reconstrução completa da grade, eliminando o efeito de piscar/apagar durante a seleção com o mouse.
+- O filtro de gêneros é reconstruído ao trocar o idioma e passa a atualizar corretamente os nomes exibidos nos idiomas suportados.
+- Corrigida a verificação de hit test do WindowChrome para usar IInputElement, eliminando o erro de compilação CS1503.
+
+## Atualização
+A versão 1.1.1 usa o mesmo AppId das versões anteriores e pode ser instalada por cima da 1.1.0, preservando os dados locais compatíveis.
