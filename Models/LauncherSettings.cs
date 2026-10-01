@@ -4,6 +4,7 @@ namespace UnifiedGameLauncher.Models;
 
 public sealed class LauncherSettings
 {
+    // Legado 1.1.x: mantido para desserializar configurações antigas. Jogos Xbox/Store agora são sempre exibidos.
     public bool ShowStoreApps { get; set; } = true;
     public bool StartClientsAutomatically { get; set; } = true;
     public bool KeepLauncherOpen { get; set; } = true;
@@ -51,6 +52,7 @@ public sealed class LauncherSettings
         "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
     };
     public string LibrarySortMode { get; set; } = "Name";
+    // Legado 1.1.x: consolidado em AutoHideDuplicateSecondary.
     public bool ShowOnlyPrimaryDuplicates { get; set; } = false;
     public ShortcutSettings Shortcuts { get; set; } = new();
     public Dictionary<string, int> SteamGridDbGameIds { get; set; } = new();
