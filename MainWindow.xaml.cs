@@ -73,6 +73,7 @@ public partial class MainWindow : Window
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
     private readonly Dictionary<string, double> _artworkAspectRatioCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _syncingLibraryColumnsSlider;
+    private bool _syncingToolbarPreferenceSliders;
 
     #endregion
 
@@ -91,7 +92,7 @@ public partial class MainWindow : Window
         {
             _mainWindowLoaded = true;
             _settings = _settingsService.Load();
-            SyncLibraryColumnsSlider();
+            SyncToolbarPreferenceSliders();
             if (_settings.AutoCleanupCache)
                 _ = Task.Run(() => CacheMaintenanceService.CleanupToLimit(_settings.MaxCacheSizeMb));
             LocalizationService.SetLanguage(_settings.Language);
@@ -320,7 +321,7 @@ public partial class MainWindow : Window
         await SetLibraryLoadingAsync(true, loadingMessage);
 
         _settings = _settingsService.Load();
-        SyncLibraryColumnsSlider();
+        SyncToolbarPreferenceSliders();
         LocalizationService.SetLanguage(_settings.Language);
         ApplyLanguage();
         ApplyVisualSettings();
@@ -692,16 +693,20 @@ public partial class MainWindow : Window
                 5 => 240d,
                 _ => 196d
             };
-        var width = Math.Min(maxWidth, availableCardWidth);
+        const double cardBorderTotal = 4; // 2 px em cada lado.
+        var outerWidth = Math.Min(maxWidth, availableCardWidth);
+        var contentWidth = Math.Max(1, outerWidth - cardBorderTotal);
 
         foreach (var game in _games)
         {
-            var height = vertical
-                ? width * 1.5
-                : width / GetArtworkAspectRatio(game.DisplayCover, 16.0 / 9.0);
+            var contentHeight = vertical
+                ? contentWidth * 1.5
+                : contentWidth / GetArtworkAspectRatio(game.DisplayCover, 16.0 / 9.0);
 
-            game.CoverWidth = Math.Round(width, 1);
-            game.CoverHeight = Math.Round(height, 1);
+            // A proporção é aplicada à área interna, não ao tamanho externo do Border.
+            // Isso elimina a faixa vazia lateral causada pela espessura do contorno.
+            game.CoverWidth = Math.Round(contentWidth + cardBorderTotal, 1);
+            game.CoverHeight = Math.Round(contentHeight + cardBorderTotal, 1);
         }
 
         GameList?.Items.Refresh();
@@ -1808,12 +1813,15 @@ public partial class MainWindow : Window
             RefreshVisibleButton,
             ClearFiltersButton,
             AddGameButton,
-            LibraryColumnsSlider
+            LibraryColumnsSlider,
+            CoverModeSlider,
+            ThemeSlider
         };
 
         if (_fullscreen)
         {
             controls.Add(FullscreenSearchBox);
+            controls.Add(FullscreenSettingsButton);
             controls.Add(FullscreenToolbarButton);
         }
         else
@@ -2037,13 +2045,16 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (ReferenceEquals(controls[_toolbarIndex], LibraryColumnsSlider))
+        if (controls[_toolbarIndex] is Slider slider)
         {
-            var old = GetColumns();
-            var next = Math.Clamp(old + delta, 4, 6);
-            if (next != old)
+            var old = slider.Value;
+            var minimum = slider.Minimum;
+            var maximum = slider.Maximum;
+            var next = Math.Clamp(old + delta, minimum, maximum);
+
+            if (Math.Abs(next - old) > 0.001)
             {
-                LibraryColumnsSlider.Value = next;
+                slider.Value = next;
                 PlayNavigationSound();
             }
             return;
@@ -2062,9 +2073,9 @@ public partial class MainWindow : Window
             case ComboBox combo:
                 combo.IsDropDownOpen = !combo.IsDropDownOpen;
                 break;
-            case Slider slider when ReferenceEquals(slider, LibraryColumnsSlider):
-                // O seletor é ajustado por cima/baixo no teclado/controle e por
-                // arraste no mouse. Enter/A não altera o valor acidentalmente.
+            case Slider:
+                // Sliders são ajustados por cima/baixo no teclado/controle e por
+                // clique/arraste no mouse. Enter/A não altera o valor acidentalmente.
                 break;
             case Button button:
                 button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -2082,28 +2093,39 @@ public partial class MainWindow : Window
 
     private int GetColumns() => Math.Clamp(_settings.LibraryColumns, 4, 6);
 
-    private void SyncLibraryColumnsSlider()
+    private void SyncToolbarPreferenceSliders()
     {
-        if (LibraryColumnsSlider is null)
+        if (LibraryColumnsSlider is null || CoverModeSlider is null || ThemeSlider is null)
             return;
 
         _syncingLibraryColumnsSlider = true;
+        _syncingToolbarPreferenceSliders = true;
         try
         {
             LibraryColumnsSlider.Value = GetColumns();
+            CoverModeSlider.Value = string.Equals(_settings.CoverMode, "Vertical", StringComparison.OrdinalIgnoreCase)
+                ? 0
+                : 1;
+            ThemeSlider.Value = string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase)
+                ? 0
+                : 1;
         }
         finally
         {
             _syncingLibraryColumnsSlider = false;
+            _syncingToolbarPreferenceSliders = false;
         }
     }
 
-    private void LibraryColumnsSlider_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    private void ToolbarSlider_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
+        if (sender is not Slider slider)
+            return;
+
         var controls = GetToolbarControls();
         var index = controls
             .Select((control, controlIndex) => new { control, controlIndex })
-            .FirstOrDefault(item => ReferenceEquals(item.control, LibraryColumnsSlider))
+            .FirstOrDefault(item => ReferenceEquals(item.control, slider))
             ?.controlIndex ?? -1;
 
         if (index < 0)
@@ -2135,6 +2157,36 @@ public partial class MainWindow : Window
         _settingsService.Save(_settings);
         UpdateCoverDimensions();
         ScrollSelectedIntoView();
+    }
+
+    private void CoverModeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || _syncingToolbarPreferenceSliders)
+            return;
+
+        var mode = e.NewValue < 0.5 ? "Vertical" : "Horizontal";
+        if (string.Equals(_settings.CoverMode, mode, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        _settings.CoverMode = mode;
+        _settingsService.Save(_settings);
+        ApplyCoverMode();
+        ScrollSelectedIntoView();
+    }
+
+    private void ThemeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || _syncingToolbarPreferenceSliders)
+            return;
+
+        var theme = e.NewValue < 0.5 ? "Light" : "Dark";
+        if (string.Equals(_settings.Theme, theme, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        _settings.Theme = theme;
+        _settingsService.Save(_settings);
+        ApplyVisualSettings();
+        UpdateSelectedGamePresentation();
     }
 
     private void MoveSelection(int delta)
@@ -2601,6 +2653,7 @@ public partial class MainWindow : Window
             ? Visibility.Visible
             : Visibility.Collapsed;
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        FullscreenSettingsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
 
         FilterSummaryBorder.Visibility = _fullscreen ? Visibility.Collapsed : Visibility.Visible;
