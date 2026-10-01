@@ -1,0 +1,19 @@
+# LUDARYX 1.1.2
+
+A versão 1.1.2 é uma atualização corretiva da série 1.1, focada em navegação, organização da biblioteca, consistência visual e gerenciamento de itens.
+
+## Correções e melhorias
+- A verificação automática de atualizações agora consulta o GitHub em toda inicialização quando a opção correspondente estiver habilitada.
+- O painel lateral e o hero do modo tela cheia passam a acompanhar corretamente os temas claro e escuro.
+- A configuração de duplicatas foi simplificada para uma única opção de exibir apenas a versão principal, mantendo a prioridade automática por plataforma em uma seção própria.
+- A opção antiga de ocultar Xbox / Microsoft Store foi removida; jogos detectados dessas fontes permanecem sempre disponíveis na biblioteca.
+- Adicionada a opção de ocultar simultaneamente o painel lateral e o hero.
+- Adicionado o botão VOLTAR AO TOPO para bibliotecas grandes.
+- O hero do modo tela cheia foi reorganizado para impedir que descrições longas cortem os botões de ação.
+- O painel lateral agora é navegável por controle no modo padrão.
+- Select / Back entra e sai do painel lateral sem depender da posição do jogo na grade.
+- Jogos ocultos agora podem ser restaurados explicitamente pelo botão DESOCULTAR no Gerenciador de Itens.
+- Mantidas as correções anteriores de fullscreen, pesquisa por mouse, hover das capas e localização dos gêneros.
+
+## Atualização
+A versão 1.1.2 usa o mesmo AppId das versões anteriores e pode ser instalada sobre a 1.1.1, preservando os dados locais compatíveis.
