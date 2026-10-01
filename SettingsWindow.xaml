@@ -97,20 +97,6 @@
                             <CheckBox x:Name="HideGameDetailsPanelsCheck"
                                       Content="Ocultar painel lateral e hero"
                                       Margin="0,10,0,0"/>
-                            <Grid Margin="0,12,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="82"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Jogos por linha"
-                                           Foreground="{StaticResource LudaryxTextSecondary}"
-                                           VerticalAlignment="Center"/>
-                                <ComboBox x:Name="LibraryColumnsCombo" Grid.Column="1" MinWidth="74">
-                                    <ComboBoxItem Content="4" Tag="4"/>
-                                    <ComboBoxItem Content="5" Tag="5"/>
-                                    <ComboBoxItem Content="6" Tag="6"/>
-                                </ComboBox>
-                            </Grid>
                         </StackPanel>
                     </Border>
 
