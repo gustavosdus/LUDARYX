@@ -652,7 +652,7 @@ public partial class MainWindow : Window
 
     private void UpdateCoverDimensions()
     {
-        // A grade usa seis colunas. O painel lateral do redesign reduz a largura
+        // A grade usa de quatro a seis colunas. O painel lateral do redesign reduz a largura
         // disponível no desktop, então dimensões fixas faziam as capas ultrapassarem
         // suas células e serem recortadas. Calculamos a largura real por célula e
         // preservamos a proporção da arte em ambos os modos.
@@ -662,12 +662,26 @@ public partial class MainWindow : Window
             libraryWidth = Math.Max(720, ActualWidth - (_fullscreen ? 36 : 370));
         }
 
-        const int columns = 6;
+        var columns = GetColumns();
+        GameList.Tag = columns;
+
         const double cellHorizontalSpace = 38; // 28 px de margem do card + folga para borda/foco
         var availableCardWidth = Math.Max(96, (libraryWidth / columns) - cellHorizontalSpace);
 
         var vertical = _settings.CoverMode == "Vertical";
-        var maxWidth = vertical ? 180d : 196d;
+        var maxWidth = vertical
+            ? columns switch
+            {
+                4 => 250d,
+                5 => 215d,
+                _ => 180d
+            }
+            : columns switch
+            {
+                4 => 300d,
+                5 => 240d,
+                _ => 196d
+            };
         var width = Math.Min(maxWidth, availableCardWidth);
 
         foreach (var game in _games)
@@ -1993,7 +2007,7 @@ public partial class MainWindow : Window
 
     #region Game selection and actions
 
-    private int GetColumns() => 6;
+    private int GetColumns() => Math.Clamp(_settings.LibraryColumns, 4, 6);
 
     private void MoveSelection(int delta)
     {
