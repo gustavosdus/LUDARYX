@@ -379,6 +379,20 @@ public static class LocalizationService
     {
         var normalizedText = text.Trim();
 
+        // Mantém a intenção visual de rótulos em caixa alta quando existem
+        // traduções específicas para eles. O fallback sem diferenciar maiúsculas
+        // continua útil para textos legados e conteúdo já traduzido.
+        var exact = Translations.FirstOrDefault(x =>
+            normalizedText.Equals(x.PtBr, StringComparison.Ordinal) ||
+            normalizedText.Equals(x.PtPt, StringComparison.Ordinal) ||
+            normalizedText.Equals(x.EnUs, StringComparison.Ordinal) ||
+            normalizedText.Equals(x.EnGb, StringComparison.Ordinal) ||
+            normalizedText.Equals(x.Es419, StringComparison.Ordinal) ||
+            normalizedText.Equals(x.EsEs, StringComparison.Ordinal));
+
+        if (exact is not null)
+            return exact;
+
         return Translations.FirstOrDefault(x =>
             normalizedText.Equals(x.PtBr, StringComparison.OrdinalIgnoreCase) ||
             normalizedText.Equals(x.PtPt, StringComparison.OrdinalIgnoreCase) ||
