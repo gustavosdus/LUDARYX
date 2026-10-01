@@ -48,6 +48,8 @@ public static class LocalizationService
         new("Mostrar itens ocultos na biblioteca", "Mostrar itens ocultos na biblioteca", "Show hidden items in library", "Show hidden items in library", "Mostrar elementos ocultos en la biblioteca", "Mostrar elementos ocultos en la biblioteca"),
         new("Ocultar painel lateral e hero", "Ocultar painel lateral e hero", "Hide side panel and hero", "Hide side panel and hero", "Ocultar panel lateral y hero", "Ocultar panel lateral y hero"),
         new("Jogos por linha", "Jogos por linha", "Games per row", "Games per row", "Juegos por fila", "Juegos por fila"),
+        new("Formato da capa: Vertical / Horizontal", "Formato da capa: Vertical / Horizontal", "Cover format: Vertical / Horizontal", "Cover format: Vertical / Horizontal", "Formato de portada: Vertical / Horizontal", "Formato de portada: Vertical / Horizontal"),
+        new("Tema: Claro / Escuro", "Tema: Claro / Escuro", "Theme: Light / Dark", "Theme: Light / Dark", "Tema: Claro / Oscuro", "Tema: Claro / Oscuro"),
         new("Execução", "Execução", "Launch", "Launch", "Ejecución", "Ejecución"),
         new("Iniciar clientes automaticamente", "Iniciar clientes automaticamente", "Start clients automatically", "Start clients automatically", "Iniciar clientes automáticamente", "Iniciar clientes automáticamente"),
         new("Manter launcher aberto", "Manter launcher aberto", "Keep launcher open", "Keep launcher open", "Mantener launcher abierto", "Mantener launcher abierto"),
