@@ -2911,10 +2911,13 @@ public partial class MainWindow : Window
                     // a navegação da barra e leva ao botão de sair da tela cheia.
                     _controllerToolbarMode = true;
                     var rightControls = GetToolbarControls();
-                    var fullscreenButtonIndex = rightControls.Count - 1;
-                    if (fullscreenButtonIndex >= 0 && ReferenceEquals(rightControls[fullscreenButtonIndex], FullscreenToolbarButton))
+                    var currentSearchIndex = rightControls
+                        .Select((control, index) => new { control, index })
+                        .FirstOrDefault(item => ReferenceEquals(item.control, FullscreenSearchBox))
+                        ?.index ?? -1;
+                    if (currentSearchIndex >= 0 && currentSearchIndex + 1 < rightControls.Count)
                     {
-                        _toolbarIndex = fullscreenButtonIndex;
+                        _toolbarIndex = currentSearchIndex + 1;
                         FocusToolbarControl();
                         PlayNavigationSound();
                         e.Handled = true;
@@ -2928,8 +2931,11 @@ public partial class MainWindow : Window
                     // da barra. Dentro do texto, esquerda/direita seguem editando.
                     _controllerToolbarMode = true;
                     var leftControls = GetToolbarControls();
-                    var searchIndex = leftControls.Count - 2;
-                    if (searchIndex > 0 && ReferenceEquals(leftControls[searchIndex], FullscreenSearchBox))
+                    var searchIndex = leftControls
+                        .Select((control, index) => new { control, index })
+                        .FirstOrDefault(item => ReferenceEquals(item.control, FullscreenSearchBox))
+                        ?.index ?? -1;
+                    if (searchIndex > 0)
                     {
                         _toolbarIndex = searchIndex;
                         MoveToolbarSelection(-1);
