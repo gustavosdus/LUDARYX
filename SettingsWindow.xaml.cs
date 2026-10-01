@@ -35,9 +35,7 @@ public partial class SettingsWindow : Window
         StartWithWindowsCheck.IsChecked = StartupService.IsEnabled();
         _settings.StartWithWindows = StartWithWindowsCheck.IsChecked == true;
         StartFullscreenCheck.IsChecked = _settings.StartFullscreen;
-        CoverModeCombo.SelectedIndex = _settings.CoverMode switch { "Horizontal" => 1, "Vertical" => 2, _ => 0 };
         NeonLineColorCombo.SelectedIndex = _settings.NeonLineColor == "LightBlue" ? 1 : 0;
-        ThemeCombo.SelectedIndex = _settings.Theme == "Light" ? 1 : 0;
         SelectLanguage(_settings.Language);
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
         CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
@@ -97,7 +95,7 @@ public partial class SettingsWindow : Window
         var query = SettingsSearchBox.Text.Trim();
         SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
-        SetSectionVisibility(AppearanceSection, query, "aparência capas linha neon tema idioma");
+        SetSectionVisibility(AppearanceSection, query, "aparência linha neon idioma");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
         SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
         SetSectionVisibility(DuplicatesSection, query, "duplicatas versão principal prioridade plataforma");
@@ -174,9 +172,7 @@ public partial class SettingsWindow : Window
                 MessageBoxImage.Error);
             return;
         }
-        _settings.CoverMode = (CoverModeCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? "Auto";
         _settings.NeonLineColor = (NeonLineColorCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() == "LightBlue" ? "LightBlue" : "Red";
-        _settings.Theme = (ThemeCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() == "Light" ? "Light" : "Dark";
         _settings.Language = (LanguageCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? LocalizationService.PortugueseBrazil;
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
         _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
