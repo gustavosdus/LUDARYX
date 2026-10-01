@@ -1162,7 +1162,7 @@ public partial class MainWindow : Window
 
             SelectedArtworkBorder.Width = sideWidth;
             SelectedArtworkBorder.Height = sideHeight;
-            SelectedArtworkBorder.HorizontalAlignment = HorizontalAlignment.Center;
+            SelectedArtworkBorder.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
 
             const double heroMaxWidth = 340;
             const double heroMaxHeight = 190;
