@@ -580,6 +580,7 @@
                                 SmallChange="1" LargeChange="1"
                                 IsSnapToTickEnabled="True"
                                 ValueChanged="LibraryColumnsSlider_ValueChanged"
+                                GotKeyboardFocus="LibraryColumnsSlider_GotKeyboardFocus"
                                 ToolTip="Jogos por linha"/>
 
                         <TextBlock x:Name="FullscreenLibraryLoadingText" Text="CARREGANDO..."
@@ -730,6 +731,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="14"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                                 Background="#0B1423" BorderThickness="2" CornerRadius="8"
                                                 RenderTransformOrigin="0.5,0.5"
                                                 MouseEnter="Cover_MouseEnter"
