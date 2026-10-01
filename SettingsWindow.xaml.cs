@@ -243,6 +243,18 @@ public partial class SettingsWindow : Window
         Close();
     }
 
+    private void Unhide_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Button b || b.Tag is not GameVisibilityItem item)
+            return;
+
+        _settings.HiddenGameIds.RemoveAll(x =>
+            x.Equals(item.Game.ProviderId, StringComparison.OrdinalIgnoreCase));
+        item.SetHidden(false);
+        item.IsVisible = true;
+        _settingsService.Save(_settings);
+    }
+
     private void RestoreExcluded_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not System.Windows.Controls.Button b || b.Tag is not GameVisibilityItem item) return;
@@ -523,9 +535,20 @@ public partial class SettingsWindow : Window
         public string ProviderId => Game.ProviderId;
         public bool IsFavorite => Game.IsFavorite;
         public bool IsExcluded => Game.IsExcluded;
+        public bool IsHidden => Game.IsHidden;
         private bool _isVisible;
         public bool IsVisible { get => _isVisible; set { if (_isVisible == value) return; _isVisible = value; OnPropertyChanged(); } }
         public GameVisibilityItem(Game game, bool isVisible) { Game = game; _isVisible = isVisible; }
+
+        public void SetHidden(bool hidden)
+        {
+            if (Game.IsHidden == hidden)
+                return;
+
+            Game.IsHidden = hidden;
+            OnPropertyChanged(nameof(IsHidden));
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
