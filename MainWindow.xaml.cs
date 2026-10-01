@@ -2098,6 +2098,23 @@ public partial class MainWindow : Window
         }
     }
 
+    private void LibraryColumnsSlider_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        var controls = GetToolbarControls();
+        var index = controls
+            .Select((control, controlIndex) => new { control, controlIndex })
+            .FirstOrDefault(item => ReferenceEquals(item.control, LibraryColumnsSlider))
+            ?.controlIndex ?? -1;
+
+        if (index < 0)
+            return;
+
+        _controllerToolbarMode = true;
+        _toolbarIndex = index;
+        UpdateControllerSelection();
+        ControllerStatusText.Text = GetControllerStatusText();
+    }
+
     private void LibraryColumnsSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (!IsLoaded || _syncingLibraryColumnsSlider)
