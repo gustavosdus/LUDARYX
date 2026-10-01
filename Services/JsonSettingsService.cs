@@ -76,10 +76,27 @@ public sealed class JsonSettingsService
             {
                 settings.DuplicatePlatformPriority = new()
                 {
-                    "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+                    "Steam", "Epic", "GOG", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
                 };
             }
             settings.Shortcuts ??= new ShortcutSettings();
+
+            // 1.1.3 altera apenas a prioridade padrão histórica. Preferências
+            // personalizadas continuam intactas; somente a sequência exata antiga
+            // Steam > GOG > Epic é migrada para Steam > Epic > GOG.
+            var legacyDuplicatePriority = new[]
+            {
+                "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+            };
+            if (settings.DuplicatePlatformPriority.SequenceEqual(
+                    legacyDuplicatePriority,
+                    StringComparer.OrdinalIgnoreCase))
+            {
+                settings.DuplicatePlatformPriority = new()
+                {
+                    "Steam", "Epic", "GOG", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+                };
+            }
 
             // 1.1.2 consolida as duas preferências antigas de duplicatas em uma só.
             // Também elimina a opção de ocultar Xbox/Microsoft Store: esses jogos
