@@ -31,13 +31,17 @@ public static class SearchNormalizationService
         if (string.IsNullOrWhiteSpace(normalizedQuery))
             return true;
 
+        var canonicalGenres = string.Join(" ", game.Metadata.Genres);
+        var localizedGenres = GenreService.DisplayManyCommaSeparated(game.Metadata.Genres);
+
         var fields = new[]
         {
             game.Name,
             game.PlatformDisplay,
             game.Metadata.Developer,
             game.Metadata.Publisher,
-            string.Join(" ", game.Metadata.Genres),
+            canonicalGenres,
+            localizedGenres,
             game.Metadata.ReleaseYear?.ToString()
         };
 
