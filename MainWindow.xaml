@@ -581,11 +581,11 @@
                                         Click="SelectedFavorite_Click"/>
                             </StackPanel>
                         </Grid>
-                        <Border Grid.Column="1" Width="340" Height="190"
+                        <Border x:Name="TvHeroPreviewBorder" Grid.Column="1" Width="340" Height="190"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Background="{DynamicResource TvHeroPreviewBackground}" BorderBrush="{DynamicResource TvHeroPreviewBorder}"
                                 BorderThickness="1" CornerRadius="10">
-                            <Image x:Name="TvHeroPreviewImage" Stretch="UniformToFill"/>
+                            <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"/>
                         </Border>
                     </Grid>
                 </Grid>
@@ -632,7 +632,7 @@
                                             </Border.Style>
                                             <Grid ClipToBounds="True">
                                                 <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}"
-                                                       Stretch="UniformToFill" SnapsToDevicePixels="True"/>
+                                                       Stretch="Uniform" SnapsToDevicePixels="True"/>
 
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7">
@@ -694,9 +694,9 @@
                         Margin="0,12,14,14">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
-                            <Border Height="160" Background="{DynamicResource SelectedPanelArtworkBackground}" CornerRadius="8" ClipToBounds="True"
+                            <Border x:Name="SelectedArtworkBorder" Height="160" Background="{DynamicResource SelectedPanelArtworkBackground}" CornerRadius="8" ClipToBounds="True"
                                     BorderBrush="{DynamicResource SelectedPanelArtworkBorder}" BorderThickness="1">
-                                <Image x:Name="SelectedArtworkImage" Stretch="UniformToFill"
+                                <Image x:Name="SelectedArtworkImage" Stretch="Uniform"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
