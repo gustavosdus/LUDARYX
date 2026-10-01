@@ -759,7 +759,8 @@ public partial class MainWindow : Window
             if (source is TextBox ||
                 source is Button ||
                 source is ComboBox ||
-                System.Windows.Shell.WindowChrome.GetIsHitTestVisibleInChrome(source))
+                source is IInputElement inputElement &&
+                System.Windows.Shell.WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
             {
                 return true;
             }
