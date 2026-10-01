@@ -198,14 +198,13 @@ public partial class MainWindow : Window
             if (!_settings.CheckForUpdatesOnStartup)
                 return;
 
-            var lastCheckUtc = _settings.LastUpdateCheckUtc;
-            if (lastCheckUtc.HasValue && DateTime.UtcNow - lastCheckUtc.Value < TimeSpan.FromHours(24))
-                return;
-
+            // A opção diz "ao iniciar": quando habilitada, consulta o GitHub em
+            // toda inicialização. LastUpdateCheckUtc é apenas informativo e não deve
+            // impedir uma nova versão publicada poucas horas após a última abertura.
+            var result = await GitHubUpdateService.CheckForUpdatesAsync();
             _settings.LastUpdateCheckUtc = DateTime.UtcNow;
             _settingsService.Save(_settings);
 
-            var result = await GitHubUpdateService.CheckForUpdatesAsync();
             if (!result.IsUpdateAvailable)
                 return;
 
@@ -337,9 +336,6 @@ public partial class MainWindow : Window
             {
                 var discovered = await _library.LoadLibraryAsync(discoveryCts.Token)
                     .ConfigureAwait(false);
-
-                if (!settingsSnapshot.ShowStoreApps)
-                    discovered = discovered.Where(g => g.Platform != GamePlatform.Xbox).ToList();
 
                 discovered = discovered
                     .Where(g => !settingsSnapshot.ExcludedGameIds.Contains(
@@ -1188,11 +1184,6 @@ public partial class MainWindow : Window
              !g.IsDuplicate ||
              !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var preferredProvider) ||
              g.ProviderId.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase) ||
-             _specialFilter == "duplicates") &&
-            (!_settings.ShowOnlyPrimaryDuplicates ||
-             !g.IsDuplicate ||
-             !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var primaryProvider) ||
-             g.ProviderId.Equals(primaryProvider, StringComparison.OrdinalIgnoreCase) ||
              _specialFilter == "duplicates") &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
@@ -2352,6 +2343,24 @@ public partial class MainWindow : Window
         var toolbarItemSelectedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#555B63" : "#10283D");
         var searchCaretColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#000000" : "#FFFFFF");
 
+        // Superfícies que antes permaneciam fixas no tema escuro.
+        var selectedPanelBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#EEF1F5" : "#0A1421");
+        var selectedPanelBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#A8B2C0" : "#1E3850");
+        var selectedPanelArtworkBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E2E7ED" : "#07111C");
+        var selectedPanelArtworkBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#AAB5C3" : "#1C344C");
+        var selectedPanelTextPrimaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#111827" : "#F5F7FA");
+        var selectedPanelTextSecondaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#566273" : "#9AAABD");
+        var selectedPanelMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#82D8FF");
+        var selectedPanelDividerColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#BCC5D0" : "#1B3147");
+
+        var tvHeroBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E7EBF0" : "#07111D");
+        var tvHeroTextPrimaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#111827" : "#FFFFFF");
+        var tvHeroTextSecondaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#4F5D6E" : "#A9B6C7");
+        var tvHeroMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#9EDBFF");
+        var tvHeroDescriptionColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#263445" : "#D8E0EA");
+        var tvHeroPreviewBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#DDE3EA" : "#33101C29");
+        var tvHeroPreviewBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#9EABB9" : "#31506D");
+
         MainRoot.Background = topBrush;
         HeaderGrid.Background = topBrush;
         ToolbarBorder.Background = topBrush;
@@ -2370,6 +2379,29 @@ public partial class MainWindow : Window
         SetOrUpdateBrushResource("ToolbarItemHoverBackground", toolbarItemHoverColor);
         SetOrUpdateBrushResource("ToolbarItemSelectedBackground", toolbarItemSelectedColor);
         SetOrUpdateBrushResource("SearchCaretBrush", searchCaretColor);
+        SetOrUpdateBrushResource("SelectedPanelBackground", selectedPanelBackgroundColor);
+        SetOrUpdateBrushResource("SelectedPanelBorder", selectedPanelBorderColor);
+        SetOrUpdateBrushResource("SelectedPanelArtworkBackground", selectedPanelArtworkBackgroundColor);
+        SetOrUpdateBrushResource("SelectedPanelArtworkBorder", selectedPanelArtworkBorderColor);
+        SetOrUpdateBrushResource("SelectedPanelTextPrimary", selectedPanelTextPrimaryColor);
+        SetOrUpdateBrushResource("SelectedPanelTextSecondary", selectedPanelTextSecondaryColor);
+        SetOrUpdateBrushResource("SelectedPanelMeta", selectedPanelMetaColor);
+        SetOrUpdateBrushResource("SelectedPanelDivider", selectedPanelDividerColor);
+        SetOrUpdateBrushResource("TvHeroBackground", tvHeroBackgroundColor);
+        SetOrUpdateBrushResource("TvHeroTextPrimary", tvHeroTextPrimaryColor);
+        SetOrUpdateBrushResource("TvHeroTextSecondary", tvHeroTextSecondaryColor);
+        SetOrUpdateBrushResource("TvHeroMeta", tvHeroMetaColor);
+        SetOrUpdateBrushResource("TvHeroDescription", tvHeroDescriptionColor);
+        SetOrUpdateBrushResource("TvHeroPreviewBackground", tvHeroPreviewBackgroundColor);
+        SetOrUpdateBrushResource("TvHeroPreviewBorder", tvHeroPreviewBorderColor);
+
+        TvHeroArtwork.Opacity = lightTheme ? 0.18 : 0.34;
+        TvHeroTint.Background = new SolidColorBrush(
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+                lightTheme ? "#A8EEF1F5" : "#B807101B"));
+        TvHeroGradientStart.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#F5EEF1F5" : "#F0060B12");
+        TvHeroGradientMiddle.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D8EEF1F5" : "#D00A1420");
+        TvHeroGradientEnd.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#A8EEF1F5" : "#900A1420");
     }
 
 
