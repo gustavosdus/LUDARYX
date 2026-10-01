@@ -41,6 +41,21 @@
         <SolidColorBrush x:Key="ToolbarItemHoverBackground" Color="#111A26"/>
         <SolidColorBrush x:Key="ToolbarItemSelectedBackground" Color="#10283D"/>
         <SolidColorBrush x:Key="SearchCaretBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SelectedPanelBackground" Color="#0A1421"/>
+        <SolidColorBrush x:Key="SelectedPanelBorder" Color="#1E3850"/>
+        <SolidColorBrush x:Key="SelectedPanelArtworkBackground" Color="#07111C"/>
+        <SolidColorBrush x:Key="SelectedPanelArtworkBorder" Color="#1C344C"/>
+        <SolidColorBrush x:Key="SelectedPanelTextPrimary" Color="#F5F7FA"/>
+        <SolidColorBrush x:Key="SelectedPanelTextSecondary" Color="#9AAABD"/>
+        <SolidColorBrush x:Key="SelectedPanelMeta" Color="#82D8FF"/>
+        <SolidColorBrush x:Key="SelectedPanelDivider" Color="#1B3147"/>
+        <SolidColorBrush x:Key="TvHeroBackground" Color="#07111D"/>
+        <SolidColorBrush x:Key="TvHeroTextPrimary" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TvHeroTextSecondary" Color="#A9B6C7"/>
+        <SolidColorBrush x:Key="TvHeroMeta" Color="#9EDBFF"/>
+        <SolidColorBrush x:Key="TvHeroDescription" Color="#D8E0EA"/>
+        <SolidColorBrush x:Key="TvHeroPreviewBackground" Color="#33101C29"/>
+        <SolidColorBrush x:Key="TvHeroPreviewBorder" Color="#31506D"/>
         <SolidColorBrush x:Key="TextPrimary" Color="#F5F7FA"/>
         <SolidColorBrush x:Key="TextSecondary" Color="#8E98AA"/>
         <SolidColorBrush x:Key="ControlBorder" Color="#202938"/>
@@ -508,20 +523,20 @@
 
             <!-- TV hero. Visible only in fullscreen. -->
             <Border x:Name="TvHeroPanel" Grid.Row="0" Height="250"
-                    Visibility="Collapsed" Background="#07111D"
-                    BorderBrush="#19324A" BorderThickness="0,0,0,1"
+                    Visibility="Collapsed" Background="{DynamicResource TvHeroBackground}"
+                    BorderBrush="{DynamicResource SelectedPanelBorder}" BorderThickness="0,0,0,1"
                     ClipToBounds="True">
                 <Grid>
                     <Image x:Name="TvHeroArtwork" Stretch="UniformToFill" Opacity="0.34">
                         <Image.Effect><BlurEffect Radius="16"/></Image.Effect>
                     </Image>
-                    <Border Background="#B807101B"/>
+                    <Border x:Name="TvHeroTint" Background="#B807101B"/>
                     <Rectangle>
                         <Rectangle.Fill>
                             <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                                <GradientStop Color="#F0060B12" Offset="0"/>
-                                <GradientStop Color="#D00A1420" Offset="0.55"/>
-                                <GradientStop Color="#900A1420" Offset="1"/>
+                                <GradientStop x:Name="TvHeroGradientStart" Color="#F0060B12" Offset="0"/>
+                                <GradientStop x:Name="TvHeroGradientMiddle" Color="#D00A1420" Offset="0.55"/>
+                                <GradientStop x:Name="TvHeroGradientEnd" Color="#900A1420" Offset="1"/>
                             </LinearGradientBrush>
                         </Rectangle.Fill>
                     </Rectangle>
@@ -532,11 +547,11 @@
                             <ColumnDefinition Width="360"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel VerticalAlignment="Center" MaxWidth="760" HorizontalAlignment="Left">
-                            <TextBlock x:Name="TvHeroTitle" Text="LUDARYX" Foreground="White"
+                            <TextBlock x:Name="TvHeroTitle" Text="LUDARYX" Foreground="{DynamicResource TvHeroTextPrimary}"
                                        FontSize="32" FontWeight="Bold" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="TvHeroMeta" Foreground="#9EDBFF" FontSize="12" Margin="0,7,0,0"/>
-                            <TextBlock x:Name="TvHeroUsage" Foreground="#A9B6C7" FontSize="11" Margin="0,5,0,0"/>
-                            <TextBlock x:Name="TvHeroDescription" Foreground="#D8E0EA"
+                            <TextBlock x:Name="TvHeroMeta" Foreground="{DynamicResource TvHeroMeta}" FontSize="12" Margin="0,7,0,0"/>
+                            <TextBlock x:Name="TvHeroUsage" Foreground="{DynamicResource TvHeroTextSecondary}" FontSize="11" Margin="0,5,0,0"/>
+                            <TextBlock x:Name="TvHeroDescription" Foreground="{DynamicResource TvHeroDescription}"
                                        FontSize="12" TextWrapping="Wrap" MaxHeight="58" Margin="0,12,0,0"/>
                             <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                                 <Button x:Name="TvPlayButton" Content="A  JOGAR"
@@ -552,7 +567,7 @@
                         </StackPanel>
                         <Border Grid.Column="1" Width="340" Height="190"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
-                                Background="#33101C29" BorderBrush="#31506D"
+                                Background="{DynamicResource TvHeroPreviewBackground}" BorderBrush="{DynamicResource TvHeroPreviewBorder}"
                                 BorderThickness="1" CornerRadius="10">
                             <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"/>
                         </Border>
@@ -646,26 +661,29 @@
 
                 <!-- Desktop selected-game panel. -->
                 <Border x:Name="SelectedGamePanel" Grid.Column="1"
-                        Style="{StaticResource LudaryxSelectedPanel}" Margin="0,12,14,14">
+                        Style="{StaticResource LudaryxSelectedPanel}"
+                        Background="{DynamicResource SelectedPanelBackground}"
+                        BorderBrush="{DynamicResource SelectedPanelBorder}"
+                        Margin="0,12,14,14">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
-                            <Border Height="160" Background="#07111C" CornerRadius="8" ClipToBounds="True"
-                                    BorderBrush="#1C344C" BorderThickness="1">
+                            <Border Height="160" Background="{DynamicResource SelectedPanelArtworkBackground}" CornerRadius="8" ClipToBounds="True"
+                                    BorderBrush="{DynamicResource SelectedPanelArtworkBorder}" BorderThickness="1">
                                 <Image x:Name="SelectedArtworkImage" Stretch="Uniform"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
-                                       Foreground="White" FontSize="20" FontWeight="Bold"
+                                       Foreground="{DynamicResource SelectedPanelTextPrimary}" FontSize="20" FontWeight="Bold"
                                        TextWrapping="Wrap" Margin="0,14,0,0"/>
-                            <TextBlock x:Name="SelectedGameMetaText" Foreground="#82D8FF"
+                            <TextBlock x:Name="SelectedGameMetaText" Foreground="{DynamicResource SelectedPanelMeta}"
                                        FontSize="11" Margin="0,5,0,0" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="SelectedGameUsageText" Foreground="#9AAABD"
+                            <TextBlock x:Name="SelectedGameUsageText" Foreground="{DynamicResource SelectedPanelTextSecondary}"
                                        FontSize="10" Margin="0,7,0,0" TextWrapping="Wrap"/>
 
-                            <Border Height="1" Background="#1B3147" Margin="0,13"/>
+                            <Border Height="1" Background="{DynamicResource SelectedPanelDivider}" Margin="0,13"/>
 
-                            <TextBlock Text="Descrição" Foreground="#788DA5" FontSize="10" FontWeight="SemiBold"/>
-                            <TextBlock x:Name="SelectedGameDescriptionText" Foreground="#D4DCE7"
+                            <TextBlock Text="Descrição" Foreground="{DynamicResource SelectedPanelTextSecondary}" FontSize="10" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="SelectedGameDescriptionText" Foreground="{DynamicResource SelectedPanelTextPrimary}"
                                        FontSize="11" TextWrapping="Wrap" MaxHeight="94" Margin="0,5,0,0"/>
 
                             <StackPanel Margin="0,16,0,0">
