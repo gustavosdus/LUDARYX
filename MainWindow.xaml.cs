@@ -1155,7 +1155,14 @@ public partial class MainWindow : Window
         // inteira com Stretch=Uniform, sem letterboxing e sem recorte.
         Dispatcher.BeginInvoke(() =>
         {
-            var sideMaxWidth = Math.Max(1, SelectedGamePanel.ActualWidth - 30);
+            // ViewportWidth já desconta a barra de rolagem vertical. Usá-lo evita
+            // que a capa seja parcialmente escondida quando nome/descrição tornam
+            // o painel alto o suficiente para exibir o scrollbar.
+            var viewportWidth = SelectedGameScrollViewer.ViewportWidth;
+            var sideMaxWidth = viewportWidth > 1
+                ? viewportWidth
+                : Math.Max(1, SelectedGamePanel.ActualWidth - 30);
+
             const double sideMaxHeight = 160;
             var sideWidth = Math.Min(sideMaxWidth, sideMaxHeight * ratio);
             var sideHeight = sideWidth / ratio;
@@ -1172,6 +1179,44 @@ public partial class MainWindow : Window
             TvHeroPreviewBorder.Width = heroWidth;
             TvHeroPreviewBorder.Height = heroHeight;
         }, DispatcherPriority.Loaded);
+    }
+
+    private void SelectedGameScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // O aparecimento/desaparecimento da barra vertical altera o viewport.
+        // Recalcula o quadro usando a nova largura útil.
+        UpdateSelectedArtworkFrames(SelectedArtworkImage.Source);
+    }
+
+    private void FramedArtworkImage_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Image image ||
+            image.ActualWidth <= 0 ||
+            image.ActualHeight <= 0)
+        {
+            return;
+        }
+
+        var radius = 0d;
+        DependencyObject? current = image;
+
+        while (current is not null)
+        {
+            current = VisualTreeHelper.GetParent(current);
+            if (current is Border border)
+            {
+                radius = Math.Max(
+                    0,
+                    border.CornerRadius.TopLeft -
+                    Math.Max(border.BorderThickness.Left, border.BorderThickness.Top));
+                break;
+            }
+        }
+
+        image.Clip = new RectangleGeometry(
+            new Rect(0, 0, image.ActualWidth, image.ActualHeight),
+            radius,
+            radius);
     }
 
     private void UpdateFilterChips()
