@@ -264,10 +264,12 @@ public partial class SettingsWindow : Window
         try
         {
             _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
-            _settings.LastUpdateCheckUtc = DateTime.UtcNow;
             _settingsService.Save(_settings);
 
             var result = await GitHubUpdateService.CheckForUpdatesAsync();
+            _settings.LastUpdateCheckUtc = DateTime.UtcNow;
+            _settingsService.Save(_settings);
+
             if (!result.IsUpdateAvailable)
             {
                 UpdateStatusText.Text = $"Você já está na versão mais recente ({result.CurrentVersionDisplay}).";
