@@ -197,25 +197,6 @@
                 </Grid>
 
                 <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.9*"/>
-                            <ColumnDefinition Width="1.1*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Margin="0,0,18,0">
-                            <TextBlock Text="Duplicatas" Style="{StaticResource LudaryxSectionTitle}"/>
-                            <CheckBox x:Name="AutoHideDuplicateSecondaryCheck" Content="Ocultar automaticamente versões duplicadas secundárias" Margin="0,4,0,0"/>
-                            <CheckBox x:Name="ShowOnlyPrimaryDuplicatesCheck" Content="Mostrar somente a versão principal de duplicatas" Margin="0,10,0,0"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="Prioridade automática por plataforma" Foreground="{StaticResource LudaryxTextSecondary}" Margin="0,0,0,5"/>
-                            <TextBox x:Name="DuplicatePriorityBox"/>
-                            <TextBlock Text="Separe as plataformas por vírgulas. Você também pode escolher a versão principal na tela de detalhes."
-                                       Foreground="#6F829A" FontSize="10" TextWrapping="Wrap" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.1*"/>
                         <ColumnDefinition Width="0.9*"/>
