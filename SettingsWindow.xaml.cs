@@ -28,7 +28,6 @@ public partial class SettingsWindow : Window
         });
         _games = games.ToList();
         _settings = Clone(settings);
-        ShowStoreAppsCheck.IsChecked = _settings.ShowStoreApps;
         ShowHiddenCheck.IsChecked = _settings.ShowHiddenApps;
         AutoStartClientsCheck.IsChecked = _settings.StartClientsAutomatically;
         KeepLauncherOpenCheck.IsChecked = _settings.KeepLauncherOpen;
@@ -41,8 +40,7 @@ public partial class SettingsWindow : Window
         SelectLanguage(_settings.Language);
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
         CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
-        AutoHideDuplicateSecondaryCheck.IsChecked = _settings.AutoHideDuplicateSecondary;
-        ShowOnlyPrimaryDuplicatesCheck.IsChecked = _settings.ShowOnlyPrimaryDuplicates;
+        AutoHideDuplicateSecondaryCheck.IsChecked = _settings.AutoHideDuplicateSecondary || _settings.ShowOnlyPrimaryDuplicates;
         DuplicatePriorityBox.Text = string.Join(", ", _settings.DuplicatePlatformPriority);
         ShortcutSearchBox.Text = _settings.Shortcuts.FocusSearch;
         ShortcutFullscreenBox.Text = _settings.Shortcuts.ToggleFullscreen;
@@ -96,12 +94,11 @@ public partial class SettingsWindow : Window
     private void SettingsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
         var query = SettingsSearchBox.Text.Trim();
-        SetSectionVisibility(LibrarySection, query, "biblioteca xbox ocultos");
+        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos duplicatas versão principal prioridade plataforma");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
         SetSectionVisibility(AppearanceSection, query, "aparência capas linha neon tema idioma");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
         SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
-        SetSectionVisibility(DuplicatesSection, query, "duplicatas prioridade plataforma");
         SetSectionVisibility(CacheSection, query, "cache backup diagnóstico pasta dados");
         SetSectionVisibility(ShortcutsSection, query, "atalhos teclado pesquisar tela cheia atualizar configurações");
         SetSectionVisibility(IntegrationsSection, query, "status integrações clientes steam epic gog xbox ea ubisoft battle riot");
@@ -156,7 +153,6 @@ public partial class SettingsWindow : Window
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
-        _settings.ShowStoreApps = ShowStoreAppsCheck.IsChecked == true;
         _settings.ShowHiddenApps = ShowHiddenCheck.IsChecked == true;
         _settings.StartClientsAutomatically = AutoStartClientsCheck.IsChecked == true;
         _settings.KeepLauncherOpen = KeepLauncherOpenCheck.IsChecked == true;
@@ -182,7 +178,8 @@ public partial class SettingsWindow : Window
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
         _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
         _settings.AutoHideDuplicateSecondary = AutoHideDuplicateSecondaryCheck.IsChecked == true;
-        _settings.ShowOnlyPrimaryDuplicates = ShowOnlyPrimaryDuplicatesCheck.IsChecked == true;
+        // Campo legado mantido apenas para compatibilidade de leitura de settings antigos.
+        _settings.ShowOnlyPrimaryDuplicates = false;
         _settings.DuplicatePlatformPriority = DuplicatePriorityBox.Text
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -444,7 +441,6 @@ public partial class SettingsWindow : Window
 
     private static LauncherSettings Clone(LauncherSettings source) => new()
     {
-        ShowStoreApps = source.ShowStoreApps,
         StartClientsAutomatically = source.StartClientsAutomatically,
         KeepLauncherOpen = source.KeepLauncherOpen,
         StartWithWindows = source.StartWithWindows,
@@ -467,8 +463,8 @@ public partial class SettingsWindow : Window
         SkippedUpdateVersion = source.SkippedUpdateVersion,
         AutoCleanupCache = source.AutoCleanupCache,
         MaxCacheSizeMb = source.MaxCacheSizeMb,
-        AutoHideDuplicateSecondary = source.AutoHideDuplicateSecondary,
-        ShowOnlyPrimaryDuplicates = source.ShowOnlyPrimaryDuplicates,
+        AutoHideDuplicateSecondary = source.AutoHideDuplicateSecondary || source.ShowOnlyPrimaryDuplicates,
+        ShowOnlyPrimaryDuplicates = false,
         PreferredDuplicateProviders = new Dictionary<string, string>(source.PreferredDuplicateProviders, StringComparer.OrdinalIgnoreCase),
         DuplicatePlatformPriority = source.DuplicatePlatformPriority.ToList(),
         LibrarySortMode = source.LibrarySortMode,
