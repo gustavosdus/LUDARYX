@@ -1407,7 +1407,9 @@ public partial class MainWindow : Window
 
         if (_sidePanelMode && !_fullscreen)
         {
-            if (_gamepad.WasPressed(GamepadButtons.B, state) || left)
+            if (_gamepad.WasPressed(GamepadButtons.Back, state) ||
+                _gamepad.WasPressed(GamepadButtons.B, state) ||
+                left)
             {
                 ExitSidePanelMode();
                 return;
@@ -1522,22 +1524,17 @@ public partial class MainWindow : Window
             else if (up) MoveSelection(-GetColumns());
             else if (down) MoveSelection(GetColumns());
             else if (left) MoveSelection(-1);
-            else if (right)
-            {
-                var atRightEdge = _selectedIndex % GetColumns() == GetColumns() - 1 ||
-                                  _selectedIndex == _visibleGames.Count - 1;
-                if (!_fullscreen &&
-                    SelectedGamePanel.Visibility == Visibility.Visible &&
-                    atRightEdge)
-                {
-                    EnterSidePanelMode();
-                }
-                else
-                {
-                    MoveSelection(1);
-                }
-            }
+            else if (right) MoveSelection(1);
             if (up || down || left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+        }
+
+        if (!_fullscreen &&
+            _gamepad.WasPressed(GamepadButtons.Back, state) &&
+            SelectedGamePanel.Visibility == Visibility.Visible &&
+            !_settings.HideGameDetailsPanels)
+        {
+            EnterSidePanelMode();
+            return;
         }
 
         if (_gamepad.WasPressed(GamepadButtons.A, state)) await LaunchSelectedAsync();
