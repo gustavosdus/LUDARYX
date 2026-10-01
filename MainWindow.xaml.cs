@@ -66,6 +66,8 @@ public partial class MainWindow : Window
     private int _toolbarIndex;
     private bool _tvHeroMode;
     private int _tvHeroActionIndex;
+    private bool _sidePanelMode;
+    private int _sidePanelActionIndex;
     private bool _syncingSearchBoxes;
     private CancellationTokenSource? _selectedDescriptionCts;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
@@ -949,6 +951,8 @@ public partial class MainWindow : Window
         var showSidePanel = ActualWidth >= 1120 && !_settings.HideGameDetailsPanels;
         SelectedPanelColumn.Width = showSidePanel ? new GridLength(330) : new GridLength(0);
         SelectedGamePanel.Visibility = showSidePanel ? Visibility.Visible : Visibility.Collapsed;
+        if (!showSidePanel)
+            _sidePanelMode = false;
     }
 
     private void UpdateSelectedGamePresentation()
@@ -1309,6 +1313,9 @@ public partial class MainWindow : Window
         if (_tvHeroMode && _fullscreen)
             return $"{LocalizationService.Translate("MODO TV")} • {LocalizationService.Translate("Ações do jogo")}";
 
+        if (_sidePanelMode && !_fullscreen)
+            return $"{LocalizationService.Translate("Controle conectado")} • {LocalizationService.Translate("Ações do jogo")}";
+
         if (_controllerToolbarMode)
         {
             return _fullscreen
@@ -1398,6 +1405,51 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (_sidePanelMode && !_fullscreen)
+        {
+            if (_gamepad.WasPressed(GamepadButtons.B, state) || left)
+            {
+                ExitSidePanelMode();
+                return;
+            }
+
+            if (up || down)
+            {
+                if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
+                {
+                    MoveSidePanelSelection(up ? -1 : 1);
+                    _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+                }
+                return;
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.A, state))
+            {
+                ActivateSidePanelControl();
+                return;
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.X, state))
+            {
+                OpenSelectedDetails();
+                return;
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.Y, state))
+            {
+                ToggleSelectedFavorite();
+                return;
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.Start, state))
+            {
+                Settings_Click(this, new RoutedEventArgs());
+                return;
+            }
+
+            return;
+        }
+
         if (_tvHeroMode && _fullscreen)
         {
             if (_gamepad.WasPressed(GamepadButtons.B, state) || down)
@@ -1470,7 +1522,21 @@ public partial class MainWindow : Window
             else if (up) MoveSelection(-GetColumns());
             else if (down) MoveSelection(GetColumns());
             else if (left) MoveSelection(-1);
-            else if (right) MoveSelection(1);
+            else if (right)
+            {
+                var atRightEdge = _selectedIndex % GetColumns() == GetColumns() - 1 ||
+                                  _selectedIndex == _visibleGames.Count - 1;
+                if (!_fullscreen &&
+                    SelectedGamePanel.Visibility == Visibility.Visible &&
+                    atRightEdge)
+                {
+                    EnterSidePanelMode();
+                }
+                else
+                {
+                    MoveSelection(1);
+                }
+            }
             if (up || down || left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
         }
 
@@ -1644,6 +1710,80 @@ public partial class MainWindow : Window
         TvDetailsButton,
         TvFavoriteButton
     }.Where(button => button.Visibility == Visibility.Visible && button.IsEnabled).ToList();
+
+    private IReadOnlyList<Button> GetSidePanelControls() => new[]
+    {
+        SelectedPlayButton,
+        SelectedDetailsButton,
+        SelectedFavoriteButton
+    }.Where(button => button.Visibility == Visibility.Visible && button.IsEnabled).ToList();
+
+    private void EnterSidePanelMode()
+    {
+        if (_fullscreen ||
+            _settings.HideGameDetailsPanels ||
+            SelectedGamePanel.Visibility != Visibility.Visible)
+        {
+            return;
+        }
+
+        var controls = GetSidePanelControls();
+        if (controls.Count == 0)
+            return;
+
+        _sidePanelMode = true;
+        _controllerToolbarMode = false;
+        _tvHeroMode = false;
+        _sidePanelActionIndex = Math.Clamp(_sidePanelActionIndex, 0, controls.Count - 1);
+        FocusSidePanelControl();
+        PlayNavigationSound();
+        ControllerStatusText.Text =
+            $"{LocalizationService.Translate("Controle conectado")} • {LocalizationService.Translate("Ações do jogo")}";
+    }
+
+    private void ExitSidePanelMode()
+    {
+        _sidePanelMode = false;
+        Keyboard.ClearFocus();
+        GameList.Focus();
+        Keyboard.Focus(GameList);
+        UpdateControllerSelection();
+        PlayNavigationSound();
+    }
+
+    private void MoveSidePanelSelection(int delta)
+    {
+        var controls = GetSidePanelControls();
+        if (controls.Count == 0)
+            return;
+
+        var next = Math.Clamp(_sidePanelActionIndex + delta, 0, controls.Count - 1);
+        if (next == _sidePanelActionIndex)
+            return;
+
+        _sidePanelActionIndex = next;
+        FocusSidePanelControl();
+        PlayNavigationSound();
+    }
+
+    private void FocusSidePanelControl()
+    {
+        var controls = GetSidePanelControls();
+        if (_sidePanelActionIndex < 0 || _sidePanelActionIndex >= controls.Count)
+            return;
+
+        controls[_sidePanelActionIndex].Focus();
+        Keyboard.Focus(controls[_sidePanelActionIndex]);
+    }
+
+    private void ActivateSidePanelControl()
+    {
+        var controls = GetSidePanelControls();
+        if (_sidePanelActionIndex < 0 || _sidePanelActionIndex >= controls.Count)
+            return;
+
+        controls[_sidePanelActionIndex].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    }
 
     private void EnterTvHeroMode()
     {
@@ -1934,6 +2074,12 @@ public partial class MainWindow : Window
             if (_controllerToolbarMode)
             {
                 FocusToolbarControl();
+                return;
+            }
+
+            if (_sidePanelMode)
+            {
+                FocusSidePanelControl();
                 return;
             }
 
@@ -2265,6 +2411,8 @@ public partial class MainWindow : Window
 
         if (!_fullscreen)
             _tvHeroMode = false;
+        else
+            _sidePanelMode = false;
 
         UpdateResponsiveLayout();
         Dispatcher.BeginInvoke(UpdateCoverDimensions, DispatcherPriority.Loaded);
