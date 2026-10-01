@@ -72,6 +72,7 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _selectedDescriptionCts;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
     private readonly Dictionary<string, double> _artworkAspectRatioCache = new(StringComparer.OrdinalIgnoreCase);
+    private bool _syncingLibraryColumnsSlider;
 
     #endregion
 
@@ -90,6 +91,7 @@ public partial class MainWindow : Window
         {
             _mainWindowLoaded = true;
             _settings = _settingsService.Load();
+            SyncLibraryColumnsSlider();
             if (_settings.AutoCleanupCache)
                 _ = Task.Run(() => CacheMaintenanceService.CleanupToLimit(_settings.MaxCacheSizeMb));
             LocalizationService.SetLanguage(_settings.Language);
@@ -318,6 +320,7 @@ public partial class MainWindow : Window
         await SetLibraryLoadingAsync(true, loadingMessage);
 
         _settings = _settingsService.Load();
+        SyncLibraryColumnsSlider();
         LocalizationService.SetLanguage(_settings.Language);
         ApplyLanguage();
         ApplyVisualSettings();
@@ -656,16 +659,23 @@ public partial class MainWindow : Window
         // disponível no desktop, então dimensões fixas faziam as capas ultrapassarem
         // suas células e serem recortadas. Calculamos a largura real por célula e
         // preservamos a proporção da arte em ambos os modos.
-        var libraryWidth = LibraryAreaBorder?.ActualWidth ?? 0;
+        var viewportWidth = LibraryScroll?.ViewportWidth ?? 0;
+        var libraryWidth = viewportWidth > 1
+            ? Math.Max(1, viewportWidth - 42) // Padding horizontal do ScrollViewer: 24 + 18.
+            : LibraryAreaBorder?.ActualWidth ?? 0;
+
         if (libraryWidth <= 1)
         {
-            libraryWidth = Math.Max(720, ActualWidth - (_fullscreen ? 36 : 370));
+            libraryWidth = Math.Max(720, ActualWidth - (_fullscreen ? 36 : 370)) - 42;
         }
 
         var columns = GetColumns();
         GameList.Tag = columns;
 
-        const double cellHorizontalSpace = 38; // 28 px de margem do card + folga para borda/foco
+        // 28 px pertencem à margem do card. A folga adicional garante que o
+        // contorno de foco não encoste no limite da célula, especialmente com
+        // 4/5 colunas e o painel lateral ativo.
+        const double cellHorizontalSpace = 44;
         var availableCardWidth = Math.Max(96, (libraryWidth / columns) - cellHorizontalSpace);
 
         var vertical = _settings.CoverMode == "Vertical";
@@ -1797,7 +1807,8 @@ public partial class MainWindow : Window
             SortCombo,
             RefreshVisibleButton,
             ClearFiltersButton,
-            AddGameButton
+            AddGameButton,
+            LibraryColumnsSlider
         };
 
         if (_fullscreen)
@@ -1807,6 +1818,7 @@ public partial class MainWindow : Window
         }
         else
         {
+            controls.Add(SearchBox);
             controls.Add(GlobalRefreshButton);
             controls.Add(GlobalSettingsButton);
             controls.Add(GlobalStatisticsButton);
@@ -2025,6 +2037,18 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (ReferenceEquals(controls[_toolbarIndex], LibraryColumnsSlider))
+        {
+            var old = GetColumns();
+            var next = Math.Clamp(old + delta, 4, 6);
+            if (next != old)
+            {
+                LibraryColumnsSlider.Value = next;
+                PlayNavigationSound();
+            }
+            return;
+        }
+
         // Para botões/campo de pesquisa, para baixo retorna naturalmente à biblioteca.
         if (delta > 0) ExitToolbarMode();
     }
@@ -2037,6 +2061,10 @@ public partial class MainWindow : Window
         {
             case ComboBox combo:
                 combo.IsDropDownOpen = !combo.IsDropDownOpen;
+                break;
+            case Slider slider when ReferenceEquals(slider, LibraryColumnsSlider):
+                // O seletor é ajustado por cima/baixo no teclado/controle e por
+                // arraste no mouse. Enter/A não altera o valor acidentalmente.
                 break;
             case Button button:
                 button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -2053,6 +2081,44 @@ public partial class MainWindow : Window
     #region Game selection and actions
 
     private int GetColumns() => Math.Clamp(_settings.LibraryColumns, 4, 6);
+
+    private void SyncLibraryColumnsSlider()
+    {
+        if (LibraryColumnsSlider is null)
+            return;
+
+        _syncingLibraryColumnsSlider = true;
+        try
+        {
+            LibraryColumnsSlider.Value = GetColumns();
+        }
+        finally
+        {
+            _syncingLibraryColumnsSlider = false;
+        }
+    }
+
+    private void LibraryColumnsSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || _syncingLibraryColumnsSlider)
+            return;
+
+        var columns = Math.Clamp((int)Math.Round(e.NewValue), 4, 6);
+        if (Math.Abs(LibraryColumnsSlider.Value - columns) > 0.001)
+        {
+            _syncingLibraryColumnsSlider = true;
+            LibraryColumnsSlider.Value = columns;
+            _syncingLibraryColumnsSlider = false;
+        }
+
+        if (_settings.LibraryColumns == columns)
+            return;
+
+        _settings.LibraryColumns = columns;
+        _settingsService.Save(_settings);
+        UpdateCoverDimensions();
+        ScrollSelectedIntoView();
+    }
 
     private void MoveSelection(int delta)
     {
