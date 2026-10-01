@@ -546,14 +546,30 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="360"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel VerticalAlignment="Center" MaxWidth="760" HorizontalAlignment="Left">
-                            <TextBlock x:Name="TvHeroTitle" Text="LUDARYX" Foreground="{DynamicResource TvHeroTextPrimary}"
-                                       FontSize="32" FontWeight="Bold" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="TvHeroMeta" Foreground="{DynamicResource TvHeroMeta}" FontSize="12" Margin="0,7,0,0"/>
-                            <TextBlock x:Name="TvHeroUsage" Foreground="{DynamicResource TvHeroTextSecondary}" FontSize="11" Margin="0,5,0,0"/>
-                            <TextBlock x:Name="TvHeroDescription" Foreground="{DynamicResource TvHeroDescription}"
-                                       FontSize="12" TextWrapping="Wrap" MaxHeight="58" Margin="0,12,0,0"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Grid VerticalAlignment="Stretch" MaxWidth="760" HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TvHeroTitle" Grid.Row="0" Text="LUDARYX"
+                                       Foreground="{DynamicResource TvHeroTextPrimary}"
+                                       FontSize="32" FontWeight="Bold" TextWrapping="Wrap"
+                                       MaxHeight="76" ClipToBounds="True"/>
+                            <TextBlock x:Name="TvHeroMeta" Grid.Row="1"
+                                       Foreground="{DynamicResource TvHeroMeta}" FontSize="12"
+                                       Margin="0,7,0,0"/>
+                            <TextBlock x:Name="TvHeroUsage" Grid.Row="2"
+                                       Foreground="{DynamicResource TvHeroTextSecondary}" FontSize="11"
+                                       Margin="0,5,0,0"/>
+                            <TextBlock x:Name="TvHeroDescription" Grid.Row="3"
+                                       Foreground="{DynamicResource TvHeroDescription}"
+                                       FontSize="12" TextWrapping="Wrap"
+                                       MaxHeight="46" ClipToBounds="True"
+                                       VerticalAlignment="Top" Margin="0,10,0,8"/>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,4,0,0">
                                 <Button x:Name="TvPlayButton" Content="A  JOGAR"
                                         Style="{StaticResource LudaryxHeroPrimaryButton}"
                                         Click="SelectedPlay_Click" Margin="0,0,8,0"/>
@@ -564,7 +580,7 @@
                                         Style="{StaticResource LudaryxHeroButton}"
                                         Click="SelectedFavorite_Click"/>
                             </StackPanel>
-                        </StackPanel>
+                        </Grid>
                         <Border Grid.Column="1" Width="340" Height="190"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Background="{DynamicResource TvHeroPreviewBackground}" BorderBrush="{DynamicResource TvHeroPreviewBorder}"
@@ -701,7 +717,7 @@
                                 <Button x:Name="SelectedPlayButton" Content="JOGAR"
                                         Style="{StaticResource LudaryxHeroPrimaryButton}"
                                         Click="SelectedPlay_Click" Margin="0,0,0,7"/>
-                                <Button Content="DETALHES / PERSONALIZAR"
+                                <Button x:Name="SelectedDetailsButton" Content="DETALHES / PERSONALIZAR"
                                         Click="SelectedDetails_Click" Margin="0,0,0,7"/>
                                 <Button x:Name="SelectedFavoriteButton" Content="☆ FAVORITO"
                                         Click="SelectedFavorite_Click"/>
