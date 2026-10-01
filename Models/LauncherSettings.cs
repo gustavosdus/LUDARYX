@@ -11,6 +11,7 @@ public sealed class LauncherSettings
     public bool StartWithWindows { get; set; } = false;
     public bool StartFullscreen { get; set; } = false;
     public bool ShowHiddenApps { get; set; } = false;
+    public bool HideGameDetailsPanels { get; set; } = false;
     public List<string> HiddenGameIds { get; set; } = new();
     public List<string> ExcludedGameIds { get; set; } = new();
     public List<string> FavoriteGameIds { get; set; } = new();
