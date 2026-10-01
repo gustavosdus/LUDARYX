@@ -107,6 +107,7 @@ public sealed class JsonSettingsService
                 settings.ShowOnlyPrimaryDuplicates = false;
             }
             settings.ShowStoreApps = true;
+            settings.LibraryColumns = Math.Clamp(settings.LibraryColumns <= 0 ? 6 : settings.LibraryColumns, 4, 6);
 
             foreach (var manualGame in settings.ManualGames)
             {
