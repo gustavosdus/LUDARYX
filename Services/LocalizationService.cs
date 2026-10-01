@@ -116,6 +116,7 @@ public static class LocalizationService
         new("FAVORITO", "FAVORITO", "FAVORITE", "FAVOURITE", "FAVORITO", "FAVORITO"),
         new("Mostrar", "Mostrar", "Show", "Show", "Mostrar", "Mostrar"),
         new("RESTAURAR", "RESTAURAR", "RESTORE", "RESTORE", "RESTAURAR", "RESTAURAR"),
+        new("DESOCULTAR", "MOSTRAR", "UNHIDE", "UNHIDE", "MOSTRAR", "MOSTRAR"),
         new("CANCELAR", "CANCELAR", "CANCEL", "CANCEL", "CANCELAR", "CANCELAR"),
         new("SALVAR", "GUARDAR", "SAVE", "SAVE", "GUARDAR", "GUARDAR"),
 
