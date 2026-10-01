@@ -116,20 +116,9 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="Aparência" Style="{StaticResource LudaryxSectionTitle}"/>
                             <Grid Grid.Row="1" Margin="0,2,0,7">
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <TextBlock Text="Capas" Foreground="{StaticResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="CoverModeCombo" Grid.Column="1">
-                                    <ComboBoxItem Content="Auto" Tag="Auto"/>
-                                    <ComboBoxItem Content="Horizontal" Tag="Horizontal"/>
-                                    <ComboBoxItem Content="Vertical" Tag="Vertical"/>
-                                </ComboBox>
-                            </Grid>
-                            <Grid Grid.Row="2" Margin="0,0,0,7">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                 <TextBlock Text="Linha neon" Foreground="{StaticResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
                                 <ComboBox x:Name="NeonLineColorCombo" Grid.Column="1">
@@ -137,15 +126,7 @@
                                     <ComboBoxItem Content="Azul claro" Tag="LightBlue"/>
                                 </ComboBox>
                             </Grid>
-                            <Grid Grid.Row="3" Margin="0,0,0,7">
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <TextBlock Text="Tema" Foreground="{StaticResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="ThemeCombo" Grid.Column="1">
-                                    <ComboBoxItem Content="Escuro" Tag="Dark"/>
-                                    <ComboBoxItem Content="Claro" Tag="Light"/>
-                                </ComboBox>
-                            </Grid>
-                            <Grid Grid.Row="4">
+                            <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                 <TextBlock Text="Idioma" Foreground="{StaticResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
                                 <ComboBox x:Name="LanguageCombo" Grid.Column="1">
