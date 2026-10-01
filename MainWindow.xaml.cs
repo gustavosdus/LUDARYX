@@ -71,6 +71,7 @@ public partial class MainWindow : Window
     private bool _syncingSearchBoxes;
     private CancellationTokenSource? _selectedDescriptionCts;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
+    private readonly Dictionary<string, double> _artworkAspectRatioCache = new(StringComparer.OrdinalIgnoreCase);
 
     #endregion
 
@@ -668,12 +669,13 @@ public partial class MainWindow : Window
         var vertical = _settings.CoverMode == "Vertical";
         var maxWidth = vertical ? 180d : 196d;
         var width = Math.Min(maxWidth, availableCardWidth);
-        var height = vertical
-            ? width * 1.5                         // 2:3
-            : width * 9.0 / 16.0;                // 16:9
 
         foreach (var game in _games)
         {
+            var height = vertical
+                ? width * 1.5
+                : width / GetArtworkAspectRatio(game.DisplayCover, 16.0 / 9.0);
+
             game.CoverWidth = Math.Round(width, 1);
             game.CoverHeight = Math.Round(height, 1);
         }
@@ -1019,6 +1021,7 @@ public partial class MainWindow : Window
         // No hero/header do modo TV, prioriza sempre a arte horizontal.
         // A capa vertical fica apenas como fallback quando não houver arte horizontal disponível.
         ApplyArtworkWithFade(TvHeroPreviewImage, selectedSource, selectedKey);
+        UpdateSelectedArtworkFrames(selectedSource);
 
         RefreshSelectedLocalizedDescriptionAsync(game);
     }
@@ -1100,6 +1103,61 @@ public partial class MainWindow : Window
         }
 
         return null;
+    }
+
+    private double GetArtworkAspectRatio(string? path, double fallback)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return fallback;
+
+        if (_artworkAspectRatioCache.TryGetValue(path, out var cached))
+            return cached;
+
+        var source = LoadHomeArtwork(path);
+        var ratio = GetArtworkAspectRatio(source, fallback);
+        _artworkAspectRatioCache[path] = ratio;
+        return ratio;
+    }
+
+    private static double GetArtworkAspectRatio(ImageSource? source, double fallback)
+    {
+        if (source is System.Windows.Media.Imaging.BitmapSource bitmap &&
+            bitmap.PixelWidth > 0 &&
+            bitmap.PixelHeight > 0)
+        {
+            var ratio = (double)bitmap.PixelWidth / bitmap.PixelHeight;
+            if (double.IsFinite(ratio) && ratio > 0.1)
+                return ratio;
+        }
+
+        return fallback;
+    }
+
+    private void UpdateSelectedArtworkFrames(ImageSource? source)
+    {
+        var ratio = GetArtworkAspectRatio(source, 16.0 / 9.0);
+
+        // O quadro acompanha a proporção real da arte. Assim a imagem continua
+        // inteira com Stretch=Uniform, sem letterboxing e sem recorte.
+        Dispatcher.BeginInvoke(() =>
+        {
+            var sideMaxWidth = Math.Max(1, SelectedGamePanel.ActualWidth - 30);
+            const double sideMaxHeight = 160;
+            var sideWidth = Math.Min(sideMaxWidth, sideMaxHeight * ratio);
+            var sideHeight = sideWidth / ratio;
+
+            SelectedArtworkBorder.Width = sideWidth;
+            SelectedArtworkBorder.Height = sideHeight;
+            SelectedArtworkBorder.HorizontalAlignment = HorizontalAlignment.Center;
+
+            const double heroMaxWidth = 340;
+            const double heroMaxHeight = 190;
+            var heroWidth = Math.Min(heroMaxWidth, heroMaxHeight * ratio);
+            var heroHeight = heroWidth / ratio;
+
+            TvHeroPreviewBorder.Width = heroWidth;
+            TvHeroPreviewBorder.Height = heroHeight;
+        }, DispatcherPriority.Loaded);
     }
 
     private void UpdateFilterChips()
