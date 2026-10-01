@@ -726,6 +726,14 @@ public partial class MainWindow : Window
 
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        // Fullscreen/TV deve se comportar como tela cheia real, não como uma janela
+        // sem borda que pode ser arrastada ou "desgrudada" do monitor.
+        if (_fullscreen)
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (e.ClickCount == 2)
         {
             ToggleMaximizeWindow();
@@ -919,9 +927,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        var genres = string.IsNullOrWhiteSpace(game.GenresDisplay)
+        var localizedGenres = GenreService.DisplayMany(game.Metadata.Genres);
+        var genres = string.IsNullOrWhiteSpace(localizedGenres)
             ? LocalizationService.Translate("Não informado")
-            : game.GenresDisplay;
+            : localizedGenres;
         var rating = AgeRatingService.GetDisplay(game.Metadata, _settings.Language);
         var description = _metadata.GetDisplayDescription(game, _settings);
         description = string.IsNullOrWhiteSpace(description)
@@ -947,13 +956,20 @@ public partial class MainWindow : Window
         TvPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "A  JOGAR";
         TvPlayButton.IsEnabled = !game.IsRunning;
 
-        var heroImage = LoadHomeArtwork(game.HeroArtwork);
-        var coverImage = LoadHomeArtwork(game.DisplayCover);
-        ApplyArtworkWithFade(SelectedArtworkImage, heroImage ?? coverImage);
-        ApplyArtworkWithFade(TvHeroArtwork, heroImage ?? coverImage);
+        var heroPath = game.HeroArtwork;
+        var coverPath = game.DisplayCover;
+        var heroImage = LoadHomeArtwork(heroPath);
+        var coverImage = LoadHomeArtwork(coverPath);
+        var selectedSource = heroImage ?? coverImage;
+        var selectedKey = !string.IsNullOrWhiteSpace(heroPath) && heroImage is not null
+            ? heroPath
+            : coverPath;
+
+        ApplyArtworkWithFade(SelectedArtworkImage, selectedSource, selectedKey);
+        ApplyArtworkWithFade(TvHeroArtwork, selectedSource, selectedKey);
         // No hero/header do modo TV, prioriza sempre a arte horizontal.
         // A capa vertical fica apenas como fallback quando não houver arte horizontal disponível.
-        ApplyArtworkWithFade(TvHeroPreviewImage, heroImage ?? coverImage);
+        ApplyArtworkWithFade(TvHeroPreviewImage, selectedSource, selectedKey);
 
         RefreshSelectedLocalizedDescriptionAsync(game);
     }
@@ -992,14 +1008,22 @@ public partial class MainWindow : Window
         }
     }
 
-    private static void ApplyArtworkWithFade(System.Windows.Controls.Image image, ImageSource? source)
+    private static void ApplyArtworkWithFade(System.Windows.Controls.Image image, ImageSource? source, string? sourceKey)
     {
-        if (ReferenceEquals(image.Source, source))
+        // CoverImageConverter pode criar uma nova instância de ImageSource toda vez que
+        // a seleção é reapresentada. Comparar apenas ReferenceEquals fazia a mesma arte
+        // reiniciar o fade continuamente ao passar o mouse sobre o card selecionado.
+        if (string.Equals(image.Tag as string, sourceKey, StringComparison.OrdinalIgnoreCase))
             return;
 
+        image.Tag = sourceKey;
         image.BeginAnimation(OpacityProperty, null);
-        image.Opacity = 0.15;
+        image.Opacity = source is null ? 1 : 0.15;
         image.Source = source;
+
+        if (source is null)
+            return;
+
         image.BeginAnimation(
             OpacityProperty,
             new DoubleAnimation(0.15, 1, TimeSpan.FromMilliseconds(180))
