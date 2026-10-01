@@ -914,10 +914,30 @@ public partial class MainWindow : Window
         Dispatcher.BeginInvoke(UpdateCoverDimensions, DispatcherPriority.Loaded);
     }
 
+    private void LibraryScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        BackToTopButton.Visibility = e.VerticalOffset > 320 && _visibleGames.Count > 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private void BackToTop_Click(object sender, RoutedEventArgs e)
+    {
+        LibraryScroll.ScrollToTop();
+        BackToTopButton.Visibility = Visibility.Collapsed;
+        GameList.Focus();
+        Keyboard.Focus(GameList);
+    }
+
     private void UpdateResponsiveLayout()
     {
         if (!IsLoaded)
             return;
+
+        var showHero = _fullscreen && !_settings.HideGameDetailsPanels;
+        TvHeroPanel.Visibility = showHero ? Visibility.Visible : Visibility.Collapsed;
+        if (!showHero)
+            _tvHeroMode = false;
 
         if (_fullscreen)
         {
@@ -926,7 +946,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var showSidePanel = ActualWidth >= 1120;
+        var showSidePanel = ActualWidth >= 1120 && !_settings.HideGameDetailsPanels;
         SelectedPanelColumn.Width = showSidePanel ? new GridLength(330) : new GridLength(0);
         SelectedGamePanel.Visibility = showSidePanel ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -1627,7 +1647,7 @@ public partial class MainWindow : Window
 
     private void EnterTvHeroMode()
     {
-        if (!_fullscreen)
+        if (!_fullscreen || _settings.HideGameDetailsPanels)
         {
             EnterToolbarMode();
             return;
@@ -2234,7 +2254,9 @@ public partial class MainWindow : Window
         HeaderGrid.Visibility = _fullscreen ? Visibility.Collapsed : Visibility.Visible;
         HeaderRow.Height = new GridLength(_fullscreen ? 0 : 78);
 
-        TvHeroPanel.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        TvHeroPanel.Visibility = _fullscreen && !_settings.HideGameDetailsPanels
+            ? Visibility.Visible
+            : Visibility.Collapsed;
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
 
@@ -2402,6 +2424,8 @@ public partial class MainWindow : Window
         TvHeroGradientStart.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#F5EEF1F5" : "#F0060B12");
         TvHeroGradientMiddle.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D8EEF1F5" : "#D00A1420");
         TvHeroGradientEnd.Color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#A8EEF1F5" : "#900A1420");
+
+        UpdateResponsiveLayout();
     }
 
 
