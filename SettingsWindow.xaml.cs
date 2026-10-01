@@ -30,6 +30,7 @@ public partial class SettingsWindow : Window
         _settings = Clone(settings);
         ShowHiddenCheck.IsChecked = _settings.ShowHiddenApps;
         HideGameDetailsPanelsCheck.IsChecked = _settings.HideGameDetailsPanels;
+        LibraryColumnsCombo.SelectedIndex = Math.Clamp(_settings.LibraryColumns, 4, 6) - 4;
         AutoStartClientsCheck.IsChecked = _settings.StartClientsAutomatically;
         KeepLauncherOpenCheck.IsChecked = _settings.KeepLauncherOpen;
         StartWithWindowsCheck.IsChecked = StartupService.IsEnabled();
@@ -95,7 +96,7 @@ public partial class SettingsWindow : Window
     private void SettingsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
         var query = SettingsSearchBox.Text.Trim();
-        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero");
+        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero jogos linha grade colunas");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
         SetSectionVisibility(AppearanceSection, query, "aparência capas linha neon tema idioma");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
@@ -157,6 +158,11 @@ public partial class SettingsWindow : Window
     {
         _settings.ShowHiddenApps = ShowHiddenCheck.IsChecked == true;
         _settings.HideGameDetailsPanels = HideGameDetailsPanelsCheck.IsChecked == true;
+        _settings.LibraryColumns = int.TryParse(
+            (LibraryColumnsCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString(),
+            out var libraryColumns)
+            ? Math.Clamp(libraryColumns, 4, 6)
+            : 6;
         _settings.StartClientsAutomatically = AutoStartClientsCheck.IsChecked == true;
         _settings.KeepLauncherOpen = KeepLauncherOpenCheck.IsChecked == true;
         _settings.StartWithWindows = StartWithWindowsCheck.IsChecked == true;
@@ -464,6 +470,7 @@ public partial class SettingsWindow : Window
         StartFullscreen = source.StartFullscreen,
         ShowHiddenApps = source.ShowHiddenApps,
         HideGameDetailsPanels = source.HideGameDetailsPanels,
+        LibraryColumns = Math.Clamp(source.LibraryColumns, 4, 6),
         HiddenGameIds = source.HiddenGameIds.ToList(),
         ExcludedGameIds = source.ExcludedGameIds.ToList(),
         FavoriteGameIds = source.FavoriteGameIds.ToList(),
