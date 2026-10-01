@@ -130,109 +130,210 @@
 
         <!-- Seletor compacto de densidade da biblioteca: três pontos para 4/5/6 jogos. -->
         <Style x:Key="LibraryDensitySlider" TargetType="Slider">
-            <Setter Property="Width" Value="126"/>
+            <Setter Property="Width" Value="116"/>
             <Setter Property="Height" Value="32"/>
-            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Margin" Value="5,3,3,3"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Slider">
-                        <Border x:Name="DensityChrome"
-                                Background="{DynamicResource NavButtonBackground}"
-                                BorderBrush="#293242"
-                                BorderThickness="1"
-                                CornerRadius="5"
-                                Padding="10,3">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="15"/>
-                                    <RowDefinition Height="9"/>
-                                </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0" Margin="2,0">
-                                    <Border Height="2"
-                                            VerticalAlignment="Center"
-                                            Background="#42546A"
-                                            CornerRadius="1"/>
-
-                                    <Ellipse Width="5" Height="5"
-                                             HorizontalAlignment="Left"
-                                             VerticalAlignment="Center"
-                                             Fill="#7D91A8"/>
-                                    <Ellipse Width="5" Height="5"
-                                             HorizontalAlignment="Center"
-                                             VerticalAlignment="Center"
-                                             Fill="#7D91A8"/>
-                                    <Ellipse Width="5" Height="5"
-                                             HorizontalAlignment="Right"
-                                             VerticalAlignment="Center"
-                                             Fill="#7D91A8"/>
-
-                                    <Track x:Name="PART_Track"
-                                           Orientation="Horizontal"
-                                           IsDirectionReversed="False">
-                                        <Track.DecreaseRepeatButton>
-                                            <RepeatButton Command="Slider.DecreaseLarge"
-                                                          Opacity="0"
-                                                          Focusable="False">
-                                                <RepeatButton.Template>
-                                                    <ControlTemplate TargetType="RepeatButton">
-                                                        <Border Background="Transparent"/>
-                                                    </ControlTemplate>
-                                                </RepeatButton.Template>
-                                            </RepeatButton>
-                                        </Track.DecreaseRepeatButton>
-                                        <Track.Thumb>
-                                            <Thumb Width="11" Height="11" Focusable="False">
-                                                <Thumb.Template>
-                                                    <ControlTemplate TargetType="Thumb">
-                                                        <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
-                                                                 Stroke="#D9FBFF"
-                                                                 StrokeThickness="1"/>
-                                                    </ControlTemplate>
-                                                </Thumb.Template>
-                                            </Thumb>
-                                        </Track.Thumb>
-                                        <Track.IncreaseRepeatButton>
-                                            <RepeatButton Command="Slider.IncreaseLarge"
-                                                          Opacity="0"
-                                                          Focusable="False">
-                                                <RepeatButton.Template>
-                                                    <ControlTemplate TargetType="RepeatButton">
-                                                        <Border Background="Transparent"/>
-                                                    </ControlTemplate>
-                                                </RepeatButton.Template>
-                                            </RepeatButton>
-                                        </Track.IncreaseRepeatButton>
-                                    </Track>
-                                </Grid>
-
-                                <Grid Grid.Row="1" Margin="0,-1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="4" Foreground="#8092A8"
-                                               FontSize="7" HorizontalAlignment="Left"/>
-                                    <TextBlock Grid.Column="1" Text="5" Foreground="#8092A8"
-                                               FontSize="7" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Text="6" Foreground="#8092A8"
-                                               FontSize="7" HorizontalAlignment="Right"/>
-                                </Grid>
+                        <Grid Background="Transparent" Margin="5,2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="17"/>
+                                <RowDefinition Height="9"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Border x:Name="DensityTrackLine"
+                                        Height="2"
+                                        Margin="2,0"
+                                        VerticalAlignment="Center"
+                                        Background="#42546A"
+                                        CornerRadius="1"/>
+                                <Ellipse Width="5" Height="5" HorizontalAlignment="Left"
+                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                <Ellipse Width="5" Height="5" HorizontalAlignment="Center"
+                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                <Ellipse Width="5" Height="5" HorizontalAlignment="Right"
+                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                <Track x:Name="PART_Track" Orientation="Horizontal" IsDirectionReversed="False">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent"/>
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb Width="11" Height="11" Focusable="False">
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
+                                                             Stroke="#D9FBFF" StrokeThickness="1"/>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="Slider.IncreaseLarge" Opacity="0" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent"/>
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
                             </Grid>
-                        </Border>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="4" Foreground="#8092A8"
+                                           FontSize="7" HorizontalAlignment="Left"/>
+                                <TextBlock Grid.Column="1" Text="5" Foreground="#8092A8"
+                                           FontSize="7" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="6" Foreground="#8092A8"
+                                           FontSize="7" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="DensityChrome" Property="Background"
-                                        Value="{DynamicResource NavButtonHoverBackground}"/>
-                                <Setter TargetName="DensityChrome" Property="BorderBrush" Value="#465166"/>
+                                <Setter TargetName="DensityTrackLine" Property="Background" Value="#607991"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="DensityChrome" Property="BorderBrush"
+                                <Setter TargetName="DensityTrackLine" Property="Background"
                                         Value="{DynamicResource SelectionAccentBorder}"/>
-                                <Setter TargetName="DensityChrome" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CoverModeSwitchSlider" TargetType="Slider">
+            <Setter Property="Width" Value="66"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="5,3,3,3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Background="Transparent">
+                            <Border x:Name="CoverTrackLine" Width="38" Height="2"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Background="#42546A" CornerRadius="1"/>
+                            <TextBlock Text="V" Foreground="#8EA1B7" FontWeight="Bold" FontSize="9"
+                                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1,0,0,0"/>
+                            <TextBlock Text="H" Foreground="#8EA1B7" FontWeight="Bold" FontSize="9"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                            <Track x:Name="PART_Track" Orientation="Horizontal"
+                                   Margin="12,0" IsDirectionReversed="False">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="12" Height="12" Focusable="False">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
+                                                         Stroke="#D9FBFF" StrokeThickness="1"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Opacity="0" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CoverTrackLine" Property="Background" Value="#607991"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="CoverTrackLine" Property="Background"
+                                        Value="{DynamicResource SelectionAccentBorder}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ThemeSwitchSlider" TargetType="Slider">
+            <Setter Property="Width" Value="72"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="5,3,3,3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Background="Transparent">
+                            <Border x:Name="ThemeTrackLine" Width="38" Height="2"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Background="#42546A" CornerRadius="1"/>
+                            <TextBlock Text="☀" Foreground="#D6A94B" FontSize="13"
+                                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="☾" Foreground="#A9C9E8" FontSize="15"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track" Orientation="Horizontal"
+                                   Margin="14,0" IsDirectionReversed="False">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="12" Height="12" Focusable="False">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
+                                                         Stroke="#D9FBFF" StrokeThickness="1"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Opacity="0" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThemeTrackLine" Property="Background" Value="#607991"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ThemeTrackLine" Property="Background"
+                                        Value="{DynamicResource SelectionAccentBorder}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -580,8 +681,26 @@
                                 SmallChange="1" LargeChange="1"
                                 IsSnapToTickEnabled="True"
                                 ValueChanged="LibraryColumnsSlider_ValueChanged"
-                                GotKeyboardFocus="LibraryColumnsSlider_GotKeyboardFocus"
+                                GotKeyboardFocus="ToolbarSlider_GotKeyboardFocus"
                                 ToolTip="Jogos por linha"/>
+                        <Slider x:Name="CoverModeSlider"
+                                Style="{StaticResource CoverModeSwitchSlider}"
+                                Minimum="0" Maximum="1" Value="1"
+                                TickFrequency="1"
+                                SmallChange="1" LargeChange="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="CoverModeSlider_ValueChanged"
+                                GotKeyboardFocus="ToolbarSlider_GotKeyboardFocus"
+                                ToolTip="Formato da capa: Vertical / Horizontal"/>
+                        <Slider x:Name="ThemeSlider"
+                                Style="{StaticResource ThemeSwitchSlider}"
+                                Minimum="0" Maximum="1" Value="1"
+                                TickFrequency="1"
+                                SmallChange="1" LargeChange="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="ThemeSlider_ValueChanged"
+                                GotKeyboardFocus="ToolbarSlider_GotKeyboardFocus"
+                                ToolTip="Tema: Claro / Escuro"/>
 
                         <TextBlock x:Name="FullscreenLibraryLoadingText" Text="CARREGANDO..."
                                    Visibility="Collapsed" Foreground="#8EBAD5" FontSize="9"
@@ -604,6 +723,11 @@
                                      FontSize="12" TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                         </Grid>
                     </Border>
+                    <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="Settings_Click"
+                            ToolTip="Configurações">
+                        <TextBlock Text="⚙" Foreground="#E8ECF5" FontSize="17"/>
+                    </Button>
                     <Button x:Name="FullscreenToolbarButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click"
                             ToolTip="Sair da tela cheia">
