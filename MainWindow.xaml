@@ -584,8 +584,9 @@
                         <Border x:Name="TvHeroPreviewBorder" Grid.Column="1" Width="340" Height="190"
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Background="{DynamicResource TvHeroPreviewBackground}" BorderBrush="{DynamicResource TvHeroPreviewBorder}"
-                                BorderThickness="1" CornerRadius="10">
-                            <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"/>
+                                BorderThickness="1" CornerRadius="10" ClipToBounds="True">
+                            <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"
+                                   SizeChanged="FramedArtworkImage_SizeChanged"/>
                         </Border>
                     </Grid>
                 </Grid>
@@ -632,7 +633,8 @@
                                             </Border.Style>
                                             <Grid ClipToBounds="True">
                                                 <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}"
-                                                       Stretch="Uniform" SnapsToDevicePixels="True"/>
+                                                       Stretch="Uniform" SnapsToDevicePixels="True"
+                                                       SizeChanged="FramedArtworkImage_SizeChanged"/>
 
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7">
@@ -692,12 +694,16 @@
                         Background="{DynamicResource SelectedPanelBackground}"
                         BorderBrush="{DynamicResource SelectedPanelBorder}"
                         Margin="0,12,14,14">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer x:Name="SelectedGameScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  SizeChanged="SelectedGameScrollViewer_SizeChanged">
                         <StackPanel>
                             <Border x:Name="SelectedArtworkBorder" Height="160" Background="{DynamicResource SelectedPanelArtworkBackground}" CornerRadius="8" ClipToBounds="True"
                                     BorderBrush="{DynamicResource SelectedPanelArtworkBorder}" BorderThickness="1">
                                 <Image x:Name="SelectedArtworkImage" Stretch="Uniform"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       SizeChanged="FramedArtworkImage_SizeChanged"/>
                             </Border>
                             <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
                                        Foreground="{DynamicResource SelectedPanelTextPrimary}" FontSize="20" FontWeight="Bold"
