@@ -50,7 +50,7 @@ public sealed class LauncherSettings
     public Dictionary<string, string> PreferredDuplicateProviders { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public List<string> DuplicatePlatformPriority { get; set; } = new()
     {
-        "Steam", "GOG", "Epic", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
+        "Steam", "Epic", "GOG", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
     };
     public string LibrarySortMode { get; set; } = "Name";
     // Legado 1.1.x: consolidado em AutoHideDuplicateSecondary.
