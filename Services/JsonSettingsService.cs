@@ -81,6 +81,16 @@ public sealed class JsonSettingsService
             }
             settings.Shortcuts ??= new ShortcutSettings();
 
+            // 1.1.2 consolida as duas preferências antigas de duplicatas em uma só.
+            // Também elimina a opção de ocultar Xbox/Microsoft Store: esses jogos
+            // passam a fazer parte da biblioteca sempre que forem detectados.
+            if (settings.ShowOnlyPrimaryDuplicates)
+            {
+                settings.AutoHideDuplicateSecondary = true;
+                settings.ShowOnlyPrimaryDuplicates = false;
+            }
+            settings.ShowStoreApps = true;
+
             foreach (var manualGame in settings.ManualGames)
             {
                 manualGame.LaunchProfiles ??= new();
