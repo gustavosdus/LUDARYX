@@ -95,14 +95,12 @@
                             <TextBlock Text="Biblioteca" Style="{StaticResource LudaryxSectionTitle}"/>
                             <CheckBox x:Name="ShowHiddenCheck" Content="Mostrar itens ocultos na biblioteca" Margin="0,5,0,0"/>
                             <CheckBox x:Name="AutoHideDuplicateSecondaryCheck"
-                                      Content="Mostrar somente a versão principal de jogos duplicados"
+                                      Content="Mostrar somente a versão principal de duplicatas"
                                       Margin="0,10,0,0"/>
-                            <TextBlock Text="Prioridade de duplicatas por plataforma"
+                            <TextBlock Text="Prioridade automática por plataforma (separe por vírgulas):"
                                        Foreground="{StaticResource LudaryxTextSecondary}"
-                                       Margin="0,12,0,5"/>
+                                       TextWrapping="Wrap" Margin="0,12,0,5"/>
                             <TextBox x:Name="DuplicatePriorityBox"/>
-                            <TextBlock Text="Separe as plataformas por vírgulas. A versão principal também pode ser escolhida nos detalhes do jogo."
-                                       Foreground="#6F829A" FontSize="10" TextWrapping="Wrap" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
