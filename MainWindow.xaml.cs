@@ -47,6 +47,8 @@ public partial class MainWindow : Window
     private ResizeMode _previousResizeMode;
     private bool _previousTopmost;
     private Rect _previousWindowBounds;
+    private double _previousChromeCaptionHeight = 40;
+    private Thickness _previousChromeResizeBorderThickness = new(6);
     private bool _controllerConnected;
     private DateTime _nextNavigationAllowedUtc = DateTime.MinValue;
     private int _pendingAnalogVerticalDirection;
@@ -734,6 +736,12 @@ public partial class MainWindow : Window
             return;
         }
 
+        // Controles interativos dentro do cabeçalho (principalmente a pesquisa)
+        // nunca devem iniciar DragMove. WindowChrome trata parte do cabeçalho como
+        // área não-cliente, então checamos também os ancestrais do elemento clicado.
+        if (IsInteractiveHeaderSource(e.OriginalSource as DependencyObject))
+            return;
+
         if (e.ClickCount == 2)
         {
             ToggleMaximizeWindow();
@@ -742,6 +750,26 @@ public partial class MainWindow : Window
 
         if (e.LeftButton == MouseButtonState.Pressed)
             DragMove();
+    }
+
+    private bool IsInteractiveHeaderSource(DependencyObject? source)
+    {
+        while (source is not null && source != HeaderGrid)
+        {
+            if (source is TextBox ||
+                source is Button ||
+                source is ComboBox ||
+                System.Windows.Shell.WindowChrome.GetIsHitTestVisibleInChrome(source))
+            {
+                return true;
+            }
+
+            source = source is Visual
+                ? VisualTreeHelper.GetParent(source)
+                : LogicalTreeHelper.GetParent(source);
+        }
+
+        return false;
     }
 
     private void ToggleMaximizeWindow()
@@ -1851,9 +1879,18 @@ public partial class MainWindow : Window
     {
         var index = _visibleGames.IndexOf(game);
         if (index < 0) return;
+
+        // Items.Refresh recriava/reaplicava os containers enquanto o ponteiro ainda
+        // estava sobre o card. Isso podia disparar MouseEnter novamente e causar
+        // o efeito de capa apagando/piscando. Game já notifica IsControllerSelected,
+        // então não existe necessidade de atualizar a coleção inteira.
+        if (_selectedIndex == index && game.IsControllerSelected)
+            return;
+
+        _controllerToolbarMode = false;
+        _tvHeroMode = false;
         _selectedIndex = index;
         UpdateControllerSelection();
-        GameList.Items.Refresh();
     }
 
     private void OpenDetails(Game game)
@@ -2091,6 +2128,18 @@ public partial class MainWindow : Window
             WindowState = WindowState.Normal;
             WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
+
+            // Remove também as regiões nativas de legenda/redimensionamento do
+            // WindowChrome. Sem isso, o Windows ainda pode interpretar alguns
+            // cliques nas bordas/topo como arraste mesmo com DragMove bloqueado.
+            if (System.Windows.Shell.WindowChrome.GetWindowChrome(this) is { } chrome)
+            {
+                _previousChromeCaptionHeight = chrome.CaptionHeight;
+                _previousChromeResizeBorderThickness = chrome.ResizeBorderThickness;
+                chrome.CaptionHeight = 0;
+                chrome.ResizeBorderThickness = new Thickness(0);
+            }
+
             Topmost = true;
             ApplyFullscreenBounds();
             Cursor = Cursors.None;
@@ -2103,6 +2152,12 @@ public partial class MainWindow : Window
             // WM_GETMINMAXINFO para que um estado maximizado volte a respeitar a
             // área útil do monitor e a barra de tarefas.
             _fullscreen = false;
+
+            if (System.Windows.Shell.WindowChrome.GetWindowChrome(this) is { } chrome)
+            {
+                chrome.CaptionHeight = _previousChromeCaptionHeight;
+                chrome.ResizeBorderThickness = _previousChromeResizeBorderThickness;
+            }
 
             Topmost = _previousTopmost;
             WindowStyle = _previousWindowStyle;
@@ -2231,6 +2286,11 @@ public partial class MainWindow : Window
     private void ApplyLanguage()
     {
         LocalizationService.Apply(this);
+
+        // Os gêneros são objetos gerados em tempo de execução, portanto não são
+        // atualizados por LocalizationService.Apply. Reconstrói o filtro no idioma
+        // atual preservando o gênero canônico selecionado.
+        BuildGenreFilter();
 
         foreach (var item in LibraryFilterCombo.Items.OfType<ComboBoxItem>())
         {
