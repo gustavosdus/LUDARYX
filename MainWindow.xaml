@@ -583,7 +583,7 @@
 
                 <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{StaticResource GameAreaBlue}">
                     <Grid>
-                        <ScrollViewer x:Name="LibraryScroll" Padding="24,18,18,24">
+                        <ScrollViewer x:Name="LibraryScroll" Padding="24,18,18,24" ScrollChanged="LibraryScroll_ScrollChanged">
                             <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -647,6 +647,17 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
+
+                        <Button x:Name="BackToTopButton"
+                                Content="VOLTAR AO TOPO"
+                                Style="{StaticResource NavButton}"
+                                Visibility="Collapsed"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,28,24"
+                                Padding="14,8"
+                                Panel.ZIndex="20"
+                                Click="BackToTop_Click"/>
 
                         <StackPanel x:Name="EmptyStatePanel" Visibility="Collapsed"
                                     HorizontalAlignment="Center" VerticalAlignment="Center">
