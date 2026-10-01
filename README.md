@@ -28,7 +28,7 @@
 
 ## Versão
 
-**LUDARYX 1.1.1** — atualização corretiva da série 1.1, com ajustes no fullscreen, pesquisa por mouse, hover das capas e tradução dos gêneros.
+**LUDARYX 1.1.2** — atualização corretiva da série 1.1, com melhorias de navegação, temas, biblioteca, duplicatas, atualização automática e gerenciamento de itens.
 
 ## Requisitos para desenvolvimento
 
@@ -58,7 +58,7 @@ Para gerar uma release local completa em um único comando, incluindo validaçã
 powershell -ExecutionPolicy Bypass -File Scripts\Build-Release.ps1
 ```
 
-O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.1.1.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
+O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.1.2.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
 
 Para publicar apenas os executáveis, continue usando `Scripts\Publish-Release.ps1`.
 
