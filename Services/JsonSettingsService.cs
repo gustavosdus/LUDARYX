@@ -108,6 +108,11 @@ public sealed class JsonSettingsService
             }
             settings.ShowStoreApps = true;
             settings.LibraryColumns = Math.Clamp(settings.LibraryColumns <= 0 ? 6 : settings.LibraryColumns, 4, 6);
+            if (!string.Equals(settings.CoverMode, "Vertical", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(settings.CoverMode, "Horizontal", StringComparison.OrdinalIgnoreCase))
+            {
+                settings.CoverMode = "Horizontal";
+            }
 
             foreach (var manualGame in settings.ManualGames)
             {
