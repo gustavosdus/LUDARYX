@@ -585,7 +585,7 @@
                                 HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Background="{DynamicResource TvHeroPreviewBackground}" BorderBrush="{DynamicResource TvHeroPreviewBorder}"
                                 BorderThickness="1" CornerRadius="10">
-                            <Image x:Name="TvHeroPreviewImage" Stretch="Uniform"/>
+                            <Image x:Name="TvHeroPreviewImage" Stretch="UniformToFill"/>
                         </Border>
                     </Grid>
                 </Grid>
@@ -632,7 +632,7 @@
                                             </Border.Style>
                                             <Grid ClipToBounds="True">
                                                 <Image Source="{Binding DisplayCover, Converter={StaticResource CoverImageConverter}}"
-                                                       Stretch="Uniform" SnapsToDevicePixels="True"/>
+                                                       Stretch="UniformToFill" SnapsToDevicePixels="True"/>
 
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7">
@@ -696,7 +696,7 @@
                         <StackPanel>
                             <Border Height="160" Background="{DynamicResource SelectedPanelArtworkBackground}" CornerRadius="8" ClipToBounds="True"
                                     BorderBrush="{DynamicResource SelectedPanelArtworkBorder}" BorderThickness="1">
-                                <Image x:Name="SelectedArtworkImage" Stretch="Uniform"
+                                <Image x:Name="SelectedArtworkImage" Stretch="UniformToFill"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock x:Name="SelectedGameNameText" Text="Selecione um jogo"
