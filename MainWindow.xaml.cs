@@ -1254,7 +1254,7 @@ public partial class MainWindow : Window
         if (priority.Length == 0)
             priority = new[]
             {
-                GamePlatform.Steam, GamePlatform.GOG, GamePlatform.Epic, GamePlatform.Xbox,
+                GamePlatform.Steam, GamePlatform.Epic, GamePlatform.GOG, GamePlatform.Xbox,
                 GamePlatform.EAApp, GamePlatform.UbisoftConnect, GamePlatform.BattleNet,
                 GamePlatform.RiotClient, GamePlatform.Manual
             };
