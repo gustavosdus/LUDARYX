@@ -29,6 +29,7 @@ public partial class SettingsWindow : Window
         _games = games.ToList();
         _settings = Clone(settings);
         ShowHiddenCheck.IsChecked = _settings.ShowHiddenApps;
+        HideGameDetailsPanelsCheck.IsChecked = _settings.HideGameDetailsPanels;
         AutoStartClientsCheck.IsChecked = _settings.StartClientsAutomatically;
         KeepLauncherOpenCheck.IsChecked = _settings.KeepLauncherOpen;
         StartWithWindowsCheck.IsChecked = StartupService.IsEnabled();
@@ -94,11 +95,12 @@ public partial class SettingsWindow : Window
     private void SettingsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
         var query = SettingsSearchBox.Text.Trim();
-        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos duplicatas versão principal prioridade plataforma");
+        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
         SetSectionVisibility(AppearanceSection, query, "aparência capas linha neon tema idioma");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
         SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
+        SetSectionVisibility(DuplicatesSection, query, "duplicatas versão principal prioridade plataforma");
         SetSectionVisibility(CacheSection, query, "cache backup diagnóstico pasta dados");
         SetSectionVisibility(ShortcutsSection, query, "atalhos teclado pesquisar tela cheia atualizar configurações");
         SetSectionVisibility(IntegrationsSection, query, "status integrações clientes steam epic gog xbox ea ubisoft battle riot");
@@ -154,6 +156,7 @@ public partial class SettingsWindow : Window
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         _settings.ShowHiddenApps = ShowHiddenCheck.IsChecked == true;
+        _settings.HideGameDetailsPanels = HideGameDetailsPanelsCheck.IsChecked == true;
         _settings.StartClientsAutomatically = AutoStartClientsCheck.IsChecked == true;
         _settings.KeepLauncherOpen = KeepLauncherOpenCheck.IsChecked == true;
         _settings.StartWithWindows = StartWithWindowsCheck.IsChecked == true;
@@ -448,6 +451,7 @@ public partial class SettingsWindow : Window
         StartWithWindows = source.StartWithWindows,
         StartFullscreen = source.StartFullscreen,
         ShowHiddenApps = source.ShowHiddenApps,
+        HideGameDetailsPanels = source.HideGameDetailsPanels,
         HiddenGameIds = source.HiddenGameIds.ToList(),
         ExcludedGameIds = source.ExcludedGameIds.ToList(),
         FavoriteGameIds = source.FavoriteGameIds.ToList(),
