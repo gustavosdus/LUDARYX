@@ -825,12 +825,12 @@
 
             <Grid x:Name="FullscreenLoadingIndicator"
                   Grid.RowSpan="2"
-                  Width="44"
-                  Height="44"
+                  Width="38"
+                  Height="38"
                   Visibility="Collapsed"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Top"
-                  Margin="0,14,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom"
+                  Margin="24,0,0,20"
                   Panel.ZIndex="80"
                   IsHitTestVisible="False"
                   RenderTransformOrigin="0.5,0.5">
@@ -838,21 +838,22 @@
                     <RotateTransform x:Name="FullscreenSpinnerRotation"/>
                 </Grid.RenderTransform>
 
-                <!-- Quase todo o anel usa a espessura normal. -->
-                <Path Stroke="{Binding Background, ElementName=NeonSeparator}"
-                      StrokeThickness="2"
-                      StrokeStartLineCap="Round"
-                      StrokeEndLineCap="Round"
-                      Fill="Transparent"
-                      Data="M22,5 A17,17 0 1 1 10,34"/>
+                <!-- Anel fino contínuo: não existe quebra entre as duas espessuras. -->
+                <Ellipse Width="30"
+                         Height="30"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Stroke="{Binding Background, ElementName=NeonSeparator}"
+                         StrokeThickness="2"
+                         Fill="Transparent"/>
 
-                <!-- Trecho final um pouco mais espesso, conectado ao arco principal. -->
+                <!-- Pequeno trecho mais espesso sobre o mesmo contorno. -->
                 <Path Stroke="{Binding Background, ElementName=NeonSeparator}"
                       StrokeThickness="4"
                       StrokeStartLineCap="Round"
                       StrokeEndLineCap="Round"
                       Fill="Transparent"
-                      Data="M10,34 A17,17 0 0 1 5.5,26"/>
+                      Data="M19,4 A15,15 0 0 1 30.6,9.5"/>
 
                 <Grid.Triggers>
                     <EventTrigger RoutedEvent="FrameworkElement.Loaded">
