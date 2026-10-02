@@ -342,6 +342,44 @@
         </Style>
 
 
+        <Style x:Key="IntegratedIconButton" TargetType="Button">
+            <Setter Property="Opacity" Value="0.58"/>
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border x:Name="FocusMark"
+                                    Height="2"
+                                    Margin="8,0"
+                                    VerticalAlignment="Bottom"
+                                    Background="{DynamicResource SelectionAccentBorder}"
+                                    Opacity="0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.78"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Opacity" Value="1"/>
+                                <Setter TargetName="FocusMark" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Botão de tela cheia sem fundo: somente o ícone do monitor -->
         <Style x:Key="FullscreenIconButton" TargetType="Button">
             <Setter Property="Opacity" Value="0.50"/>
@@ -606,7 +644,7 @@
 
             <StackPanel Grid.Column="2" Orientation="Horizontal"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
-                <Button x:Name="GlobalRefreshButton" Style="{StaticResource LudaryxIconButton}"
+                <Button x:Name="GlobalRefreshButton" Style="{StaticResource IntegratedIconButton}"
                         Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0">
                     <Viewbox Width="17" Height="17">
                         <Canvas Width="24" Height="24">
@@ -616,8 +654,8 @@
                         </Canvas>
                     </Viewbox>
                 </Button>
-                <Button x:Name="GlobalSettingsButton" Content="⚙" Style="{StaticResource LudaryxIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
-                <Button x:Name="GlobalStatisticsButton" Content="▥" Style="{StaticResource LudaryxIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalSettingsButton" Content="⚙" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalStatisticsButton" Content="▥" Style="{StaticResource IntegratedIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
                 <Button x:Name="GlobalFullscreenButton" Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
                     <Viewbox Width="19" Height="19">
                         <Canvas Width="24" Height="24">
@@ -723,6 +761,18 @@
                                      FontSize="12" TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                         </Grid>
                     </Border>
+                    <Button x:Name="FullscreenRefreshButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="Refresh_Click"
+                            ToolTip="Atualizar biblioteca">
+                        <Viewbox Width="17" Height="17">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="#E8ECF5" StrokeThickness="2"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      StrokeLineJoin="Round"
+                                      Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
                     <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Settings_Click"
                             ToolTip="Configurações">
@@ -765,6 +815,28 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+
+            <StackPanel x:Name="FullscreenLoadingIndicator"
+                        Grid.RowSpan="2"
+                        Visibility="Collapsed"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,12,0,0"
+                        Panel.ZIndex="80"
+                        IsHitTestVisible="False">
+                <TextBlock x:Name="FullscreenLoadingIndicatorText"
+                           Text="ATUALIZANDO BIBLIOTECA..."
+                           Foreground="{DynamicResource TvHeroTextSecondary}"
+                           FontSize="10"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,5"/>
+                <ProgressBar Width="240" Height="3"
+                             IsIndeterminate="True"
+                             Background="#25384B"
+                             Foreground="{DynamicResource SelectionAccentBorder}"
+                             BorderThickness="0"/>
+            </StackPanel>
 
             <!-- TV hero. Visible only in fullscreen. -->
             <Border x:Name="TvHeroPanel" Grid.Row="0" Height="250"
