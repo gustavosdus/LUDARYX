@@ -144,12 +144,10 @@ public sealed class GamepadService : IDisposable
             {
                 if (TryReadRawInputDualSense(lParam, out var state))
                 {
+                    // Apenas registra o estado. Poll() decide qual controle está ativo,
+                    // permitindo que Xbox e DualSense coexistam sem o Sony bloquear
+                    // permanentemente o XInput só por estar conectado.
                     _rawDualSenseState = state;
-                    ActiveDeviceKind = GamepadDeviceKind.PlayStation;
-                    StateChanged?.Invoke(this, state);
-                    // Do not update _previous before StateChanged. WasPressed()
-                    // must compare the new state with the state from the
-                    // previous polling cycle.
                     handled = false;
                 }
             }
@@ -649,76 +647,72 @@ public sealed class GamepadService : IDisposable
 
     private void Poll()
     {
-        // Direct HID is the primary path. HidSharp opens the physical Sony HID
-        // interface directly and works with both USB and Bluetooth Classic HID.
-        lock (_hidSync)
+        var hasPlayStation = TryGetPlayStationState(out var playStationState);
+
+        var xinputResult = XInputGetState(0, out var xinputState);
+        var hasXbox = xinputResult == ERROR_SUCCESS;
+        var xboxState = hasXbox
+            ? WithDigitalTriggers(new GamepadState(
+                true,
+                (GamepadButtons)xinputState.Gamepad.wButtons,
+                xinputState.Gamepad.sThumbLX,
+                xinputState.Gamepad.sThumbLY,
+                xinputState.Gamepad.bLeftTrigger,
+                xinputState.Gamepad.bRightTrigger))
+            : new GamepadState(false, GamepadButtons.None, 0, 0, 0, 0);
+
+        if (hasPlayStation || hasXbox)
         {
-            if (_hidDualSenseConnected)
+            var playStationInput = hasPlayStation && HasMeaningfulDeviceInput(playStationState);
+            var xboxInput = hasXbox && HasMeaningfulDeviceInput(xboxState);
+
+            // Mantém o dispositivo ativo enquanto ele estiver conectado e troca
+            // imediatamente quando o outro recebe entrada real. Isso evita que um
+            // DualSense ocioso bloqueie um controle Xbox conectado depois.
+            if (ActiveDeviceKind == GamepadDeviceKind.Xbox && hasXbox)
             {
-                var direct = _hidDualSenseState;
-                ActiveDeviceKind = GamepadDeviceKind.PlayStation;
-                StateChanged?.Invoke(this, direct);
-                _previous = direct;
+                if (playStationInput && !xboxInput)
+                    PublishState(GamepadDeviceKind.PlayStation, playStationState);
+                else
+                    PublishState(GamepadDeviceKind.Xbox, xboxState);
                 return;
             }
-        }
 
-        // Raw Input remains as a Windows fallback.
-        if (_rawDualSenseState.IsConnected)
-        {
-            ActiveDeviceKind = GamepadDeviceKind.PlayStation;
-            StateChanged?.Invoke(this, _rawDualSenseState);
-            _previous = _rawDualSenseState;
-            return;
-        }
-
-        // Prefer a real DualSense exposed by SDL over XInput. Steam Input can
-        // create a virtual Xbox/XInput device; if XInput is checked first, that
-        // virtual device can hide the physical DualSense from the launcher.
-        if (_sdlInitialized)
-        {
-            if (_sdlController == IntPtr.Zero && _sdlJoystick == IntPtr.Zero)
-                RefreshSdlController();
-
-            if (IsSdlDualSenseOpen())
+            if (ActiveDeviceKind == GamepadDeviceKind.PlayStation && hasPlayStation)
             {
-                try
-                {
-                    SDL_PumpEvents();
-                    var current = _sdlController != IntPtr.Zero
-                        ? ReadSdlState(_sdlController)
-                        : ReadRawJoystickState(_sdlJoystick);
-                    ActiveDeviceKind = GamepadDeviceKind.PlayStation;
-                    StateChanged?.Invoke(this, current);
-                    _previous = current;
-                    return;
-                }
-                catch
-                {
-                    CloseSdlDevices();
-                }
+                if (xboxInput && !playStationInput)
+                    PublishState(GamepadDeviceKind.Xbox, xboxState);
+                else
+                    PublishState(GamepadDeviceKind.PlayStation, playStationState);
+                return;
             }
-        }
 
-        // XInput remains available as the fallback for Xbox/XInput controllers.
-        var result = XInputGetState(0, out var state);
-        if (result == ERROR_SUCCESS)
-        {
-            var current = WithDigitalTriggers(new GamepadState(
-                true,
-                (GamepadButtons)state.Gamepad.wButtons,
-                state.Gamepad.sThumbLX,
-                state.Gamepad.sThumbLY,
-                state.Gamepad.bLeftTrigger,
-                state.Gamepad.bRightTrigger));
-            ActiveDeviceKind = GamepadDeviceKind.Xbox;
-            StateChanged?.Invoke(this, current);
-            _previous = current;
+            if (xboxInput)
+            {
+                PublishState(GamepadDeviceKind.Xbox, xboxState);
+                return;
+            }
+
+            if (playStationInput)
+            {
+                PublishState(GamepadDeviceKind.PlayStation, playStationState);
+                return;
+            }
+
+            if (hasXbox)
+            {
+                PublishState(GamepadDeviceKind.Xbox, xboxState);
+                return;
+            }
+
+            PublishState(GamepadDeviceKind.PlayStation, playStationState);
             return;
         }
 
-        if (result != ERROR_DEVICE_NOT_CONNECTED) return;
+        if (xinputResult != ERROR_DEVICE_NOT_CONNECTED && xinputResult != ERROR_SUCCESS)
+            return;
 
+        // SDL genérico permanece como fallback para outros controles compatíveis.
         if (!_sdlInitialized)
         {
             PublishDisconnectedIfNeeded();
@@ -752,6 +746,7 @@ public sealed class GamepadService : IDisposable
                         return;
                     }
                 }
+
                 current = _sdlController != IntPtr.Zero
                     ? ReadSdlState(_sdlController)
                     : ReadRawJoystickState(_sdlJoystick);
@@ -769,21 +764,81 @@ public sealed class GamepadService : IDisposable
                         return;
                     }
                 }
+
                 current = _sdlController != IntPtr.Zero
                     ? ReadSdlState(_sdlController)
                     : ReadRawJoystickState(_sdlJoystick);
             }
-            ActiveDeviceKind = IsSdlDualSenseOpen()
-                ? GamepadDeviceKind.PlayStation
-                : GamepadDeviceKind.Xbox;
-            StateChanged?.Invoke(this, current);
-            _previous = current;
+
+            PublishState(
+                IsSdlDualSenseOpen() ? GamepadDeviceKind.PlayStation : GamepadDeviceKind.Xbox,
+                current);
         }
         catch
         {
-            _sdlController = IntPtr.Zero;
+            CloseSdlDevices();
             PublishDisconnectedIfNeeded();
         }
+    }
+
+    private bool TryGetPlayStationState(out GamepadState state)
+    {
+        lock (_hidSync)
+        {
+            if (_hidDualSenseConnected)
+            {
+                state = _hidDualSenseState;
+                return true;
+            }
+        }
+
+        if (_rawDualSenseState.IsConnected)
+        {
+            state = _rawDualSenseState;
+            return true;
+        }
+
+        if (_sdlInitialized)
+        {
+            if (_sdlController == IntPtr.Zero && _sdlJoystick == IntPtr.Zero)
+                RefreshSdlController();
+
+            if (IsSdlDualSenseOpen())
+            {
+                try
+                {
+                    SDL_PumpEvents();
+                    state = _sdlController != IntPtr.Zero
+                        ? ReadSdlState(_sdlController)
+                        : ReadRawJoystickState(_sdlJoystick);
+                    return true;
+                }
+                catch
+                {
+                    CloseSdlDevices();
+                }
+            }
+        }
+
+        state = new(false, GamepadButtons.None, 0, 0, 0, 0);
+        return false;
+    }
+
+    private void PublishState(GamepadDeviceKind kind, GamepadState state)
+    {
+        ActiveDeviceKind = kind;
+        StateChanged?.Invoke(this, state);
+        _previous = state;
+    }
+
+    private static bool HasMeaningfulDeviceInput(GamepadState state)
+    {
+        const short stickThreshold = 12000;
+        return state.Buttons != GamepadButtons.None ||
+               Math.Abs((int)state.LeftX) >= stickThreshold ||
+               Math.Abs((int)state.LeftY) >= stickThreshold ||
+               state.LeftTrigger >= 40 ||
+               state.RightTrigger >= 40;
     }
 
     private bool IsSdlDualSenseOpen()
