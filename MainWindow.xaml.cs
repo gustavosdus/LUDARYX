@@ -1041,9 +1041,8 @@ public partial class MainWindow : Window
         TvHeroMeta.Text = $"{game.PlatformDisplay}  •  {genres}  •  {rating}";
         TvHeroUsage.Text = $"{game.TotalPlayTimeDisplay}  •  {game.PlayCountDisplay}  •  {game.LastPlayedDisplay}";
         TvHeroDescription.Text = description;
-        TvFavoriteButton.Content = game.IsFavorite ? "Y  ★ FAVORITO" : "Y  ☆ FAVORITO";
-        TvPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "A  JOGAR";
         TvPlayButton.IsEnabled = !game.IsRunning;
+        UpdateTvHeroInputLabels();
 
         var heroPath = game.HeroArtwork;
         var coverPath = game.DisplayCover;
@@ -1439,7 +1438,7 @@ public partial class MainWindow : Window
         foreach (var g in _games.Concat(_visibleGames).Distinct())
             g.IsControllerSelected = false;
 
-        if (_visibleGames.Count > 0 && !_controllerToolbarMode)
+        if (_visibleGames.Count > 0 && !_controllerToolbarMode && !_tvHeroMode)
             _visibleGames[_selectedIndex].IsControllerSelected = true;
 
         ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
@@ -1595,6 +1594,18 @@ public partial class MainWindow : Window
 
         if (_tvHeroMode && _fullscreen)
         {
+            if (_gamepad.WasPressed(GamepadButtons.B, state))
+            {
+                ToggleFullscreen();
+                return;
+            }
+
+            if (_gamepad.WasPressed(GamepadButtons.Back, state))
+            {
+                ExitTvHeroMode();
+                return;
+            }
+
             if (_suppressHeroVerticalUntilNeutral)
             {
                 if (!up && !down && analogVertical == 0)
@@ -1602,7 +1613,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                if (_gamepad.WasPressed(GamepadButtons.B, state) || down)
+                if (down)
                 {
                     ExitTvHeroMode();
                     return;
@@ -1627,7 +1638,6 @@ public partial class MainWindow : Window
             else if (_gamepad.WasPressed(GamepadButtons.X, state)) OpenSelectedDetails();
             else if (_gamepad.WasPressed(GamepadButtons.Y, state)) ToggleSelectedFavorite();
             else if (_gamepad.WasPressed(GamepadButtons.Start, state)) Settings_Click(this, new RoutedEventArgs());
-            else if (_gamepad.WasPressed(GamepadButtons.Back, state)) ToggleFullscreen();
             return;
         }
 
@@ -1667,8 +1677,7 @@ public partial class MainWindow : Window
         {
             if (up && _selectedIndex < GetColumns())
             {
-                if (_fullscreen) EnterTvHeroMode();
-                else EnterToolbarMode();
+                EnterToolbarMode();
             }
             else if (up) MoveSelection(-GetColumns());
             else if (down) MoveSelection(GetColumns());
@@ -1677,13 +1686,20 @@ public partial class MainWindow : Window
             if (up || down || left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
         }
 
-        if (!_fullscreen &&
-            _gamepad.WasPressed(GamepadButtons.Back, state) &&
-            SelectedGamePanel.Visibility == Visibility.Visible &&
-            !_settings.HideGameDetailsPanels)
+        if (_gamepad.WasPressed(GamepadButtons.Back, state))
         {
-            EnterSidePanelMode();
-            return;
+            if (_fullscreen)
+            {
+                EnterTvHeroMode();
+                return;
+            }
+
+            if (SelectedGamePanel.Visibility == Visibility.Visible &&
+                !_settings.HideGameDetailsPanels)
+            {
+                EnterSidePanelMode();
+                return;
+            }
         }
 
         if (_gamepad.WasPressed(GamepadButtons.A, state)) await LaunchSelectedAsync();
@@ -1703,7 +1719,6 @@ public partial class MainWindow : Window
             if (_fullscreen) Settings_Click(this, new RoutedEventArgs());
             else ToggleFullscreen();
         }
-        else if (_gamepad.WasPressed(GamepadButtons.Back, state) && _fullscreen) ToggleFullscreen();
     }
 
     private void CycleComboSelection(ComboBox combo, int delta)
@@ -1777,28 +1792,32 @@ public partial class MainWindow : Window
         if (TvPlayButtonText is null || TvDetailsButtonText is null || TvFavoriteButtonText is null)
             return;
 
-        var play = LocalizationService.Translate("JOGAR");
+        var selected = _visibleGames.ElementAtOrDefault(_selectedIndex);
+        var play = selected?.IsRunning == true
+            ? LocalizationService.Translate("EM EXECUÇÃO")
+            : LocalizationService.Translate("JOGAR");
         var details = LocalizationService.Translate("DETALHES");
         var favorite = LocalizationService.Translate("FAVORITO");
+        var favoriteGlyph = selected?.IsFavorite == true ? "★" : "☆";
 
         switch (_footerInputMode)
         {
             case FooterInputMode.PlayStation:
-                TvPlayButtonText.Text = $"✕  {play}";
+                TvPlayButtonText.Text = selected?.IsRunning == true ? play : $"✕  {play}";
                 TvDetailsButtonText.Text = $"□  {details}";
-                TvFavoriteButtonText.Text = $"△  {favorite}";
+                TvFavoriteButtonText.Text = $"△  {favoriteGlyph} {favorite}";
                 break;
 
             case FooterInputMode.Keyboard:
-                TvPlayButtonText.Text = $"ENTER  {play}";
+                TvPlayButtonText.Text = selected?.IsRunning == true ? play : $"ENTER  {play}";
                 TvDetailsButtonText.Text = $"SPACE  {details}";
-                TvFavoriteButtonText.Text = $"F  {favorite}";
+                TvFavoriteButtonText.Text = $"F  {favoriteGlyph} {favorite}";
                 break;
 
             default:
-                TvPlayButtonText.Text = $"A  {play}";
+                TvPlayButtonText.Text = selected?.IsRunning == true ? play : $"A  {play}";
                 TvDetailsButtonText.Text = $"X  {details}";
-                TvFavoriteButtonText.Text = $"Y  {favorite}";
+                TvFavoriteButtonText.Text = $"Y  {favoriteGlyph} {favorite}";
                 break;
         }
     }
@@ -1997,6 +2016,7 @@ public partial class MainWindow : Window
         ResetAnalogNavigation();
 
         _tvHeroActionIndex = Math.Clamp(_tvHeroActionIndex, 0, controls.Count - 1);
+        UpdateControllerSelection();
         FocusTvHeroControl();
         PlayNavigationSound();
         ControllerStatusText.Text = $"{LocalizationService.Translate("MODO TV")} • {LocalizationService.Translate("Ações do jogo")}";
@@ -2005,6 +2025,7 @@ public partial class MainWindow : Window
     private void ExitTvHeroMode()
     {
         _tvHeroMode = false;
+        _suppressHeroVerticalUntilNeutral = false;
         Keyboard.ClearFocus();
         GameList.Focus();
         Keyboard.Focus(GameList);
