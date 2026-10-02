@@ -785,6 +785,11 @@
                             ToolTip="Configurações">
                         <TextBlock Text="⚙" Foreground="#E8ECF5" FontSize="17"/>
                     </Button>
+                    <Button x:Name="FullscreenStatisticsButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="Statistics_Click"
+                            ToolTip="Estatísticas">
+                        <TextBlock Text="▥" Foreground="#E8ECF5" FontSize="16"/>
+                    </Button>
                     <Button x:Name="FullscreenToolbarButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click"
                             ToolTip="Sair da tela cheia">
