@@ -2847,9 +2847,11 @@ public partial class MainWindow : Window
 
         // Superfícies que antes permaneciam fixas no tema escuro.
         var selectedPanelBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#EEF1F5" : "#0A1421");
-        var selectedPanelBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#A8B2C0" : "#1E3850");
+        // Hero e painel lateral seguem o mesmo contorno de seleção da biblioteca:
+        // vermelho no tema claro e azul/ciano no tema escuro.
+        var selectedPanelBorderColor = selectionBorderColor;
         var selectedPanelArtworkBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E2E7ED" : "#07111C");
-        var selectedPanelArtworkBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#AAB5C3" : "#1C344C");
+        var selectedPanelArtworkBorderColor = selectionBorderColor;
         var selectedPanelTextPrimaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#111827" : "#F5F7FA");
         var selectedPanelTextSecondaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#566273" : "#9AAABD");
         var selectedPanelMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#82D8FF");
@@ -2861,7 +2863,14 @@ public partial class MainWindow : Window
         var tvHeroMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#9EDBFF");
         var tvHeroDescriptionColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#263445" : "#D8E0EA");
         var tvHeroPreviewBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#DDE3EA" : "#33101C29");
-        var tvHeroPreviewBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#9EABB9" : "#31506D");
+        var tvHeroPreviewBorderColor = selectionBorderColor;
+
+        var heroPlayBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#32BDEB" : "#D9153C");
+        var heroPlayBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#6EDCFF" : "#FF3158");
+        var heroPlayForegroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#07131D" : "#FFFFFF");
 
         MainRoot.Background = topBrush;
         HeaderGrid.Background = topBrush;
@@ -2896,6 +2905,18 @@ public partial class MainWindow : Window
         SetOrUpdateBrushResource("TvHeroDescription", tvHeroDescriptionColor);
         SetOrUpdateBrushResource("TvHeroPreviewBackground", tvHeroPreviewBackgroundColor);
         SetOrUpdateBrushResource("TvHeroPreviewBorder", tvHeroPreviewBorderColor);
+
+        var heroPlayBackground = new SolidColorBrush(heroPlayBackgroundColor);
+        var heroPlayBorder = new SolidColorBrush(heroPlayBorderColor);
+        var heroPlayForeground = new SolidColorBrush(heroPlayForegroundColor);
+
+        SelectedPlayButton.Background = heroPlayBackground;
+        SelectedPlayButton.BorderBrush = heroPlayBorder;
+        SelectedPlayButton.Foreground = heroPlayForeground;
+
+        TvPlayButton.Background = new SolidColorBrush(heroPlayBackgroundColor);
+        TvPlayButton.BorderBrush = new SolidColorBrush(heroPlayBorderColor);
+        TvPlayButton.Foreground = new SolidColorBrush(heroPlayForegroundColor);
 
         TvHeroArtwork.Opacity = lightTheme ? 0.18 : 0.34;
         TvHeroTint.Background = new SolidColorBrush(
