@@ -924,15 +924,21 @@
                                        MaxHeight="46" ClipToBounds="True"
                                        VerticalAlignment="Top" Margin="0,10,0,8"/>
                             <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,4,0,0">
-                                <Button x:Name="TvPlayButton" Content="A  JOGAR"
+                                <Button x:Name="TvPlayButton"
                                         Style="{StaticResource LudaryxHeroPrimaryButton}"
-                                        Click="SelectedPlay_Click" Margin="0,0,8,0"/>
-                                <Button x:Name="TvDetailsButton" Content="X  DETALHES"
+                                        Click="SelectedPlay_Click" Margin="0,0,8,0">
+                                    <TextBlock x:Name="TvPlayButtonText" Text="A  JOGAR"/>
+                                </Button>
+                                <Button x:Name="TvDetailsButton"
                                         Style="{StaticResource LudaryxHeroButton}"
-                                        Click="SelectedDetails_Click" Margin="0,0,8,0"/>
-                                <Button x:Name="TvFavoriteButton" Content="Y  FAVORITO"
+                                        Click="SelectedDetails_Click" Margin="0,0,8,0">
+                                    <TextBlock x:Name="TvDetailsButtonText" Text="X  DETALHES"/>
+                                </Button>
+                                <Button x:Name="TvFavoriteButton"
                                         Style="{StaticResource LudaryxHeroButton}"
-                                        Click="SelectedFavorite_Click"/>
+                                        Click="SelectedFavorite_Click">
+                                    <TextBlock x:Name="TvFavoriteButtonText" Text="Y  FAVORITO"/>
+                                </Button>
                             </StackPanel>
                         </Grid>
                         <Border x:Name="TvHeroPreviewBorder" Grid.Column="1" Width="340" Height="190"
