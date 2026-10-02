@@ -74,6 +74,7 @@ public partial class MainWindow : Window
     private readonly Dictionary<string, double> _artworkAspectRatioCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _syncingLibraryColumnsSlider;
     private bool _syncingToolbarPreferenceSliders;
+    private bool _isLibraryLoading;
 
     #endregion
 
@@ -621,17 +622,25 @@ public partial class MainWindow : Window
 
     private async Task SetLibraryLoadingAsync(bool isLoading, string? message = null)
     {
+        _isLibraryLoading = isLoading;
+
         if (!string.IsNullOrWhiteSpace(message))
         {
             var localizedMessage = LocalizationService.Translate(message);
             LibraryLoadingText.Text = localizedMessage;
             FullscreenLibraryLoadingText.Text = localizedMessage;
+            FullscreenLoadingIndicatorText.Text = localizedMessage;
             StartupLibraryLoadingText.Text = localizedMessage;
         }
 
         var visibility = isLoading ? Visibility.Visible : Visibility.Collapsed;
+
+        // Desktop mantém o indicador pequeno do cabeçalho. No fullscreen, a
+        // atualização ganha um indicador próprio sobre a área de jogos.
         LibraryLoadingText.Visibility = !_fullscreen ? visibility : Visibility.Collapsed;
-        FullscreenLibraryLoadingText.Visibility = _fullscreen ? visibility : Visibility.Collapsed;
+        FullscreenLibraryLoadingText.Visibility = Visibility.Collapsed;
+        FullscreenLoadingIndicator.Visibility = _fullscreen ? visibility : Visibility.Collapsed;
+
         StartupLibraryLoadingText.Visibility = StartupOverlay.Visibility == Visibility.Visible
             ? visibility
             : Visibility.Collapsed;
@@ -1821,6 +1830,7 @@ public partial class MainWindow : Window
         if (_fullscreen)
         {
             controls.Add(FullscreenSearchBox);
+            controls.Add(FullscreenRefreshButton);
             controls.Add(FullscreenSettingsButton);
             controls.Add(FullscreenToolbarButton);
         }
@@ -2653,6 +2663,7 @@ public partial class MainWindow : Window
             ? Visibility.Visible
             : Visibility.Collapsed;
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        FullscreenRefreshButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenSettingsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
 
@@ -2668,12 +2679,11 @@ public partial class MainWindow : Window
         Dispatcher.BeginInvoke(UpdateCoverDimensions, DispatcherPriority.Loaded);
         UpdateSelectedGamePresentation();
 
-        var loadingVisible = LibraryLoadingText.Visibility == Visibility.Visible ||
-                             FullscreenLibraryLoadingText.Visibility == Visibility.Visible;
-        LibraryLoadingText.Visibility = !_fullscreen && loadingVisible
+        LibraryLoadingText.Visibility = !_fullscreen && _isLibraryLoading
             ? Visibility.Visible
             : Visibility.Collapsed;
-        FullscreenLibraryLoadingText.Visibility = _fullscreen && loadingVisible
+        FullscreenLibraryLoadingText.Visibility = Visibility.Collapsed;
+        FullscreenLoadingIndicator.Visibility = _fullscreen && _isLibraryLoading
             ? Visibility.Visible
             : Visibility.Collapsed;
 
