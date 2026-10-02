@@ -1008,7 +1008,12 @@ public sealed class MetadataService
         {
             game.Name = metadata.CanonicalName;
         }
-        game.CoverImage = metadata.CoverLocalPath ?? game.CoverImage;
+        // Não troca uma capa já selecionada pela UI durante enriquecimento.
+        // MainWindow.ApplyCoverMode() decide entre vertical/horizontal. Sobrescrever
+        // aqui fazia o modo Vertical mostrar temporariamente CoverLocalPath (horizontal)
+        // enquanto uma atualização de metadados/arte ainda estava em andamento.
+        if (string.IsNullOrWhiteSpace(game.CoverImage))
+            game.CoverImage = metadata.CoverLocalPath;
     }
 
     /// <summary>
