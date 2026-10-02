@@ -629,7 +629,6 @@ public partial class MainWindow : Window
             var localizedMessage = LocalizationService.Translate(message);
             LibraryLoadingText.Text = localizedMessage;
             FullscreenLibraryLoadingText.Text = localizedMessage;
-            FullscreenLoadingIndicatorText.Text = localizedMessage;
             StartupLibraryLoadingText.Text = localizedMessage;
         }
 
