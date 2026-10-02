@@ -67,6 +67,7 @@ public partial class MainWindow : Window
     private bool _tvHeroMode;
     private int _tvHeroActionIndex;
     private bool _sidePanelMode;
+    private bool _suppressHeroVerticalUntilNeutral;
     private int _sidePanelActionIndex;
     private bool _syncingSearchBoxes;
     private CancellationTokenSource? _selectedDescriptionCts;
@@ -1594,17 +1595,25 @@ public partial class MainWindow : Window
 
         if (_tvHeroMode && _fullscreen)
         {
-            if (_gamepad.WasPressed(GamepadButtons.B, state) || down)
+            if (_suppressHeroVerticalUntilNeutral)
             {
-                ExitTvHeroMode();
-                return;
+                if (!up && !down && analogVertical == 0)
+                    _suppressHeroVerticalUntilNeutral = false;
             }
-
-            if (up)
+            else
             {
-                _tvHeroMode = false;
-                EnterToolbarMode();
-                return;
+                if (_gamepad.WasPressed(GamepadButtons.B, state) || down)
+                {
+                    ExitTvHeroMode();
+                    return;
+                }
+
+                if (up && DateTime.UtcNow >= _nextNavigationAllowedUtc)
+                {
+                    _tvHeroMode = false;
+                    EnterToolbarMode();
+                    return;
+                }
             }
 
             if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
@@ -1758,6 +1767,39 @@ public partial class MainWindow : Window
             XboxExtraHintText.Text = "B  PERSONALIZAR   •   Y  FAVORITO   •   LB/RB  COLEÇÃO";
             PlayStationExtraHintText.Text = "○  PERSONALIZAR   •   △  FAVORITO   •   L1/R1  COLEÇÃO";
             KeyboardExtraHintText.Text = "F  FAVORITO   •   F11  TELA CHEIA";
+        }
+
+        UpdateTvHeroInputLabels();
+    }
+
+    private void UpdateTvHeroInputLabels()
+    {
+        if (TvPlayButtonText is null || TvDetailsButtonText is null || TvFavoriteButtonText is null)
+            return;
+
+        var play = LocalizationService.Translate("JOGAR");
+        var details = LocalizationService.Translate("DETALHES");
+        var favorite = LocalizationService.Translate("FAVORITO");
+
+        switch (_footerInputMode)
+        {
+            case FooterInputMode.PlayStation:
+                TvPlayButtonText.Text = $"✕  {play}";
+                TvDetailsButtonText.Text = $"□  {details}";
+                TvFavoriteButtonText.Text = $"△  {favorite}";
+                break;
+
+            case FooterInputMode.Keyboard:
+                TvPlayButtonText.Text = $"ENTER  {play}";
+                TvDetailsButtonText.Text = $"SPACE  {details}";
+                TvFavoriteButtonText.Text = $"F  {favorite}";
+                break;
+
+            default:
+                TvPlayButtonText.Text = $"A  {play}";
+                TvDetailsButtonText.Text = $"X  {details}";
+                TvFavoriteButtonText.Text = $"Y  {favorite}";
+                break;
         }
     }
 
@@ -1946,6 +1988,14 @@ public partial class MainWindow : Window
 
         _tvHeroMode = true;
         _controllerToolbarMode = false;
+
+        // O mesmo "cima" usado para entrar no hero pode continuar pressionado por
+        // alguns frames. Ignora navegação vertical até o eixo/direcional voltar ao
+        // neutro para não saltar imediatamente para a barra superior.
+        _suppressHeroVerticalUntilNeutral = true;
+        _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(180);
+        ResetAnalogNavigation();
+
         _tvHeroActionIndex = Math.Clamp(_tvHeroActionIndex, 0, controls.Count - 1);
         FocusTvHeroControl();
         PlayNavigationSound();
