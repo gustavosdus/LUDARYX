@@ -1,0 +1,29 @@
+# LUDARYX 1.1.3
+
+A versão 1.1.3 é uma atualização corretiva e de refinamento da série 1.1, focada em layout, controles da biblioteca, fullscreen/TV, capas, temas e navegação por teclado/controle.
+
+## Correções e melhorias
+- Capas horizontais agora respeitam melhor a proporção real da arte sem recorte, distorção ou letterboxing desnecessário.
+- Corrigidos vazamentos das imagens para fora dos quadros e problemas de recorte no painel lateral quando há barra de rolagem.
+- Adicionado controle de densidade da biblioteca com 4, 5 ou 6 jogos por linha, integrado à barra principal.
+- O controle de densidade usa três posições fixas e pode ser operado por mouse, teclado e controle sem alterar o valor ao apenas navegar para outro item.
+- Formato de capa e tema foram movidos para a barra como switches compactos, também acessíveis por mouse, teclado e controle.
+- A ordem padrão de duplicatas passa a priorizar Steam, Epic e GOG, preservando preferências personalizadas já existentes.
+- Filtros e rótulos visuais foram padronizados em caixa alta onde aplicável.
+- O botão VOLTAR AO TOPO foi integrado à biblioteca.
+- Hero e painel lateral receberam melhorias de layout para descrições e nomes longos.
+- O painel lateral pode ser acessado com Select / Back no modo padrão, sem depender da coluna do jogo.
+- Jogos ocultos podem ser restaurados explicitamente pelo Gerenciador de Itens.
+- Fullscreen ganhou acesso direto a Atualizar biblioteca, Configurações e Estatísticas.
+- O indicador de atualização do fullscreen foi redesenhado como um spinner neon discreto.
+- Corrigida a preservação das capas verticais durante atualização de metadados e artes.
+- Hero e painel lateral agora respeitam corretamente o contexto de foco: somente a área ativa mantém o contorno de seleção.
+- O contorno dos botões acompanha o tema: azul/ciano no escuro e vermelho no claro.
+- O botão JOGAR do hero e do painel lateral usa azul claro no tema claro e vermelho no tema escuro.
+- Os botões do hero adaptam seus rótulos ao dispositivo em uso: Xbox, PlayStation ou teclado.
+- Back / Select passa a abrir diretamente o hero no fullscreen a partir de qualquer jogo; B / Bola permanece como comando para sair da tela cheia.
+- Corrigida a coexistência entre DualSense e controles Xbox/XInput: o último controle com entrada real assume a navegação.
+- Melhorias gerais de foco, navegação e consistência visual entre modo padrão e modo TV.
+
+## Atualização
+A versão 1.1.3 usa o mesmo AppId das versões anteriores e pode ser instalada sobre a 1.1.2, preservando configurações e dados locais compatíveis.
