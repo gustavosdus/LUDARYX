@@ -1831,6 +1831,7 @@ public partial class MainWindow : Window
             controls.Add(FullscreenSearchBox);
             controls.Add(FullscreenRefreshButton);
             controls.Add(FullscreenSettingsButton);
+            controls.Add(FullscreenStatisticsButton);
             controls.Add(FullscreenToolbarButton);
         }
         else
@@ -2664,6 +2665,7 @@ public partial class MainWindow : Window
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenRefreshButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenSettingsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        FullscreenStatisticsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
 
         FilterSummaryBorder.Visibility = _fullscreen ? Visibility.Collapsed : Visibility.Visible;
