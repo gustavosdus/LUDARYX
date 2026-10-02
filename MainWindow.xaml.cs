@@ -1438,8 +1438,13 @@ public partial class MainWindow : Window
         foreach (var g in _games.Concat(_visibleGames).Distinct())
             g.IsControllerSelected = false;
 
-        if (_visibleGames.Count > 0 && !_controllerToolbarMode && !_tvHeroMode)
+        if (_visibleGames.Count > 0 &&
+            !_controllerToolbarMode &&
+            !_tvHeroMode &&
+            !_sidePanelMode)
+        {
             _visibleGames[_selectedIndex].IsControllerSelected = true;
+        }
 
         ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
         UpdateSelectedGamePresentation();
@@ -1940,6 +1945,10 @@ public partial class MainWindow : Window
         _controllerToolbarMode = false;
         _tvHeroMode = false;
         _sidePanelActionIndex = Math.Clamp(_sidePanelActionIndex, 0, controls.Count - 1);
+
+        // Ao entrar no painel lateral, o card deixa de ser o contexto ativo.
+        // Apenas o botão focado no painel mantém o contorno de seleção.
+        UpdateControllerSelection();
         FocusSidePanelControl();
         PlayNavigationSound();
         ControllerStatusText.Text =
@@ -2845,13 +2854,12 @@ public partial class MainWindow : Window
         var toolbarItemSelectedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#555B63" : "#10283D");
         var searchCaretColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#000000" : "#FFFFFF");
 
-        // Superfícies que antes permaneciam fixas no tema escuro.
+        // Superfícies do hero/painel mantêm seus contornos próprios.
+        // A cor de seleção do tema é usada somente no foco dos controles.
         var selectedPanelBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#EEF1F5" : "#0A1421");
-        // Hero e painel lateral seguem o mesmo contorno de seleção da biblioteca:
-        // vermelho no tema claro e azul/ciano no tema escuro.
-        var selectedPanelBorderColor = selectionBorderColor;
+        var selectedPanelBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#A8B2C0" : "#1E3850");
         var selectedPanelArtworkBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E2E7ED" : "#07111C");
-        var selectedPanelArtworkBorderColor = selectionBorderColor;
+        var selectedPanelArtworkBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#AAB5C3" : "#1C344C");
         var selectedPanelTextPrimaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#111827" : "#F5F7FA");
         var selectedPanelTextSecondaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#566273" : "#9AAABD");
         var selectedPanelMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#82D8FF");
@@ -2863,7 +2871,7 @@ public partial class MainWindow : Window
         var tvHeroMetaColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#0B638F" : "#9EDBFF");
         var tvHeroDescriptionColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#263445" : "#D8E0EA");
         var tvHeroPreviewBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#DDE3EA" : "#33101C29");
-        var tvHeroPreviewBorderColor = selectionBorderColor;
+        var tvHeroPreviewBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#9EABB9" : "#31506D");
 
         var heroPlayBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
             lightTheme ? "#32BDEB" : "#D9153C");
