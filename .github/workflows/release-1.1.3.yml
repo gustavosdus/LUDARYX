@@ -1,0 +1,46 @@
+name: Publish LUDARYX 1.1.3
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/release-1.1.3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install Inno Setup
+        shell: powershell
+        run: |
+          choco install innosetup -y --no-progress
+
+      - name: Validate and build release
+        shell: powershell
+        run: |
+          .\Scripts\Build-Release.ps1 -Version "1.1.3"
+
+      - name: Publish GitHub Release
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v1.1.3 `
+            ".\Installer\LUDARYX-1.1.3-Setup.exe" `
+            ".\Installer\SHA256SUMS.txt" `
+            --repo "${{ github.repository }}" `
+            --target "${{ github.sha }}" `
+            --title "LUDARYX 1.1.3" `
+            --notes-file ".\RELEASE-1.1.3.txt" `
+            --latest
