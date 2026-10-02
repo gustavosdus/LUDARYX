@@ -344,6 +344,9 @@
 
         <Style x:Key="IntegratedIconButton" TargetType="Button">
             <Setter Property="Opacity" Value="0.58"/>
+            <Setter Property="Foreground" Value="#E8ECF5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Width" Value="38"/>
             <Setter Property="Height" Value="38"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -654,8 +657,12 @@
                         </Canvas>
                     </Viewbox>
                 </Button>
-                <Button x:Name="GlobalSettingsButton" Content="⚙" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0"/>
-                <Button x:Name="GlobalStatisticsButton" Content="▥" Style="{StaticResource IntegratedIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0"/>
+                <Button x:Name="GlobalSettingsButton" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0">
+                    <TextBlock Text="⚙" Foreground="#E8ECF5" FontSize="17"/>
+                </Button>
+                <Button x:Name="GlobalStatisticsButton" Style="{StaticResource IntegratedIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0">
+                    <TextBlock Text="▥" Foreground="#E8ECF5" FontSize="16"/>
+                </Button>
                 <Button x:Name="GlobalFullscreenButton" Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
                     <Viewbox Width="19" Height="19">
                         <Canvas Width="24" Height="24">
@@ -816,27 +823,51 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel x:Name="FullscreenLoadingIndicator"
-                        Grid.RowSpan="2"
-                        Visibility="Collapsed"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Margin="0,12,0,0"
-                        Panel.ZIndex="80"
-                        IsHitTestVisible="False">
-                <TextBlock x:Name="FullscreenLoadingIndicatorText"
-                           Text="ATUALIZANDO BIBLIOTECA..."
-                           Foreground="{DynamicResource TvHeroTextSecondary}"
-                           FontSize="10"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,5"/>
-                <ProgressBar Width="240" Height="3"
-                             IsIndeterminate="True"
-                             Background="#25384B"
-                             Foreground="{DynamicResource SelectionAccentBorder}"
-                             BorderThickness="0"/>
-            </StackPanel>
+            <Grid x:Name="FullscreenLoadingIndicator"
+                  Grid.RowSpan="2"
+                  Width="44"
+                  Height="44"
+                  Visibility="Collapsed"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top"
+                  Margin="0,14,0,0"
+                  Panel.ZIndex="80"
+                  IsHitTestVisible="False"
+                  RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <RotateTransform x:Name="FullscreenSpinnerRotation"/>
+                </Grid.RenderTransform>
+
+                <!-- Quase todo o anel usa a espessura normal. -->
+                <Path Stroke="{Binding Background, ElementName=NeonSeparator}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Fill="Transparent"
+                      Data="M22,5 A17,17 0 1 1 10,34"/>
+
+                <!-- Trecho final um pouco mais espesso, conectado ao arco principal. -->
+                <Path Stroke="{Binding Background, ElementName=NeonSeparator}"
+                      StrokeThickness="4"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Fill="Transparent"
+                      Data="M10,34 A17,17 0 0 1 5.5,26"/>
+
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetName="FullscreenSpinnerRotation"
+                                                 Storyboard.TargetProperty="Angle"
+                                                 From="0"
+                                                 To="360"
+                                                 Duration="0:0:0.9"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+            </Grid>
 
             <!-- TV hero. Visible only in fullscreen. -->
             <Border x:Name="TvHeroPanel" Grid.Row="0" Height="250"
