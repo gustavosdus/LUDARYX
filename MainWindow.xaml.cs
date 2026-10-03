@@ -1853,7 +1853,7 @@ public partial class MainWindow : Window
             PlayStationCustomizeHintText.Text = $"□  {customizeText}";
             XboxExtraHintText.Text = "Y  FAVORITO   •   B  VOLTAR   •   LB/RB  COLEÇÃO   •   LT/RT  PLATAFORMA";
             PlayStationExtraHintText.Text = "△  FAVORITO   •   ○  VOLTAR   •   L1/R1  COLEÇÃO   •   L2/R2  PLATAFORMA";
-            KeyboardExtraHintText.Text = "F  FAVORITO   •   ESC  VOLTAR   •   F11  TELA CHEIA";
+            KeyboardExtraHintText.Text = "F  FAVORITO   •   TAB  HERO   •   ESC  VOLTAR   •   PGUP/PGDN  COLEÇÃO   •   CTRL+PGUP/PGDN  PLATAFORMA";
         }
         else
         {
@@ -1861,7 +1861,7 @@ public partial class MainWindow : Window
             PlayStationCustomizeHintText.Text = $"□  {LocalizationService.Translate("TELA CHEIA")}";
             XboxExtraHintText.Text = "B  PERSONALIZAR   •   Y  FAVORITO   •   LB/RB  COLEÇÃO";
             PlayStationExtraHintText.Text = "○  PERSONALIZAR   •   △  FAVORITO   •   L1/R1  COLEÇÃO";
-            KeyboardExtraHintText.Text = "F  FAVORITO   •   F11  TELA CHEIA";
+            KeyboardExtraHintText.Text = "F  FAVORITO   •   TAB  PAINEL   •   PGUP/PGDN  COLEÇÃO   •   CTRL+PGUP/PGDN  PLATAFORMA   •   F11  TELA CHEIA";
         }
 
         UpdateTvHeroInputLabels();
@@ -3067,6 +3067,53 @@ public partial class MainWindow : Window
         // Qualquer uso do teclado torna as dicas Enter/Espaço as dicas ativas.
         SetFooterInputMode(FooterInputMode.Keyboard);
 
+        // Equivalentes de teclado para os atalhos globais dos controles.
+        // Page Up/Down = LB/RB (coleções); Ctrl+Page Up/Down = LT/RT (plataformas).
+        if (e.Key is Key.PageUp or Key.PageDown)
+        {
+            var delta = e.Key == Key.PageUp ? -1 : 1;
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
+                CycleComboSelection(PlatformFilterCombo, delta);
+            else
+                CycleComboSelection(LibraryFilterCombo, delta);
+
+            e.Handled = true;
+            return;
+        }
+
+        // Tab assume o papel de Back/Select nas zonas de jogo:
+        // biblioteca -> painel lateral/hero; painel/hero -> biblioteca.
+        if (e.Key == Key.Tab)
+        {
+            if (_sidePanelMode && !_fullscreen)
+            {
+                ExitSidePanelMode();
+                e.Handled = true;
+                return;
+            }
+
+            if (_tvHeroMode && _fullscreen)
+            {
+                ExitTvHeroMode();
+                e.Handled = true;
+                return;
+            }
+
+            if (!_controllerToolbarMode &&
+                Keyboard.FocusedElement is not TextBox &&
+                _visibleGames.Count > 0)
+            {
+                if (_fullscreen)
+                    EnterTvHeroMode();
+                else if (SelectedGamePanel.Visibility == Visibility.Visible &&
+                         !_settings.HideGameDetailsPanels)
+                    EnterSidePanelMode();
+
+                e.Handled = true;
+                return;
+            }
+        }
+
         // Quando a pesquisa está com foco, mantém a edição de texto sem prender
         // a navegação do teclado dentro do TextBox. As setas verticais deixam
         // explicitamente a pesquisa: para cima vai à barra e para baixo aos jogos.
@@ -3135,6 +3182,38 @@ public partial class MainWindow : Window
             }
         }
 
+        if (_sidePanelMode && !_fullscreen)
+        {
+            switch (e.Key)
+            {
+                case Key.Up:
+                    MoveSidePanelSelection(-1);
+                    e.Handled = true;
+                    return;
+                case Key.Down:
+                    MoveSidePanelSelection(1);
+                    e.Handled = true;
+                    return;
+                case Key.Left:
+                case Key.Escape:
+                    ExitSidePanelMode();
+                    e.Handled = true;
+                    return;
+                case Key.Enter:
+                    ActivateSidePanelControl();
+                    e.Handled = true;
+                    return;
+                case Key.Space:
+                    OpenSelectedDetails();
+                    e.Handled = true;
+                    return;
+                case Key.F:
+                    ToggleSelectedFavorite();
+                    e.Handled = true;
+                    return;
+            }
+        }
+
         if (_tvHeroMode && _fullscreen)
         {
             switch (e.Key)
@@ -3153,12 +3232,23 @@ public partial class MainWindow : Window
                     e.Handled = true;
                     return;
                 case Key.Down:
-                case Key.Escape:
                     ExitTvHeroMode();
+                    e.Handled = true;
+                    return;
+                case Key.Escape:
+                    ToggleFullscreen();
                     e.Handled = true;
                     return;
                 case Key.Enter:
                     ActivateTvHeroControl();
+                    e.Handled = true;
+                    return;
+                case Key.Space:
+                    OpenSelectedDetails();
+                    e.Handled = true;
+                    return;
+                case Key.F:
+                    ToggleSelectedFavorite();
                     e.Handled = true;
                     return;
             }
@@ -3218,11 +3308,9 @@ public partial class MainWindow : Window
                 break;
             case Key.Up:
                 if (_selectedIndex < GetColumns())
-                {
-                    if (_fullscreen) EnterTvHeroMode();
-                    else EnterToolbarMode();
-                }
-                else MoveSelection(-GetColumns());
+                    EnterToolbarMode();
+                else
+                    MoveSelection(-GetColumns());
                 e.Handled = true;
                 break;
             case Key.Down:
