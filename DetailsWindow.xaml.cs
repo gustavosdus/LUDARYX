@@ -109,6 +109,13 @@ public partial class DetailsWindow : Window
             ? string.Empty
             : $"{LocalizationService.Translate("Fonte dos metadados")}: {_game.Metadata.Source}";
         FavoriteButton.Content = _game.IsFavorite ? $"★ {LocalizationService.Translate("FAVORITO")}" : LocalizationService.Translate("☆ FAVORITO");
+
+        var isHidden = _settings.HiddenGameIds.Contains(
+            _game.ProviderId,
+            StringComparer.OrdinalIgnoreCase);
+        _game.IsHidden = isHidden;
+        HideButton.Content = LocalizationService.Translate(isHidden ? "DESOCULTAR" : "OCULTAR");
+
         SetImage(VerticalCoverImage, _game.VerticalCover);
         SetImage(HorizontalCoverImage, _game.HorizontalCover);
         ManualNameBox.Text = _game.Name;
@@ -164,7 +171,30 @@ public partial class DetailsWindow : Window
     }
 
     private void Favorite_Click(object sender, RoutedEventArgs e) { _state.ToggleFavorite(_game, _settings); LoadData(); }
-    private void Hide_Click(object sender, RoutedEventArgs e) { AddId(_settings.HiddenGameIds); _settingsServiceSave(); DialogResult = true; Close(); }
+
+    private void Hide_Click(object sender, RoutedEventArgs e)
+    {
+        var isHidden = _settings.HiddenGameIds.Contains(
+            _game.ProviderId,
+            StringComparer.OrdinalIgnoreCase);
+
+        if (isHidden)
+        {
+            _settings.HiddenGameIds.RemoveAll(x =>
+                x.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase));
+            _game.IsHidden = false;
+        }
+        else
+        {
+            AddId(_settings.HiddenGameIds);
+            _game.IsHidden = true;
+        }
+
+        _settingsServiceSave();
+        DialogResult = true;
+        Close();
+    }
+
     private void Exclude_Click(object sender, RoutedEventArgs e) { AddId(_settings.ExcludedGameIds); _settings.HiddenGameIds.RemoveAll(x => x.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase)); _settingsServiceSave(); DialogResult = true; Close(); }
     private void AddId(List<string> list) { if (!list.Contains(_game.ProviderId, StringComparer.OrdinalIgnoreCase)) list.Add(_game.ProviderId); }
     private void _settingsServiceSave() => new JsonSettingsService().Save(_settings);
