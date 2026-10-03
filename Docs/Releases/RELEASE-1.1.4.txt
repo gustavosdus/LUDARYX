@@ -1,0 +1,22 @@
+# LUDARYX 1.1.4
+
+A versão 1.1.4 é uma atualização corretiva da série 1.1, focada em consistência de foco, filtros de itens ocultos e paridade de navegação entre mouse, teclado e controles.
+
+## Correções e melhorias
+- O hover e o foco de botões no modo claro agora usam corretamente o contorno vermelho do tema; no modo escuro permanecem azul/ciano.
+- O destaque do card da biblioteca passa a ser exclusivo do contexto ativo: hero, painel lateral e barra superior removem o contorno do jogo enquanto estiverem sendo controlados.
+- Ao retornar com o mouse para a biblioteca, o card sob o ponteiro recupera imediatamente o destaque, sem exigir movimento adicional de teclado ou controle.
+- Adicionado o filtro OCULTOS à biblioteca para visualizar diretamente jogos ocultos.
+- O filtro OCULTOS funciona mesmo quando a exibição global de itens ocultos está desativada e preserva itens ocultos que também sejam duplicatas.
+- Na Personalização, o botão OCULTAR passa automaticamente a DESOCULTAR quando o jogo já está oculto.
+- Jogos podem continuar sendo restaurados também pelo Gerenciador de Itens.
+- A navegação por teclado foi ampliada para cobrir as mesmas zonas e ações disponíveis nos controles.
+- Tab assume o papel de Back/Select para entrar e sair do painel lateral no modo padrão e do hero no fullscreen.
+- Page Up / Page Down alternam coleções, equivalentes a LB/RB.
+- Ctrl + Page Up / Ctrl + Page Down alternam plataformas, equivalentes a LT/RT.
+- Painel lateral e hero passam a aceitar navegação e ações completas por teclado, incluindo Enter, Espaço, F, setas e Escape conforme o contexto.
+- As dicas de teclado do rodapé foram atualizadas para refletir os novos comandos.
+- Melhorias gerais de consistência entre mouse, teclado, Xbox e DualSense.
+
+## Atualização
+A versão 1.1.4 usa o mesmo AppId das versões anteriores e pode ser instalada sobre a 1.1.3, preservando configurações e dados locais compatíveis.
