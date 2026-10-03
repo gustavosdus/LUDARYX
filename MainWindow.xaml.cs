@@ -2414,9 +2414,6 @@ public partial class MainWindow : Window
 
     private void Cover_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
     {
-        if (_fullscreen)
-            return;
-
         if (sender is Border border && border.DataContext is Game game)
             SelectGameWithMouse(game);
     }
@@ -2444,19 +2441,34 @@ public partial class MainWindow : Window
     private void SelectGameWithMouse(Game game)
     {
         var index = _visibleGames.IndexOf(game);
-        if (index < 0) return;
-
-        // Items.Refresh recriava/reaplicava os containers enquanto o ponteiro ainda
-        // estava sobre o card. Isso podia disparar MouseEnter novamente e causar
-        // o efeito de capa apagando/piscando. Game já notifica IsControllerSelected,
-        // então não existe necessidade de atualizar a coleção inteira.
-        if (_selectedIndex == index && game.IsControllerSelected)
+        if (index < 0)
             return;
+
+        // O mouse também define qual zona está ativa. Ao voltar do hero, painel
+        // lateral ou barra superior para a biblioteca, o destaque precisa migrar
+        // imediatamente para o card sob o ponteiro, sem exigir teclado/controle.
+        var contextChanged = _controllerToolbarMode || _tvHeroMode || _sidePanelMode;
 
         _controllerToolbarMode = false;
         _tvHeroMode = false;
+        _sidePanelMode = false;
+        _suppressHeroVerticalUntilNeutral = false;
         _selectedIndex = index;
-        UpdateControllerSelection();
+
+        // Se um botão do hero/painel ainda tiver foco de teclado, seu contorno pode
+        // permanecer desenhado mesmo depois de o mouse retornar à biblioteca.
+        // Transferir o foco para o ItemsControl mantém apenas o card como contexto ativo.
+        if (contextChanged || !game.IsControllerSelected)
+        {
+            Keyboard.ClearFocus();
+            GameList.Focus();
+            Keyboard.Focus(GameList);
+        }
+
+        // Items.Refresh recriava/reaplicava containers e causava flicker. O próprio
+        // Game notifica IsControllerSelected, então basta atualizar o estado.
+        if (contextChanged || !game.IsControllerSelected)
+            UpdateControllerSelection();
     }
 
     private void OpenDetails(Game game)
