@@ -179,6 +179,7 @@ public static class LocalizationService
         new("FAVORITOS", "FAVORITOS", "FAVORITES", "FAVOURITES", "FAVORITOS", "FAVORITOS"),
         new("RECENTES", "RECENTES", "RECENT", "RECENT", "RECIENTES", "RECIENTES"),
         new("DUPLICADOS", "DUPLICADOS", "DUPLICATES", "DUPLICATES", "DUPLICADOS", "DUPLICADOS"),
+        new("OCULTOS", "OCULTOS", "HIDDEN", "HIDDEN", "OCULTOS", "OCULTOS"),
         new("PLATAFORMA", "PLATAFORMA", "PLATFORM", "PLATFORM", "PLATAFORMA", "PLATAFORMA"),
         new("MANUAIS", "MANUAIS", "MANUAL", "MANUAL", "MANUALES", "MANUALES"),
         new("Filtrar por gênero", "Filtrar por género", "Filter by genre", "Filter by genre", "Filtrar por género", "Filtrar por género"),
