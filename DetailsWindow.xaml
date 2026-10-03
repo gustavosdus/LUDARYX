@@ -83,7 +83,7 @@
                     <WrapPanel Margin="0,0,0,12">
                         <Button x:Name="FavoriteButton" Content="☆ FAVORITO" Click="Favorite_Click" Margin="0,0,7,7"/>
                         <Button Content="JOGAR" Style="{StaticResource LudaryxPrimaryButton}" Click="Play_Click" Margin="0,0,7,7"/>
-                        <Button Content="OCULTAR" Click="Hide_Click" Margin="0,0,7,7"/>
+                        <Button x:Name="HideButton" Content="OCULTAR" Click="Hide_Click" Margin="0,0,7,7"/>
                         <Button Content="EXCLUIR DA BIBLIOTECA" Style="{StaticResource LudaryxDangerButton}" Click="Exclude_Click" Margin="0,0,7,7"/>
                         <Button x:Name="EditManualLaunchButton" Content="EDITAR INICIALIZAÇÃO" Click="EditManualLaunch_Click" Visibility="Collapsed" Margin="0,0,7,7"/>
                         <Button x:Name="DuplicateManualGameButton" Content="DUPLICAR ENTRADA" Click="DuplicateManualGame_Click" Visibility="Collapsed" Margin="0,0,7,7"/>
