@@ -112,7 +112,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource NavButtonHoverBackground}"/>
-                                <Setter Property="BorderBrush" Value="#465166"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource NavButtonPressedBackground}"/>
@@ -480,7 +480,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="#3A465A"/>
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                                 <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource ToolbarFieldHoverBackground}"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
@@ -605,7 +605,8 @@
 
         <!-- Desktop header: compact identity, central search and global actions. -->
         <Grid x:Name="HeaderGrid" Grid.Row="0" Background="#05070B"
-              MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+              MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+              GotKeyboardFocus="ToolbarRegion_GotKeyboardFocus">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="205"/>
                 <ColumnDefinition Width="*"/>
@@ -681,7 +682,8 @@
 
         <!-- Filters are kept separate from administrative actions. -->
         <Border x:Name="ToolbarBorder" Grid.Row="2" Background="#070A10"
-                BorderBrush="#152131" BorderThickness="0,0,0,1">
+                BorderBrush="#152131" BorderThickness="0,0,0,1"
+                GotKeyboardFocus="ToolbarRegion_GotKeyboardFocus">
             <Grid Margin="14,0,10,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -694,6 +696,7 @@
                             <ComboBoxItem Content="FAVORITOS" Tag="favorites"/>
                             <ComboBoxItem Content="RECENTES" Tag="recent"/>
                             <ComboBoxItem Content="DUPLICADOS" Tag="duplicates"/>
+                            <ComboBoxItem Content="OCULTOS" Tag="hidden"/>
                         </ComboBox>
                         <ComboBox x:Name="PlatformFilterCombo" Width="160" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="PlatformFilterCombo_SelectionChanged" ToolTip="Filtrar por plataforma">
                             <ComboBoxItem Content="TODAS PLATAFORMAS" Tag="all"/>
@@ -878,6 +881,7 @@
             <!-- TV hero. Visible only in fullscreen. -->
             <Border x:Name="TvHeroPanel" Grid.Row="0" Height="250"
                     Visibility="Collapsed" Background="{DynamicResource TvHeroBackground}"
+                    GotKeyboardFocus="HeroRegion_GotKeyboardFocus"
                     BorderBrush="{DynamicResource SelectedPanelBorder}" BorderThickness="0,0,0,1"
                     ClipToBounds="True">
                 <Grid>
@@ -961,7 +965,8 @@
                 <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{StaticResource GameAreaBlue}">
                     <Grid>
                         <ScrollViewer x:Name="LibraryScroll" Padding="24,18,18,24" ScrollChanged="LibraryScroll_ScrollChanged">
-                            <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}">
+                            <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}"
+                                          GotKeyboardFocus="GameList_GotKeyboardFocus">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="{Binding Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
@@ -1052,6 +1057,7 @@
                 <!-- Desktop selected-game panel. -->
                 <Border x:Name="SelectedGamePanel" Grid.Column="1"
                         Style="{StaticResource LudaryxSelectedPanel}"
+                        GotKeyboardFocus="SidePanelRegion_GotKeyboardFocus"
                         Background="{DynamicResource SelectedPanelBackground}"
                         BorderBrush="{DynamicResource SelectedPanelBorder}"
                         Margin="0,12,14,14">
