@@ -890,6 +890,7 @@ public partial class MainWindow : Window
             "favorites" => "favorites",
             "recent" => "recent",
             "duplicates" => "duplicates",
+            "hidden" => "hidden",
             _ => ""
         };
         ApplyFilter();
@@ -1339,7 +1340,7 @@ public partial class MainWindow : Window
 
         IEnumerable<Game> filtered = _games.Where(g =>
             !g.IsExcluded &&
-            (showHidden || !g.IsHidden) &&
+            (_specialFilter == "hidden" ? g.IsHidden : (showHidden || !g.IsHidden)) &&
             (!_platformFilter.HasValue || g.Platform == _platformFilter.Value) &&
             (_specialFilter != "favorites" || g.IsFavorite) &&
             (_specialFilter != "recent" || g.LastPlayedUtc.HasValue) &&
@@ -1348,7 +1349,7 @@ public partial class MainWindow : Window
              !g.IsDuplicate ||
              !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var preferredProvider) ||
              g.ProviderId.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase) ||
-             _specialFilter == "duplicates") &&
+             _specialFilter is "duplicates" or "hidden") &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
 
@@ -1427,10 +1428,78 @@ public partial class MainWindow : Window
 
     #region Controller navigation
 
+    private void ToolbarRegion_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        _controllerToolbarMode = true;
+        _sidePanelMode = false;
+        _tvHeroMode = false;
+
+        var controls = GetToolbarControls();
+        if (e.NewFocus is System.Windows.Controls.Control focused)
+        {
+            var index = controls
+                .Select((control, controlIndex) => new { control, controlIndex })
+                .FirstOrDefault(item => ReferenceEquals(item.control, focused))
+                ?.controlIndex ?? -1;
+            if (index >= 0)
+                _toolbarIndex = index;
+        }
+
+        UpdateControllerSelection();
+    }
+
+    private void SidePanelRegion_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        if (_fullscreen)
+            return;
+
+        _sidePanelMode = true;
+        _controllerToolbarMode = false;
+        _tvHeroMode = false;
+
+        var controls = GetSidePanelControls();
+        if (e.NewFocus is Button focused)
+        {
+            var index = controls.IndexOf(focused);
+            if (index >= 0)
+                _sidePanelActionIndex = index;
+        }
+
+        UpdateControllerSelection();
+    }
+
+    private void HeroRegion_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        if (!_fullscreen)
+            return;
+
+        _tvHeroMode = true;
+        _controllerToolbarMode = false;
+        _sidePanelMode = false;
+
+        var controls = GetTvHeroControls();
+        if (e.NewFocus is Button focused)
+        {
+            var index = controls.IndexOf(focused);
+            if (index >= 0)
+                _tvHeroActionIndex = index;
+        }
+
+        UpdateControllerSelection();
+    }
+
+    private void GameList_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        _controllerToolbarMode = false;
+        _sidePanelMode = false;
+        _tvHeroMode = false;
+        UpdateControllerSelection();
+    }
+
     private void UpdateControllerSelection()
     {
-        // O destaque azul é exclusivo do contexto ativo:
-        // barra ativa = nenhum jogo destacado; biblioteca ativa = apenas o jogo selecionado.
+        // O destaque do jogo é exclusivo do contexto ativo:
+        // hero/painel/barra ativos = nenhum card destacado; biblioteca ativa = apenas o jogo selecionado.
         // Limpa tanto a biblioteca publicada quanto a lista que está atualmente
         // na tela. Em recargas assíncronas elas podem, por alguns instantes, conter
         // instâncias de gerações diferentes. Limpar a união impede que cards antigos
