@@ -39,7 +39,7 @@
     <Resource Include="Assets\Navigation.wav" />
     <Resource Include="Assets\PowerOn.wav" />
     <Resource Include="Assets\Launch.wav" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.20" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.13" />
     <PackageReference Include="sdl2.nuget" Version="2.32.8" />
     <PackageReference Include="HidSharp" Version="2.6.4" />
