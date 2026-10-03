@@ -1460,7 +1460,10 @@ public partial class MainWindow : Window
         var controls = GetSidePanelControls();
         if (e.NewFocus is Button focused)
         {
-            var index = controls.IndexOf(focused);
+            var index = controls
+                .Select((control, controlIndex) => new { control, controlIndex })
+                .FirstOrDefault(item => ReferenceEquals(item.control, focused))
+                ?.controlIndex ?? -1;
             if (index >= 0)
                 _sidePanelActionIndex = index;
         }
@@ -1480,7 +1483,10 @@ public partial class MainWindow : Window
         var controls = GetTvHeroControls();
         if (e.NewFocus is Button focused)
         {
-            var index = controls.IndexOf(focused);
+            var index = controls
+                .Select((control, controlIndex) => new { control, controlIndex })
+                .FirstOrDefault(item => ReferenceEquals(item.control, focused))
+                ?.controlIndex ?? -1;
             if (index >= 0)
                 _tvHeroActionIndex = index;
         }
