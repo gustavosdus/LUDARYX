@@ -76,6 +76,7 @@ public partial class MainWindow : Window
     private bool _syncingLibraryColumnsSlider;
     private bool _syncingToolbarPreferenceSliders;
     private bool _isLibraryLoading;
+    private CancellationTokenSource? _gameLaunchCts;
 
     #endregion
 
@@ -2527,90 +2528,181 @@ public partial class MainWindow : Window
 
     private async Task LaunchGameAsync(Game game)
     {
+        // O overlay bloqueia a interface visualmente, mas atalhos de teclado podem
+        // chegar à janela. Evita iniciar um segundo fluxo enquanto há um em andamento.
+        if (_gameLaunchCts is not null)
+            return;
+
+        if (game.IsRunning || _sessions.IsRunning(game))
+        {
+            game.IsRunning = true;
+            StatusText.Text = $"{game.Name} já está em execução";
+            ShowToast($"{game.Name} já está em execução.");
+            return;
+        }
+
+        var activeGame = _sessions.GetActiveGame(_games, game);
+        if (activeGame is not null)
+        {
+            activeGame.IsRunning = true;
+            StatusText.Text = $"{activeGame.Name} já está em execução";
+            ShowToast($"Feche {activeGame.Name} antes de iniciar outro jogo.");
+            return;
+        }
+
+        using var launchCts = new CancellationTokenSource();
+        _gameLaunchCts = launchCts;
+        var token = launchCts.Token;
+
         try
         {
-            if (game.IsRunning || _sessions.IsRunning(game))
-            {
-                game.IsRunning = true;
-                StatusText.Text = $"{game.Name} já está em execução";
-                ShowToast($"{game.Name} já está em execução.");
-                return;
-            }
-
-            var activeGame = _sessions.GetActiveGame(_games, game);
-            if (activeGame is not null)
-            {
-                activeGame.IsRunning = true;
-                StatusText.Text = $"{activeGame.Name} já está em execução";
-                ShowToast($"Feche {activeGame.Name} antes de iniciar outro jogo.");
-                return;
-            }
-
             PlayLaunchSound();
             StatusText.Text = $"Iniciando {game.Name}...";
             ShowGameLaunchOverlay(game);
 
-            // Garante que o overlay seja desenhado antes de qualquer provider iniciar
-            // trabalho síncrono e mantém a transição visível mesmo em launches muito rápidos.
+            // Garante que a interface seja desenhada antes de o provider começar.
             await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Render);
-            var minimumVisibleTime = Task.Delay(650);
+            token.ThrowIfCancellationRequested();
 
+            SetGameLaunchProgress(8);
             GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
-            await _launcher.LaunchAsync(game);
+
+            await RunLaunchCommandWithProgressAsync(game, token);
+            token.ThrowIfCancellationRequested();
 
             _state.MarkPlayed(game, _settings);
             _sessions.TrackAfterLaunch(game, _settings);
 
+            SetGameLaunchProgress(Math.Max(GameLaunchProgressBar.Value, 52));
             GameLaunchStatusText.Text = LocalizationService.Translate("Aguardando o jogo...");
-            var gameStarted = await WaitForGameStartAsync(game, TimeSpan.FromMinutes(2));
+
+            var gameStarted = await WaitForGameStartAsync(
+                game,
+                TimeSpan.FromMinutes(2),
+                token);
+
+            token.ThrowIfCancellationRequested();
 
             if (gameStarted)
             {
+                SetGameLaunchProgress(100);
                 GameLaunchStatusText.Text = LocalizationService.Translate("Jogo iniciado");
                 StatusText.Text = $"Executando: {game.Name}";
+                ApplyFilter();
 
-                // Dá um pequeno respiro visual depois da detecção para a transição
-                // não sumir no mesmo frame em que o processo aparece.
-                await Task.Delay(220);
+                // Mantém 100% por um instante para tornar a conclusão perceptível.
+                await Task.Delay(320, CancellationToken.None);
             }
             else
             {
+                // Alguns launchers/jogos não expõem um executável detectável.
+                // A barra permanece quase completa, mas não afirma 100% sem confirmação.
+                SetGameLaunchProgress(95);
                 StatusText.Text = $"Inicialização enviada: {game.Name}";
+                await Task.Delay(250, CancellationToken.None);
             }
-
-            ApplyFilter();
-            await minimumVisibleTime;
+        }
+        catch (OperationCanceledException)
+        {
+            StatusText.Text = LocalizationService.Translate("Inicialização interrompida");
+            GameLaunchStatusText.Text = LocalizationService.Translate("Inicialização interrompida");
+            CancelGameLaunchButton.IsEnabled = false;
+            await Task.Delay(220, CancellationToken.None);
         }
         catch (Exception ex)
         {
             StatusText.Text = "Falha ao iniciar o jogo";
-            MessageBox.Show($"Não foi possível iniciar {game.Name}.\n\n{ex.Message}", "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(
+                $"Não foi possível iniciar {game.Name}.\n\n{ex.Message}",
+                "LUDARYX",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
         finally
         {
             HideGameLaunchOverlay();
+
+            if (ReferenceEquals(_gameLaunchCts, launchCts))
+                _gameLaunchCts = null;
         }
     }
 
-    private async Task<bool> WaitForGameStartAsync(Game game, TimeSpan timeout)
+    private async Task RunLaunchCommandWithProgressAsync(Game game, CancellationToken token)
     {
-        var deadline = DateTime.UtcNow + timeout;
+        var launchTask = _launcher.LaunchAsync(game, token);
+        var progress = Math.Max(12d, GameLaunchProgressBar.Value);
+        SetGameLaunchProgress(progress);
+
+        while (!launchTask.IsCompleted)
+        {
+            token.ThrowIfCancellationRequested();
+
+            // A fase de comando cresce de forma suave até 48%; a metade restante
+            // fica reservada para a detecção real do processo do jogo.
+            progress = Math.Min(48, progress + 1.25);
+            SetGameLaunchProgress(progress);
+
+            await Task.WhenAny(
+                launchTask,
+                Task.Delay(160, token));
+        }
+
+        await launchTask;
+        SetGameLaunchProgress(Math.Max(50, GameLaunchProgressBar.Value));
+    }
+
+    private async Task<bool> WaitForGameStartAsync(
+        Game game,
+        TimeSpan timeout,
+        CancellationToken token)
+    {
+        var startedAt = DateTime.UtcNow;
+        var deadline = startedAt + timeout;
 
         while (DateTime.UtcNow < deadline)
         {
+            token.ThrowIfCancellationRequested();
+
             if (game.IsRunning || _sessions.IsRunning(game))
                 return true;
 
-            await Task.Delay(500);
+            // Crescimento assintótico: sobe de 52% em direção a 95% enquanto
+            // aguardamos o processo, mas nunca chega a 100% antes da detecção.
+            var elapsedSeconds = Math.Max(0, (DateTime.UtcNow - startedAt).TotalSeconds);
+            var waitProgress = 52 + (43 * (1 - Math.Exp(-elapsedSeconds / 10.0)));
+            SetGameLaunchProgress(Math.Min(95, waitProgress));
+
+            await Task.Delay(250, token);
         }
 
         return false;
     }
 
+    private void SetGameLaunchProgress(double value)
+    {
+        var normalized = Math.Clamp(value, 0, 100);
+        GameLaunchProgressBar.Value = normalized;
+        GameLaunchProgressText.Text = $"{(int)Math.Round(normalized)}%";
+    }
+
+    private void CancelGameLaunch_Click(object sender, RoutedEventArgs e)
+    {
+        if (_gameLaunchCts is null || _gameLaunchCts.IsCancellationRequested)
+            return;
+
+        CancelGameLaunchButton.IsEnabled = false;
+        GameLaunchStatusText.Text = LocalizationService.Translate("Interrompendo...");
+        _gameLaunchCts.Cancel();
+    }
+
     private void ShowGameLaunchOverlay(Game game)
     {
         GameLaunchNameText.Text = game.Name;
+        GameLaunchPlatformText.Text = game.PlatformDisplay.ToUpperInvariant();
         GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
+        CancelGameLaunchButton.Content = LocalizationService.Translate("INTERROMPER");
+        CancelGameLaunchButton.IsEnabled = true;
+        SetGameLaunchProgress(0);
 
         var verticalArtwork = game.VerticalCover;
         GameLaunchCoverImage.Source = LoadHomeArtwork(verticalArtwork);
@@ -2627,12 +2719,14 @@ public partial class MainWindow : Window
         if (GameLaunchOverlay.Visibility != Visibility.Visible)
             return;
 
-        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(140));
+        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(160));
         fadeOut.Completed += (_, _) =>
         {
             GameLaunchOverlay.Visibility = Visibility.Collapsed;
             GameLaunchOverlay.Opacity = 1;
             GameLaunchCoverImage.Source = null;
+            SetGameLaunchProgress(0);
+            CancelGameLaunchButton.IsEnabled = true;
         };
         GameLaunchOverlay.BeginAnimation(OpacityProperty, fadeOut);
     }
