@@ -2558,12 +2558,27 @@ public partial class MainWindow : Window
             GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
             await _launcher.LaunchAsync(game);
 
-            GameLaunchStatusText.Text = LocalizationService.Translate("Finalizando abertura...");
             _state.MarkPlayed(game, _settings);
             _sessions.TrackAfterLaunch(game, _settings);
-            StatusText.Text = $"Executando: {game.Name}";
-            ApplyFilter();
 
+            GameLaunchStatusText.Text = LocalizationService.Translate("Aguardando o jogo...");
+            var gameStarted = await WaitForGameStartAsync(game, TimeSpan.FromMinutes(2));
+
+            if (gameStarted)
+            {
+                GameLaunchStatusText.Text = LocalizationService.Translate("Jogo iniciado");
+                StatusText.Text = $"Executando: {game.Name}";
+
+                // Dá um pequeno respiro visual depois da detecção para a transição
+                // não sumir no mesmo frame em que o processo aparece.
+                await Task.Delay(220);
+            }
+            else
+            {
+                StatusText.Text = $"Inicialização enviada: {game.Name}";
+            }
+
+            ApplyFilter();
             await minimumVisibleTime;
         }
         catch (Exception ex)
@@ -2575,6 +2590,21 @@ public partial class MainWindow : Window
         {
             HideGameLaunchOverlay();
         }
+    }
+
+    private async Task<bool> WaitForGameStartAsync(Game game, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            if (game.IsRunning || _sessions.IsRunning(game))
+                return true;
+
+            await Task.Delay(500);
+        }
+
+        return false;
     }
 
     private void ShowGameLaunchOverlay(Game game)
