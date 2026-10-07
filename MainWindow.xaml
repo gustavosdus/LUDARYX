@@ -1185,74 +1185,210 @@
                        TextWrapping="Wrap"/>
         </Border>
 
-        <!-- Game launch overlay: shown while the selected integration prepares/starts the game. -->
+        <!-- Game launch overlay: robust launch sequence UI used in desktop and fullscreen. -->
         <Grid x:Name="GameLaunchOverlay"
               Grid.RowSpan="6"
               Panel.ZIndex="9000"
               Visibility="Collapsed"
               Background="{DynamicResource LaunchOverlayBackdrop}"
               IsHitTestVisible="True">
-            <Border Width="650"
-                    MaxWidth="760"
-                    Padding="24"
+            <Border Width="790"
+                    MaxWidth="900"
+                    Padding="0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Background="{DynamicResource LaunchOverlayPanel}"
                     BorderBrush="{DynamicResource LaunchOverlayBorder}"
                     BorderThickness="1"
-                    CornerRadius="14">
+                    CornerRadius="16">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="190"/>
-                        <ColumnDefinition Width="28"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <Border Grid.Column="0"
-                            Width="190"
-                            Height="285"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="{DynamicResource LaunchOverlayArtworkBackground}"
-                            BorderBrush="{DynamicResource LaunchOverlayArtworkBorder}"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                            ClipToBounds="True">
-                        <Image x:Name="GameLaunchCoverImage"
-                               Stretch="Uniform"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                    <!-- Yellow neon launch accent. -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource LaunchProgressNeon}"
+                            CornerRadius="16,16,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#FFE600" BlurRadius="14" ShadowDepth="0" Opacity="0.72"/>
+                        </Border.Effect>
                     </Border>
 
-                    <StackPanel Grid.Column="2"
-                                VerticalAlignment="Center">
-                        <TextBlock Text="ABRINDO JOGO"
-                                   Foreground="{DynamicResource LaunchOverlayTextSecondary}"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"/>
-                        <TextBlock x:Name="GameLaunchNameText"
-                                   Text="Jogo"
-                                   Margin="0,8,0,0"
-                                   Foreground="{DynamicResource LaunchOverlayTextPrimary}"
-                                   FontSize="26"
-                                   FontWeight="Bold"
-                                   TextWrapping="Wrap"/>
-                        <TextBlock x:Name="GameLaunchStatusText"
-                                   Text="Preparando inicialização..."
-                                   Margin="0,8,0,20"
-                                   Foreground="{DynamicResource LaunchOverlayTextSecondary}"
-                                   FontSize="12"
-                                   TextWrapping="Wrap"/>
+                    <Grid Grid.Row="1" Margin="28">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="34"/>
+                            <ColumnDefinition Width="210"/>
+                        </Grid.ColumnDefinitions>
 
-                        <ProgressBar x:Name="GameLaunchProgressBar"
-                                     Height="6"
-                                     Minimum="0"
-                                     Maximum="100"
-                                     IsIndeterminate="True"
-                                     Background="{DynamicResource LaunchProgressTrack}"
-                                     Foreground="{DynamicResource LaunchProgressNeon}"
-                                     BorderThickness="0"/>
-                    </StackPanel>
+                        <!-- Information / progress is deliberately left of the artwork. -->
+                        <Grid Grid.Column="0" VerticalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Padding="9,4"
+                                        Background="#26FFE600"
+                                        BorderBrush="#66FFE600"
+                                        BorderThickness="1"
+                                        CornerRadius="5">
+                                    <TextBlock Text="LUDARYX"
+                                               Foreground="{DynamicResource LaunchProgressNeon}"
+                                               FontSize="10"
+                                               FontWeight="Bold"/>
+                                </Border>
+                                <TextBlock Text="  /  ABRINDO JOGO"
+                                           Foreground="{DynamicResource LaunchOverlayTextSecondary}"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <TextBlock x:Name="GameLaunchNameText"
+                                       Grid.Row="1"
+                                       Text="Jogo"
+                                       Margin="0,14,0,0"
+                                       Foreground="{DynamicResource LaunchOverlayTextPrimary}"
+                                       FontSize="29"
+                                       FontWeight="Bold"
+                                       TextWrapping="Wrap"/>
+
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
+                                <Border Padding="8,3"
+                                        Background="{DynamicResource LaunchOverlayArtworkBackground}"
+                                        BorderBrush="{DynamicResource LaunchOverlayArtworkBorder}"
+                                        BorderThickness="1"
+                                        CornerRadius="5">
+                                    <TextBlock x:Name="GameLaunchPlatformText"
+                                               Text="PLATAFORMA"
+                                               Foreground="{DynamicResource LaunchOverlayTextSecondary}"
+                                               FontSize="9"
+                                               FontWeight="SemiBold"/>
+                                </Border>
+                            </StackPanel>
+
+                            <Border Grid.Row="3"
+                                    Margin="0,20,0,0"
+                                    Padding="14,12"
+                                    Background="{DynamicResource LaunchOverlayArtworkBackground}"
+                                    BorderBrush="{DynamicResource LaunchOverlayArtworkBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Ellipse Width="8" Height="8"
+                                             Fill="{DynamicResource LaunchProgressNeon}"
+                                             VerticalAlignment="Center">
+                                        <Ellipse.Effect>
+                                            <DropShadowEffect Color="#FFE600" BlurRadius="10" ShadowDepth="0" Opacity="0.85"/>
+                                        </Ellipse.Effect>
+                                    </Ellipse>
+                                    <TextBlock x:Name="GameLaunchStatusText"
+                                               Grid.Column="1"
+                                               Text="Preparando inicialização..."
+                                               Margin="10,0,0,0"
+                                               Foreground="{DynamicResource LaunchOverlayTextPrimary}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+
+                            <Grid Grid.Row="4" Margin="0,22,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <TextBlock Text="PROGRESSO"
+                                               Foreground="{DynamicResource LaunchOverlayTextSecondary}"
+                                               FontSize="9"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Left"/>
+                                    <TextBlock x:Name="GameLaunchProgressText"
+                                               Text="0%"
+                                               Foreground="{DynamicResource LaunchProgressNeon}"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <ProgressBar x:Name="GameLaunchProgressBar"
+                                             Grid.Row="1"
+                                             Margin="0,8,0,0"
+                                             Height="8"
+                                             Minimum="0"
+                                             Maximum="100"
+                                             Value="0"
+                                             IsIndeterminate="False"
+                                             Background="{DynamicResource LaunchProgressTrack}"
+                                             Foreground="{DynamicResource LaunchProgressNeon}"
+                                             BorderThickness="0"/>
+                            </Grid>
+
+                            <Grid Grid.Row="5" Margin="0,24,0,0">
+                                <TextBlock Text="O LUDARYX manterá esta tela aberta até detectar o processo do jogo."
+                                           Foreground="{DynamicResource LaunchOverlayTextSecondary}"
+                                           FontSize="10"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,132,0"/>
+                                <Button x:Name="CancelGameLaunchButton"
+                                        Content="INTERROMPER"
+                                        Width="116"
+                                        Height="34"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        Foreground="{DynamicResource LaunchOverlayTextPrimary}"
+                                        BorderBrush="{DynamicResource LaunchOverlayBorder}"
+                                        BorderThickness="1"
+                                        FontSize="10"
+                                        FontWeight="Bold"
+                                        Cursor="Hand"
+                                        Click="CancelGameLaunch_Click"/>
+                            </Grid>
+                        </Grid>
+
+                        <!-- Vertical cover on the right, as requested. -->
+                        <Grid Grid.Column="2"
+                              Width="210"
+                              Height="315"
+                              VerticalAlignment="Center">
+                            <Border Background="#18FFE600"
+                                    CornerRadius="13"
+                                    Margin="-5">
+                                <Border.Effect>
+                                    <BlurEffect Radius="18"/>
+                                </Border.Effect>
+                            </Border>
+                            <Border Background="{DynamicResource LaunchOverlayArtworkBackground}"
+                                    BorderBrush="{DynamicResource LaunchOverlayArtworkBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="11"
+                                    ClipToBounds="True">
+                                <Image x:Name="GameLaunchCoverImage"
+                                       Stretch="Uniform"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Border>
+                            <Border BorderBrush="#66FFE600"
+                                    BorderThickness="1"
+                                    CornerRadius="11"
+                                    IsHitTestVisible="False"/>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>
