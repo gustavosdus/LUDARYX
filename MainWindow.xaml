@@ -1229,8 +1229,7 @@
                         <TextBlock Text="ABRINDO JOGO"
                                    Foreground="{DynamicResource LaunchOverlayTextSecondary}"
                                    FontSize="11"
-                                   FontWeight="SemiBold"
-                                   CharacterSpacing="80"/>
+                                   FontWeight="SemiBold"/>
                         <TextBlock x:Name="GameLaunchNameText"
                                    Text="Jogo"
                                    Margin="0,8,0,0"
