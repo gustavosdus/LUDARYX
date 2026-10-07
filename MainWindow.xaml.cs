@@ -1180,13 +1180,16 @@ public partial class MainWindow : Window
         // inteira com Stretch=Uniform, sem letterboxing e sem recorte.
         Dispatcher.BeginInvoke(() =>
         {
-            // ViewportWidth já desconta a barra de rolagem vertical. Usá-lo evita
-            // que a capa seja parcialmente escondida quando nome/descrição tornam
-            // o painel alto o suficiente para exibir o scrollbar.
-            var viewportWidth = SelectedGameScrollViewer.ViewportWidth;
-            var sideMaxWidth = viewportWidth > 1
-                ? viewportWidth
-                : Math.Max(1, SelectedGamePanel.ActualWidth - 30);
+            // Usa uma largura estável do painel e reserva sempre o espaço da
+            // scrollbar. ViewportWidth muda quando a barra aparece/desaparece e isso
+            // criava um ciclo de resize que fazia a mesma arte alternar de tamanho.
+            var panelWidth = SelectedGamePanel.ActualWidth;
+            var reservedScrollbar = SystemParameters.VerticalScrollBarWidth;
+            var sideMaxWidth = Math.Max(
+                1,
+                panelWidth > 1
+                    ? panelWidth - 30 - reservedScrollbar
+                    : 300 - reservedScrollbar);
 
             const double sideMaxHeight = 160;
             var sideWidth = Math.Min(sideMaxWidth, sideMaxHeight * ratio);
@@ -1208,9 +1211,11 @@ public partial class MainWindow : Window
 
     private void SelectedGameScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        // O aparecimento/desaparecimento da barra vertical altera o viewport.
-        // Recalcula o quadro usando a nova largura útil.
-        UpdateSelectedArtworkFrames(SelectedArtworkImage.Source);
+        // Recalcula apenas quando a largura externa realmente muda. A presença da
+        // scrollbar já é considerada de forma fixa em UpdateSelectedArtworkFrames,
+        // evitando oscilações entre dois tamanhos.
+        if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1)
+            UpdateSelectedArtworkFrames(SelectedArtworkImage.Source);
     }
 
     private void FramedArtworkImage_SizeChanged(object sender, SizeChangedEventArgs e)
