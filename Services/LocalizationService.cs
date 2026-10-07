@@ -274,6 +274,8 @@ public static class LocalizationService
         new("ABRINDO JOGO", "A ABRIR JOGO", "OPENING GAME", "OPENING GAME", "ABRIENDO JUEGO", "ABRIENDO JUEGO"),
         new("Preparando inicialização...", "A preparar arranque...", "Preparing launch...", "Preparing launch...", "Preparando inicio...", "Preparando inicio..."),
         new("Finalizando abertura...", "A finalizar abertura...", "Finishing launch...", "Finishing launch...", "Finalizando apertura...", "Finalizando apertura..."),
+        new("Aguardando o jogo...", "A aguardar o jogo...", "Waiting for the game...", "Waiting for the game...", "Esperando el juego...", "Esperando el juego..."),
+        new("Jogo iniciado", "Jogo iniciado", "Game started", "Game started", "Juego iniciado", "Juego iniciado"),
         new("OCULTAR", "OCULTAR", "HIDE", "HIDE", "OCULTAR", "OCULTAR"),
         new("EXCLUIR DA BIBLIOTECA", "REMOVER DA BIBLIOTECA", "REMOVE FROM LIBRARY", "REMOVE FROM LIBRARY", "ELIMINAR DE LA BIBLIOTECA", "ELIMINAR DE LA BIBLIOTECA"),
         new("EDITAR INICIALIZAÇÃO", "EDITAR ARRANQUE", "EDIT LAUNCH", "EDIT LAUNCH", "EDITAR INICIO", "EDITAR INICIO"),
