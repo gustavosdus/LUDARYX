@@ -2841,6 +2841,27 @@ public sealed class MetadataService
         metadata.ReleaseYear.HasValue &&
         metadata.Genres.Count > 0;
 
+    private static IEnumerable<string> BuildMetadataSearchTerms(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            yield break;
+
+        var original = title.Trim();
+        yield return original;
+
+        // APIs de busca tratam pontuação de maneira diferente. Uma variante apenas
+        // com palavras permite localizar títulos oficiais com ":"/"™"/hífens diferentes
+        // sem afrouxar a validação final, que continua usando TitlesMatch.
+        var punctuationNeutral = Regex.Replace(original, @"[^\p{L}\p{N}]+", " ").Trim();
+        punctuationNeutral = Regex.Replace(punctuationNeutral, @"\s{2,}", " ");
+
+        if (!string.Equals(original, punctuationNeutral, StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(punctuationNeutral))
+        {
+            yield return punctuationNeutral;
+        }
+    }
+
     private static bool TitlesMatch(string? left, string? right) =>
         !string.IsNullOrWhiteSpace(left) &&
         !string.IsNullOrWhiteSpace(right) &&
@@ -2916,42 +2937,49 @@ public sealed class MetadataService
 
         try
         {
-            var searchUrl = "https://www.wikidata.org/w/api.php?action=wbsearchentities" +
-                            $"&search={Uri.EscapeDataString(game.Name.Trim())}" +
-                            "&language=en&uselang=en&type=item&limit=10&format=json";
-            using var searchResponse = await _http.GetAsync(searchUrl, token);
-            if (!searchResponse.IsSuccessStatusCode)
-                return null;
-
-            using var searchDoc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(
-                searchResponse, maxBytes: 1024 * 1024, cancellationToken: token));
-            if (!searchDoc.RootElement.TryGetProperty("search", out var searchResults) ||
-                searchResults.ValueKind != JsonValueKind.Array)
-            {
-                return null;
-            }
-
             string? entityId = null;
             string? canonicalName = null;
-            foreach (var result in searchResults.EnumerateArray())
+
+            foreach (var searchTerm in BuildMetadataSearchTerms(game.Name))
             {
-                var label = result.TryGetProperty("label", out var labelElement) ? labelElement.GetString() : null;
-                if (!TitlesMatch(game.Name, label))
+                var searchUrl = "https://www.wikidata.org/w/api.php?action=wbsearchentities" +
+                                $"&search={Uri.EscapeDataString(searchTerm)}" +
+                                "&language=en&uselang=en&type=item&limit=10&format=json";
+                using var searchResponse = await _http.GetAsync(searchUrl, token);
+                if (!searchResponse.IsSuccessStatusCode)
                     continue;
 
-                var description = result.TryGetProperty("description", out var descriptionElement)
-                    ? descriptionElement.GetString()
-                    : null;
-
-                // Reduz falsos positivos com filmes, álbuns e outros itens homônimos.
-                if (!string.IsNullOrWhiteSpace(description) &&
-                    !description.Contains("game", StringComparison.OrdinalIgnoreCase))
+                using var searchDoc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(
+                    searchResponse, maxBytes: 1024 * 1024, cancellationToken: token));
+                if (!searchDoc.RootElement.TryGetProperty("search", out var searchResults) ||
+                    searchResults.ValueKind != JsonValueKind.Array)
                 {
                     continue;
                 }
 
-                entityId = result.TryGetProperty("id", out var idElement) ? idElement.GetString() : null;
-                canonicalName = label;
+                foreach (var result in searchResults.EnumerateArray())
+                {
+                    var label = result.TryGetProperty("label", out var labelElement) ? labelElement.GetString() : null;
+                    if (!TitlesMatch(game.Name, label))
+                        continue;
+
+                    var description = result.TryGetProperty("description", out var descriptionElement)
+                        ? descriptionElement.GetString()
+                        : null;
+
+                    // Reduz falsos positivos com filmes, álbuns e outros itens homônimos.
+                    if (!string.IsNullOrWhiteSpace(description) &&
+                        !description.Contains("game", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    entityId = result.TryGetProperty("id", out var idElement) ? idElement.GetString() : null;
+                    canonicalName = label;
+                    if (!string.IsNullOrWhiteSpace(entityId))
+                        break;
+                }
+
                 if (!string.IsNullOrWhiteSpace(entityId))
                     break;
             }
@@ -3094,34 +3122,37 @@ public sealed class MetadataService
 
         try
         {
-            var query = Uri.EscapeDataString($"\"{gameName.Trim()}\" video game");
-            var url = $"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={query}&srlimit=8&format=json&utf8=1";
-            using var response = await _http.GetAsync(url, token);
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            using var doc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(
-                response, maxBytes: 1024 * 1024, cancellationToken: token));
-            if (!doc.RootElement.TryGetProperty("query", out var q) ||
-                !q.TryGetProperty("search", out var results) ||
-                results.ValueKind != JsonValueKind.Array)
+            foreach (var searchTerm in BuildMetadataSearchTerms(gameName))
             {
-                return null;
-            }
-
-            foreach (var item in results.EnumerateArray())
-            {
-                var title = item.TryGetProperty("title", out var titleElement) ? titleElement.GetString() : null;
-                if (string.IsNullOrWhiteSpace(title))
+                var query = Uri.EscapeDataString($"\"{searchTerm}\" video game");
+                var url = $"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={query}&srlimit=8&format=json&utf8=1";
+                using var response = await _http.GetAsync(url, token);
+                if (!response.IsSuccessStatusCode)
                     continue;
 
-                var titleWithoutQualifier = Regex.Replace(title, @"\s*\([^)]*video game[^)]*\)\s*$", "", RegexOptions.IgnoreCase).Trim();
-                if (!TitlesMatch(gameName, titleWithoutQualifier))
+                using var doc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(
+                    response, maxBytes: 1024 * 1024, cancellationToken: token));
+                if (!doc.RootElement.TryGetProperty("query", out var q) ||
+                    !q.TryGetProperty("search", out var results) ||
+                    results.ValueKind != JsonValueKind.Array)
+                {
                     continue;
+                }
 
-                var summary = await GetWikipediaSummaryAsync(title, token);
-                if (!IsLowQualityDescription(summary) && SummaryMatchesGame(summary, gameName))
-                    return summary;
+                foreach (var item in results.EnumerateArray())
+                {
+                    var title = item.TryGetProperty("title", out var titleElement) ? titleElement.GetString() : null;
+                    if (string.IsNullOrWhiteSpace(title))
+                        continue;
+
+                    var titleWithoutQualifier = Regex.Replace(title, @"\s*\([^)]*video game[^)]*\)\s*$", "", RegexOptions.IgnoreCase).Trim();
+                    if (!TitlesMatch(gameName, titleWithoutQualifier))
+                        continue;
+
+                    var summary = await GetWikipediaSummaryAsync(title, token);
+                    if (!IsLowQualityDescription(summary) && SummaryMatchesGame(summary, gameName))
+                        return summary;
+                }
             }
         }
         catch (OperationCanceledException)
