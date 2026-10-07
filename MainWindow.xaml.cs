@@ -2548,17 +2548,63 @@ public partial class MainWindow : Window
 
             PlayLaunchSound();
             StatusText.Text = $"Iniciando {game.Name}...";
+            ShowGameLaunchOverlay(game);
+
+            // Garante que o overlay seja desenhado antes de qualquer provider iniciar
+            // trabalho síncrono e mantém a transição visível mesmo em launches muito rápidos.
+            await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Render);
+            var minimumVisibleTime = Task.Delay(650);
+
+            GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
             await _launcher.LaunchAsync(game);
+
+            GameLaunchStatusText.Text = LocalizationService.Translate("Finalizando abertura...");
             _state.MarkPlayed(game, _settings);
             _sessions.TrackAfterLaunch(game, _settings);
             StatusText.Text = $"Executando: {game.Name}";
             ApplyFilter();
+
+            await minimumVisibleTime;
         }
         catch (Exception ex)
         {
             StatusText.Text = "Falha ao iniciar o jogo";
             MessageBox.Show($"Não foi possível iniciar {game.Name}.\n\n{ex.Message}", "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        finally
+        {
+            HideGameLaunchOverlay();
+        }
+    }
+
+    private void ShowGameLaunchOverlay(Game game)
+    {
+        GameLaunchNameText.Text = game.Name;
+        GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
+
+        var verticalArtwork = game.VerticalCover;
+        GameLaunchCoverImage.Source = LoadHomeArtwork(verticalArtwork);
+
+        GameLaunchOverlay.Visibility = Visibility.Visible;
+        GameLaunchOverlay.Opacity = 0;
+
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140));
+        GameLaunchOverlay.BeginAnimation(OpacityProperty, fadeIn);
+    }
+
+    private void HideGameLaunchOverlay()
+    {
+        if (GameLaunchOverlay.Visibility != Visibility.Visible)
+            return;
+
+        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(140));
+        fadeOut.Completed += (_, _) =>
+        {
+            GameLaunchOverlay.Visibility = Visibility.Collapsed;
+            GameLaunchOverlay.Opacity = 1;
+            GameLaunchCoverImage.Source = null;
+        };
+        GameLaunchOverlay.BeginAnimation(OpacityProperty, fadeOut);
     }
 
     private async void ShowToast(string message)
@@ -2726,7 +2772,10 @@ public partial class MainWindow : Window
 
             Topmost = true;
             ApplyFullscreenBounds();
-            Cursor = Cursors.None;
+
+            // 1.1.5: o mouse permanece visível no modo tela cheia para que todas
+            // as ações continuem acessíveis também por ponteiro.
+            Cursor = Cursors.Arrow;
         }
         else
         {
@@ -2967,6 +3016,23 @@ public partial class MainWindow : Window
         var heroPlayForegroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
             lightTheme ? "#07131D" : "#FFFFFF");
 
+        var launchOverlayBackdropColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#BFE9EDF2" : "#D9020509");
+        var launchOverlayPanelColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#F8F7F9FB" : "#F20A111B");
+        var launchOverlayBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#A7B2C0" : "#31445A");
+        var launchOverlayTextPrimaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#101722" : "#FFFFFF");
+        var launchOverlayTextSecondaryColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#566273" : "#AAB7C8");
+        var launchOverlayArtworkBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#E5E9EE" : "#07111C");
+        var launchOverlayArtworkBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#B3BDC9" : "#26384C");
+        var launchProgressTrackColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#CBD2DA" : "#26313D");
+
         MainRoot.Background = topBrush;
         HeaderGrid.Background = topBrush;
         ToolbarBorder.Background = topBrush;
@@ -3000,6 +3066,14 @@ public partial class MainWindow : Window
         SetOrUpdateBrushResource("TvHeroDescription", tvHeroDescriptionColor);
         SetOrUpdateBrushResource("TvHeroPreviewBackground", tvHeroPreviewBackgroundColor);
         SetOrUpdateBrushResource("TvHeroPreviewBorder", tvHeroPreviewBorderColor);
+        SetOrUpdateBrushResource("LaunchOverlayBackdrop", launchOverlayBackdropColor);
+        SetOrUpdateBrushResource("LaunchOverlayPanel", launchOverlayPanelColor);
+        SetOrUpdateBrushResource("LaunchOverlayBorder", launchOverlayBorderColor);
+        SetOrUpdateBrushResource("LaunchOverlayTextPrimary", launchOverlayTextPrimaryColor);
+        SetOrUpdateBrushResource("LaunchOverlayTextSecondary", launchOverlayTextSecondaryColor);
+        SetOrUpdateBrushResource("LaunchOverlayArtworkBackground", launchOverlayArtworkBackgroundColor);
+        SetOrUpdateBrushResource("LaunchOverlayArtworkBorder", launchOverlayArtworkBorderColor);
+        SetOrUpdateBrushResource("LaunchProgressTrack", launchProgressTrackColor);
 
         var heroPlayBackground = new SolidColorBrush(heroPlayBackgroundColor);
         var heroPlayBorder = new SolidColorBrush(heroPlayBorderColor);
