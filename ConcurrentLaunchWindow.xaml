@@ -4,7 +4,7 @@
         Title="LUDARYX" Width="620" Height="390"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None" ResizeMode="NoResize"
-        Background="#05070B"
+        Background="{DynamicResource PanelBg}"
         ShowInTaskbar="False">
     <Window.Resources>
         <SolidColorBrush x:Key="PanelBg" Color="#0A111B"/>
