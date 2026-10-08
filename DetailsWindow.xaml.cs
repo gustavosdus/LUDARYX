@@ -38,6 +38,7 @@ public partial class DetailsWindow : Window
         });
         _game = game;
         _settings = settings;
+        LudaryxThemeService.Apply(_settings);
         _launcher = launcher;
         _metadata = metadata;
         _sessions = sessions;
