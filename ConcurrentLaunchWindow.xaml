@@ -12,11 +12,17 @@
         <SolidColorBrush x:Key="PrimaryText" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="SecondaryText" Color="#A7B3C4"/>
         <SolidColorBrush x:Key="Accent" Color="#66F5FF"/>
+        <SolidColorBrush x:Key="ButtonBg" Color="#101B2A"/>
+        <SolidColorBrush x:Key="ButtonHoverBg" Color="#172A3D"/>
+        <SolidColorBrush x:Key="ButtonPressedBg" Color="#0D1622"/>
+        <SolidColorBrush x:Key="PrimaryButtonBg" Color="#153247"/>
+        <SolidColorBrush x:Key="PrimaryButtonHoverBg" Color="#1A405A"/>
+        <SolidColorBrush x:Key="WarningPanelBg" Color="#16000000"/>
         <Style TargetType="Button">
             <Setter Property="Height" Value="42"/>
             <Setter Property="Padding" Value="18,0"/>
             <Setter Property="Margin" Value="6,0,0,0"/>
-            <Setter Property="Background" Value="#101B2A"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBg}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource PanelBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -39,6 +45,10 @@
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ButtonHoverBg}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ButtonPressedBg}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -75,7 +85,7 @@
                        TextWrapping="Wrap"/>
 
             <Border Grid.Row="2" Margin="0,18,0,0" Padding="16"
-                    Background="#16000000"
+                    Background="{DynamicResource WarningPanelBg}"
                     BorderBrush="{DynamicResource PanelBorder}"
                     BorderThickness="1" CornerRadius="8">
                 <StackPanel>
@@ -99,7 +109,17 @@
             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
                 <Button x:Name="KeepCurrentButton" Content="MANTER JOGO ATUAL" Width="170" Click="KeepCurrent_Click"/>
                 <Button x:Name="OpenBothButton" Content="ABRIR TAMBÉM" Width="150" Click="OpenBoth_Click"
-                        Background="#153247"/>
+                        Background="{DynamicResource PrimaryButtonBg}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryButtonHoverBg}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>
