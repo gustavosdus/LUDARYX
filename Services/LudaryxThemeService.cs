@@ -46,6 +46,19 @@ public static class LudaryxThemeService
         Set("LudaryxFooterChipBorder", light ? "#9EABB9" : "#203A55");
         Set("LudaryxFooterChipText", light ? "#111827" : "#F3F7FB");
 
+        Set("LudaryxCheckBackground", light ? "#FFFFFF" : "#0A1320");
+        Set("LudaryxCheckBorder", light ? "#8996A6" : "#3B5068");
+        Set("LudaryxComboPopupBackground", light ? "#F8FAFC" : "#09121D");
+        Set("LudaryxComboItemHoverBackground", light ? "#E5EAF0" : "#173047");
+        Set("LudaryxComboItemSelectedBackground", light ? "#D7DEE7" : "#153952");
+        Set("LudaryxComboArrow", light ? "#4D5968" : "#A9B8C9");
+        Set("LudaryxFilterChipBackground", light ? "#E3E9EF" : "#102238");
+        Set("LudaryxFilterChipBorder", light ? "#96A5B5" : "#285275");
+        Set("LudaryxFilterChipForeground", light ? "#17364A" : "#BFEAFF");
+        Set("LudaryxSeparator", light ? "#C4CCD6" : "#203044");
+        Set("LudaryxSelectedPanelBackground", light ? "#EEF1F5" : "#0A1421");
+        Set("LudaryxSelectedPanelBorder", light ? "#A8B2C0" : "#1E3850");
+
         Set("SelectionAccentBorder", light ? "#FF163D" : "#66F5FF");
         Set("SearchCaretBrush", light ? "#000000" : "#FFFFFF");
     }
