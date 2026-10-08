@@ -12,7 +12,7 @@ public partial class StatisticsWindow : Window
     public StatisticsWindow(IEnumerable<Game> games)
     {
         InitializeComponent();
-        _controllerNavigation = new WindowGamepadNavigationService(this, Close);
+        _controllerNavigation = new WindowGamepadNavigationService(this, Close, StatsScrollViewer);
         Loaded += (_, _) =>
         {
             CloseButton.Focus();
