@@ -1,12 +1,57 @@
 <Window x:Class="UnifiedGameLauncher.UpdateProgressWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="Atualização do LUDARYX"
         Width="520" Height="210"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
-        Background="#0D0F14">
-    <Grid Margin="24">
+        WindowStyle="None"
+        Background="{DynamicResource LudaryxWindowBackground}"
+        Foreground="{DynamicResource LudaryxTextPrimary}"
+        SnapsToDevicePixels="True">
+    <shell:WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="42"
+                      ResizeBorderThickness="0"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{DynamicResource LudaryxTitleBarBackground}"
+                BorderBrush="{DynamicResource LudaryxTitleBarBorder}"
+                BorderThickness="0,0,0,1"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid Margin="16,0,8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="8" Height="8" CornerRadius="4"
+                            Background="{StaticResource LudaryxRed}" Margin="0,0,9,0"/>
+                    <TextBlock Text="LUDARYX" Foreground="{DynamicResource LudaryxTextPrimary}"
+                               FontWeight="Bold" FontSize="12"/>
+                    <TextBlock Text="  /  Atualização"
+                               Foreground="{DynamicResource LudaryxTitleBarSecondaryText}"
+                               FontSize="11"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Style="{StaticResource LudaryxWindowButton}" Content="—" Click="MinimizeWindow_Click"/>
+                    <Button Style="{StaticResource LudaryxWindowButton}" Content="×" Click="CloseWindow_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -16,14 +61,14 @@
 
         <TextBlock x:Name="TitleText"
                    Text="Baixando atualização"
-                   Foreground="White"
+                   Foreground="{DynamicResource LudaryxTextPrimary}"
                    FontSize="20"
                    FontWeight="SemiBold"/>
 
         <TextBlock x:Name="StatusText"
                    Grid.Row="1"
                    Text="Preparando download..."
-                   Foreground="#AAB2C3"
+                   Foreground="{DynamicResource LudaryxTextSecondary}"
                    TextWrapping="Wrap"
                    Margin="0,8,0,14"/>
 
@@ -39,7 +84,7 @@
                     VerticalAlignment="Bottom"
                     Margin="0,18,0,0">
             <TextBlock x:Name="ProgressText"
-                       Foreground="#8791A5"
+                       Foreground="{DynamicResource LudaryxTextSecondary}"
                        VerticalAlignment="Center"
                        Margin="0,0,16,0"/>
             <Button x:Name="CancelButton"
@@ -47,5 +92,6 @@
                     Width="110"
                     Click="Cancel_Click"/>
         </StackPanel>
+        </Grid>
     </Grid>
 </Window>
