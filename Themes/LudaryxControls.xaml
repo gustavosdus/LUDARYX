@@ -29,6 +29,18 @@
     <SolidColorBrush x:Key="LudaryxFooterChipText" Color="#F3F7FB"/>
     <SolidColorBrush x:Key="SelectionAccentBorder" Color="#66F5FF"/>
     <SolidColorBrush x:Key="SearchCaretBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="LudaryxCheckBackground" Color="#0A1320"/>
+    <SolidColorBrush x:Key="LudaryxCheckBorder" Color="#3B5068"/>
+    <SolidColorBrush x:Key="LudaryxComboPopupBackground" Color="#09121D"/>
+    <SolidColorBrush x:Key="LudaryxComboItemHoverBackground" Color="#173047"/>
+    <SolidColorBrush x:Key="LudaryxComboItemSelectedBackground" Color="#153952"/>
+    <SolidColorBrush x:Key="LudaryxComboArrow" Color="#A9B8C9"/>
+    <SolidColorBrush x:Key="LudaryxFilterChipBackground" Color="#102238"/>
+    <SolidColorBrush x:Key="LudaryxFilterChipBorder" Color="#285275"/>
+    <SolidColorBrush x:Key="LudaryxFilterChipForeground" Color="#BFEAFF"/>
+    <SolidColorBrush x:Key="LudaryxSeparator" Color="#203044"/>
+    <SolidColorBrush x:Key="LudaryxSelectedPanelBackground" Color="#0A1421"/>
+    <SolidColorBrush x:Key="LudaryxSelectedPanelBorder" Color="#1E3850"/>
 
     <Style x:Key="LudaryxCard" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackground}"/>
@@ -222,8 +234,8 @@
                                 Width="16" Height="16"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                Background="#0A1320"
-                                BorderBrush="#3B5068"
+                                Background="{DynamicResource LudaryxCheckBackground}"
+                                BorderBrush="{DynamicResource LudaryxCheckBorder}"
                                 BorderThickness="1"
                                 CornerRadius="3"/>
                         <Path x:Name="CheckMark"
@@ -282,10 +294,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsHighlighted" Value="True">
-                            <Setter TargetName="ItemBorder" Property="Background" Value="#173047"/>
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource LudaryxComboItemHoverBackground}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="ItemBorder" Property="Background" Value="#153952"/>
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource LudaryxComboItemSelectedBackground}"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -335,7 +347,7 @@
                                             <Path HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   Margin="0,0,11,0"
-                                                  Fill="#A9B8C9"
+                                                  Fill="{DynamicResource LudaryxComboArrow}"
                                                   Data="M 0 0 L 8 0 L 4 5 Z"/>
                                         </Grid>
                                     </ControlTemplate>
@@ -352,7 +364,7 @@
                                     MaxHeight="320"
                                     Margin="0,3,0,0"
                                     Padding="4"
-                                    Background="#09121D"
+                                    Background="{DynamicResource LudaryxComboPopupBackground}"
                                     BorderBrush="{DynamicResource LudaryxBorder}"
                                     BorderThickness="1"
                                     CornerRadius="6">
@@ -527,9 +539,9 @@
         <Setter Property="MinHeight" Value="26"/>
         <Setter Property="Padding" Value="10,3"/>
         <Setter Property="FontSize" Value="10"/>
-        <Setter Property="Background" Value="#102238"/>
-        <Setter Property="BorderBrush" Value="#285275"/>
-        <Setter Property="Foreground" Value="#BFEAFF"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxFilterChipBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxFilterChipBorder}"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxFilterChipForeground}"/>
     </Style>
 
     <Style x:Key="LudaryxHeroButton" TargetType="Button" BasedOn="{StaticResource LudaryxButton}">
@@ -555,15 +567,15 @@
     </Style>
 
     <Style x:Key="LudaryxSelectedPanel" TargetType="Border">
-        <Setter Property="Background" Value="#0A1421"/>
-        <Setter Property="BorderBrush" Value="#1E3850"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxSelectedPanelBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxSelectedPanelBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="14"/>
     </Style>
 
     <Style TargetType="Separator">
-        <Setter Property="Background" Value="#203044"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxSeparator}"/>
         <Setter Property="Height" Value="1"/>
         <Setter Property="Margin" Value="0,12"/>
     </Style>
