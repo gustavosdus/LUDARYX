@@ -15,7 +15,7 @@
             <TextBlock x:Name="SummaryText" Foreground="#9BA3B4" Margin="0,6,0,18" TextWrapping="Wrap"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="StatsScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Mais jogados" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
                 <ItemsControl x:Name="MostPlayedList" Margin="0,8,0,18">
