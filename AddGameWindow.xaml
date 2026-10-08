@@ -171,14 +171,14 @@
                     </Grid>
                 </Border>
 
-                <Border Background="#091725" BorderBrush="#1C5780" BorderThickness="1" CornerRadius="8" Padding="14">
+                <Border Background="{DynamicResource LudaryxPanelBackgroundAlt}" BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1" CornerRadius="8" Padding="14">
                     <TextBlock Text="Crie perfis diferentes para iniciar o mesmo jogo com argumentos distintos, por exemplo Normal, Sem mods ou Modo janela. O perfil selecionado será usado ao iniciar."
-                               Foreground="#A8C2D8" TextWrapping="Wrap" LineHeight="19"/>
+                               Foreground="{DynamicResource LudaryxTextSecondary}" TextWrapping="Wrap" LineHeight="19"/>
                 </Border>
             </StackPanel>
         </ScrollViewer>
 
-        <Border Grid.Row="3" Background="#080C13" BorderBrush="#1B2A3B" BorderThickness="0,1,0,0">
+        <Border Grid.Row="3" Background="{DynamicResource LudaryxTitleBarBackground}" BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,1,0,0">
             <Grid Margin="24,9">
                 <Button Content="CANCELAR" Width="120" HorizontalAlignment="Right" Margin="0,0,132,0" Click="Cancel_Click"/>
                 <Button x:Name="SaveButton" Content="ADICIONAR" Width="120" HorizontalAlignment="Right"
