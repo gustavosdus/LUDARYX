@@ -634,10 +634,10 @@
                         BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
-                        <TextBlock Text="⌕" Foreground="#7E9AB4" FontSize="18"
+                        <TextBlock Text="⌕" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="18"
                                    VerticalAlignment="Center" Margin="11,0,0,0"/>
                         <TextBox x:Name="SearchBox" Margin="34,1,58,1"
-                                 Background="Transparent" Foreground="#E8ECF5"
+                                 Background="Transparent" Foreground="{DynamicResource LudaryxTextPrimary}"
                                  CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
                                  Padding="0" MinHeight="0" VerticalContentAlignment="Center"
                                  FontSize="12" TextChanged="SearchBox_TextChanged"
@@ -651,7 +651,7 @@
                     </Grid>
                 </Border>
                 <TextBlock x:Name="LibraryLoadingText" Text="CARREGANDO BIBLIOTECA..."
-                           Visibility="Collapsed" Foreground="#8EBAD5"
+                           Visibility="Collapsed" Foreground="{DynamicResource LudaryxTextSecondary}"
                            FontSize="9" FontWeight="SemiBold"
                            HorizontalAlignment="Center" Margin="0,3,0,0"/>
             </StackPanel>
@@ -662,22 +662,22 @@
                         Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0">
                     <Viewbox Width="17" Height="17">
                         <Canvas Width="24" Height="24">
-                            <Path Stroke="#E8ECF5" StrokeThickness="2" StrokeStartLineCap="Round"
+                            <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2" StrokeStartLineCap="Round"
                                   StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                   Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
                         </Canvas>
                     </Viewbox>
                 </Button>
                 <Button x:Name="GlobalSettingsButton" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0">
-                    <TextBlock Text="⚙" Foreground="#E8ECF5" FontSize="17"/>
+                    <TextBlock Text="⚙" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="17"/>
                 </Button>
                 <Button x:Name="GlobalStatisticsButton" Style="{StaticResource IntegratedIconButton}" Click="Statistics_Click" ToolTip="Estatísticas" Margin="0,0,5,0">
-                    <TextBlock Text="▥" Foreground="#E8ECF5" FontSize="16"/>
+                    <TextBlock Text="▥" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="16"/>
                 </Button>
                 <Button x:Name="GlobalFullscreenButton" Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click" ToolTip="Tela cheia" Margin="0,0,8,0">
                     <Viewbox Width="19" Height="19">
                         <Canvas Width="24" Height="24">
-                            <Path Stroke="#E8ECF5" StrokeThickness="1.8" StrokeLineJoin="Round"
+                            <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="1.8" StrokeLineJoin="Round"
                                   Data="M3,4 L21,4 L21,17 L3,17 Z M9,21 L15,21 M12,17 L12,21"/>
                         </Canvas>
                     </Viewbox>
@@ -761,7 +761,7 @@
                                 ToolTip="Tema: Claro / Escuro"/>
 
                         <TextBlock x:Name="FullscreenLibraryLoadingText" Text="CARREGANDO..."
-                                   Visibility="Collapsed" Foreground="#8EBAD5" FontSize="9"
+                                   Visibility="Collapsed" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="9"
                                    FontWeight="SemiBold" VerticalAlignment="Center" Margin="10,0,3,0"/>
                     </StackPanel>
                 </ScrollViewer>
@@ -773,9 +773,9 @@
                             BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True">
                         <Grid>
-                            <TextBlock Text="⌕" Foreground="#7E9AB4" FontSize="18" VerticalAlignment="Center" Margin="11,0,0,0"/>
+                            <TextBlock Text="⌕" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="18" VerticalAlignment="Center" Margin="11,0,0,0"/>
                             <TextBox x:Name="FullscreenSearchBox" Margin="34,1,10,1"
-                                     Background="Transparent" Foreground="#E8ECF5"
+                                     Background="Transparent" Foreground="{DynamicResource LudaryxTextPrimary}"
                                      CaretBrush="{DynamicResource SearchCaretBrush}" BorderThickness="0"
                                      Padding="0" MinHeight="0" VerticalContentAlignment="Center"
                                      FontSize="12" TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
@@ -786,7 +786,7 @@
                             ToolTip="Atualizar biblioteca">
                         <Viewbox Width="17" Height="17">
                             <Canvas Width="24" Height="24">
-                                <Path Stroke="#E8ECF5" StrokeThickness="2"
+                                <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2"
                                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                       StrokeLineJoin="Round"
                                       Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
@@ -796,17 +796,17 @@
                     <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Settings_Click"
                             ToolTip="Configurações">
-                        <TextBlock Text="⚙" Foreground="#E8ECF5" FontSize="17"/>
+                        <TextBlock Text="⚙" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="17"/>
                     </Button>
                     <Button x:Name="FullscreenStatisticsButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Statistics_Click"
                             ToolTip="Estatísticas">
-                        <TextBlock Text="▥" Foreground="#E8ECF5" FontSize="16"/>
+                        <TextBlock Text="▥" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="16"/>
                     </Button>
                     <Button x:Name="FullscreenToolbarButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Fullscreen_Click"
                             ToolTip="Sair da tela cheia">
-                        <TextBlock Text="⛶" Foreground="#E8ECF5" FontSize="17"/>
+                        <TextBlock Text="⛶" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="17"/>
                     </Button>
                 </StackPanel>
             </Grid>
@@ -1113,7 +1113,7 @@
 
         <!-- Adaptive footer. -->
         <Border x:Name="FooterBorder" Grid.Row="5" Background="#05070B"
-                BorderBrush="#1B293A" BorderThickness="0,1,0,0">
+                BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,1,0,0">
             <Grid Margin="16,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -1122,7 +1122,7 @@
 
                 <TextBlock x:Name="StatusText" Visibility="Collapsed"/>
                 <TextBlock x:Name="ControllerStatusText" Grid.Column="0"
-                           Text="Controle: procurando..." Foreground="#DCE6F3"
+                           Text="Controle: procurando..." Foreground="{DynamicResource LudaryxTextPrimary}"
                            FontSize="10" VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
