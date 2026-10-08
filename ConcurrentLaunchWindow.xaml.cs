@@ -26,7 +26,15 @@ public partial class ConcurrentLaunchWindow : Window
         TitleText.Text = requestedGame.Name;
         CurrentGameText.Text = $"Em execução agora: {activeGame.Name}";
 
-        _controllerNavigation = new WindowGamepadNavigationService(this, KeepCurrent);
+        _controllerNavigation = new WindowGamepadNavigationService(
+            this,
+            KeepCurrent,
+            focusControls: new System.Windows.Controls.Control[]
+            {
+                KeepCurrentButton,
+                OpenBothButton
+            });
+
         Loaded += (_, _) =>
         {
             KeepCurrentButton.Focus();
