@@ -21,6 +21,7 @@ public partial class AddGameWindow : Window
     public AddGameWindow(ManualGameDefinition? existing = null)
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(new JsonSettingsService().Load());
         _controllerNavigation = new WindowGamepadNavigationService(this, () =>
         {
             if (IsVisible)
