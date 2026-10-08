@@ -15,7 +15,7 @@ public sealed class WindowGamepadNavigationService : IDisposable
     private readonly Action _backAction;
     private readonly GamepadService _gamepad;
     private readonly ScrollViewer? _scrollViewer;
-    private readonly IReadOnlyList<Control>? _focusControls;
+    private readonly IReadOnlyList<System.Windows.Controls.Control>? _focusControls;
     private int _focusIndex;
     private DateTime _nextNavigationAllowedUtc = DateTime.MinValue;
     private bool _waitForNeutralInput = true;
@@ -25,7 +25,7 @@ public sealed class WindowGamepadNavigationService : IDisposable
         Window window,
         Action backAction,
         ScrollViewer? scrollViewer = null,
-        IReadOnlyList<Control>? focusControls = null)
+        IReadOnlyList<System.Windows.Controls.Control>? focusControls = null)
     {
         _window = window;
         _backAction = backAction;
