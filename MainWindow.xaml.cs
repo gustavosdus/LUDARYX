@@ -3199,6 +3199,15 @@ public partial class MainWindow : Window
         var tvHeroPreviewBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#DDE3EA" : "#33101C29");
         var tvHeroPreviewBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#9EABB9" : "#31506D");
 
+        var actionButtonBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#E1E6EC" : "#111D2C");
+        var actionButtonHoverBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#D3DAE3" : "#17273A");
+        var actionButtonPressedBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#C3CCD7" : "#1B324A");
+        var actionButtonForegroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
+            lightTheme ? "#111827" : "#F5F7FA");
+
         var heroPlayBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
             lightTheme ? "#32BDEB" : "#D9153C");
         var heroPlayBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
@@ -3241,6 +3250,10 @@ public partial class MainWindow : Window
         SetOrUpdateBrushResource("ToolbarItemHoverBackground", toolbarItemHoverColor);
         SetOrUpdateBrushResource("ToolbarItemSelectedBackground", toolbarItemSelectedColor);
         SetOrUpdateBrushResource("SearchCaretBrush", searchCaretColor);
+        SetOrUpdateBrushResource("LudaryxButtonBackground", actionButtonBackgroundColor);
+        SetOrUpdateBrushResource("LudaryxButtonHoverBackground", actionButtonHoverBackgroundColor);
+        SetOrUpdateBrushResource("LudaryxButtonPressedBackground", actionButtonPressedBackgroundColor);
+        SetOrUpdateBrushResource("LudaryxButtonForeground", actionButtonForegroundColor);
         SetOrUpdateBrushResource("SelectedPanelBackground", selectedPanelBackgroundColor);
         SetOrUpdateBrushResource("SelectedPanelBorder", selectedPanelBorderColor);
         SetOrUpdateBrushResource("SelectedPanelArtworkBackground", selectedPanelArtworkBackgroundColor);
