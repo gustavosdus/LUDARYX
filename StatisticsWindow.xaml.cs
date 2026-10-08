@@ -7,9 +7,18 @@ namespace UnifiedGameLauncher;
 
 public partial class StatisticsWindow : Window
 {
+    private readonly WindowGamepadNavigationService _controllerNavigation;
+
     public StatisticsWindow(IEnumerable<Game> games)
     {
         InitializeComponent();
+        _controllerNavigation = new WindowGamepadNavigationService(this, Close);
+        Loaded += (_, _) =>
+        {
+            CloseButton.Focus();
+            System.Windows.Input.Keyboard.Focus(CloseButton);
+        };
+
         var list = games.ToList();
 
         var totalLaunches = list.Sum(game => game.PlayCount);
