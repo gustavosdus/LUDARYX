@@ -125,6 +125,7 @@ public static class DuplicateMetadataService
         var disableHorizontal = targetManual.DisableAutomaticSteamGridDbHorizontal;
 
         targetManual.Name = sourceManual?.Name ?? source.Name;
+        target.Name = targetManual.Name;
         targetManual.Description = sourceManual?.Description;
         targetManual.Genres = sourceManual?.Genres?.ToList() ?? new();
         targetManual.Developer = sourceManual?.Developer;
