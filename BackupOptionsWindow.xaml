@@ -1,9 +1,58 @@
 <Window x:Class="UnifiedGameLauncher.BackupOptionsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="Backup" Width="520" Height="360"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Background="#0D0F14">
-    <Grid Margin="24">
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="{DynamicResource LudaryxWindowBackground}"
+        Foreground="{DynamicResource LudaryxTextPrimary}"
+        SnapsToDevicePixels="True">
+    <shell:WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="42"
+                      ResizeBorderThickness="0"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{DynamicResource LudaryxTitleBarBackground}"
+                BorderBrush="{DynamicResource LudaryxTitleBarBorder}"
+                BorderThickness="0,0,0,1"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid Margin="16,0,8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="8" Height="8" CornerRadius="4"
+                            Background="{StaticResource LudaryxRed}" Margin="0,0,9,0"/>
+                    <TextBlock Text="LUDARYX"
+                               Foreground="{DynamicResource LudaryxTextPrimary}"
+                               FontWeight="Bold" FontSize="12"/>
+                    <TextBlock Text="  /  Backup"
+                               Foreground="{DynamicResource LudaryxTitleBarSecondaryText}"
+                               FontSize="11"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Style="{StaticResource LudaryxWindowButton}" Content="—" Click="MinimizeWindow_Click"/>
+                    
+                    <Button Style="{StaticResource LudaryxWindowButton}" Content="×" Click="CloseWindow_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -11,20 +60,21 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock x:Name="HeaderText" Text="EXPORTAR BACKUP" Foreground="White" FontSize="24" FontWeight="Bold"/>
-            <TextBlock x:Name="DescriptionText" Text="Escolha quais categorias deseja incluir." Foreground="#9BA3B4" Margin="0,5,0,18"/>
+            <TextBlock x:Name="HeaderText" Text="EXPORTAR BACKUP" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="24" FontWeight="Bold"/>
+            <TextBlock x:Name="DescriptionText" Text="Escolha quais categorias deseja incluir." Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,5,0,18"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1">
-            <CheckBox x:Name="SettingsCheck" IsChecked="True" Content="Configurações, favoritos, ocultos, estatísticas e jogos manuais" Foreground="#D9DDE7" Margin="0,8"/>
-            <CheckBox x:Name="ArtworkCheck" IsChecked="True" Content="Artes personalizadas" Foreground="#D9DDE7" Margin="0,8"/>
-            <CheckBox x:Name="MetadataCheck" IsChecked="True" Content="Cache de metadados (sem cache automático de capas)" Foreground="#D9DDE7" Margin="0,8"/>
-            <TextBlock x:Name="EstimatedSizeText" Foreground="#9BA3B4" Margin="0,14,0,0"/>
+            <CheckBox x:Name="SettingsCheck" IsChecked="True" Content="Configurações, favoritos, ocultos, estatísticas e jogos manuais" Foreground="{DynamicResource LudaryxTextPrimary}" Margin="0,8"/>
+            <CheckBox x:Name="ArtworkCheck" IsChecked="True" Content="Artes personalizadas" Foreground="{DynamicResource LudaryxTextPrimary}" Margin="0,8"/>
+            <CheckBox x:Name="MetadataCheck" IsChecked="True" Content="Cache de metadados (sem cache automático de capas)" Foreground="{DynamicResource LudaryxTextPrimary}" Margin="0,8"/>
+            <TextBlock x:Name="EstimatedSizeText" Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,14,0,0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="CANCELAR" Width="110" Margin="4" Click="Cancel_Click"/>
             <Button x:Name="ContinueButton" Content="CONTINUAR" Width="120" Margin="4" Click="Continue_Click"/>
         </StackPanel>
+        </Grid>
     </Grid>
 </Window>
