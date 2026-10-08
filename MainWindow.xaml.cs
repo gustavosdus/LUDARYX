@@ -1350,15 +1350,16 @@ public partial class MainWindow : Window
 
         IEnumerable<Game> filtered = _games.Where(g =>
             !g.IsExcluded &&
-            (_specialFilter == "hidden" ? g.IsHidden : (showHidden || !g.IsHidden)) &&
+            (_specialFilter == "hidden"
+                ? g.IsHidden || IsAutoHiddenDuplicateSecondary(g)
+                : (showHidden || !g.IsHidden)) &&
             (!_platformFilter.HasValue || g.Platform == _platformFilter.Value) &&
             (_specialFilter != "favorites" || g.IsFavorite) &&
             (_specialFilter != "recent" || g.LastPlayedUtc.HasValue) &&
             (_specialFilter != "duplicates" || g.IsDuplicate) &&
             (!_settings.AutoHideDuplicateSecondary ||
              !g.IsDuplicate ||
-             !_settings.PreferredDuplicateProviders.TryGetValue(g.CanonicalGameId, out var preferredProvider) ||
-             g.ProviderId.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase) ||
+             !IsAutoHiddenDuplicateSecondary(g) ||
              _specialFilter is "duplicates" or "hidden") &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
@@ -1388,6 +1389,23 @@ public partial class MainWindow : Window
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
         UpdateFilterChips();
         UpdateSelectedGamePresentation();
+    }
+
+    private bool IsAutoHiddenDuplicateSecondary(Game game)
+    {
+        if (!_settings.AutoHideDuplicateSecondary ||
+            !game.IsDuplicate ||
+            string.IsNullOrWhiteSpace(game.CanonicalGameId))
+        {
+            return false;
+        }
+
+        return _settings.PreferredDuplicateProviders.TryGetValue(
+                   game.CanonicalGameId,
+                   out var preferredProvider) &&
+               !game.ProviderId.Equals(
+                   preferredProvider,
+                   StringComparison.OrdinalIgnoreCase);
     }
 
     private void EnsureDuplicatePrimarySelections(IEnumerable<Game> games)
