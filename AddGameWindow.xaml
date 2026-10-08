@@ -7,8 +7,8 @@
         MinWidth="700" MinHeight="580"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None" ResizeMode="CanResize"
-        Background="{StaticResource LudaryxWindowBackground}"
-        Foreground="{StaticResource LudaryxTextPrimary}"
+        Background="{DynamicResource LudaryxWindowBackground}"
+        Foreground="{DynamicResource LudaryxTextPrimary}"
         SnapsToDevicePixels="True">
 
     <shell:WindowChrome.WindowChrome>
@@ -27,15 +27,15 @@
             <RowDefinition Height="58"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#070A10"
-                BorderBrush="#1A2635" BorderThickness="0,0,0,1"
+        <Border Grid.Row="0" Background="{DynamicResource LudaryxTitleBarBackground}"
+                BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,0,0,1"
                 MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid Margin="16,0,8,0">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource LudaryxRed}" Margin="0,0,9,0"/>
                     <TextBlock Text="LUDARYX" FontWeight="Bold" FontSize="12"/>
-                    <TextBlock Text="  /  Jogo manual" Foreground="#7F91A8" FontSize="11"/>
+                    <TextBlock Text="  /  Jogo manual" Foreground="{DynamicResource LudaryxTitleBarSecondaryText}" FontSize="11"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <Button Style="{StaticResource LudaryxWindowButton}" Content="—" Click="MinimizeWindow_Click"/>
@@ -47,9 +47,9 @@
 
         <StackPanel Grid.Row="1" Margin="28,20,28,14">
             <TextBlock x:Name="HeaderText" Text="ADICIONAR JOGO MANUALMENTE"
-                       Foreground="White" FontSize="27" FontWeight="Bold"/>
+                       Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="27" FontWeight="Bold"/>
             <TextBlock Text="Configure como o LUDARYX deve iniciar este jogo. Você pode editar estas opções novamente depois."
-                       Foreground="{StaticResource LudaryxTextSecondary}" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                       Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,5,0,0" TextWrapping="Wrap"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="2"
@@ -63,8 +63,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Nome" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Nome exibido na biblioteca." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Nome" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Nome exibido na biblioteca." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="NameBox" Grid.Column="1" VerticalAlignment="Center"/>
                     </Grid>
@@ -74,8 +74,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Perfil de inicialização" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Use perfis para argumentos ou modos diferentes." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0" TextWrapping="Wrap"/>
+                            <TextBlock Text="Perfil de inicialização" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Use perfis para argumentos ou modos diferentes." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0" TextWrapping="Wrap"/>
                         </StackPanel>
                         <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
@@ -94,8 +94,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Nome do perfil" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Identificação deste perfil." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Nome do perfil" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Identificação deste perfil." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="ProfileNameBox" Grid.Column="1"/>
                     </Grid>
@@ -105,8 +105,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Executável (.exe)" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Arquivo principal do jogo." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Executável (.exe)" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Arquivo principal do jogo." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="ExeBox" Grid.Column="1" Margin="0,0,8,0"/>
                         <Button Grid.Column="2" Content="PROCURAR" Width="104" Click="BrowseExe_Click"/>
@@ -117,8 +117,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Argumentos de inicialização" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Parâmetros adicionais (opcional)." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Argumentos de inicialização" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Parâmetros adicionais (opcional)." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="ArgumentsBox" Grid.Column="1"/>
                     </Grid>
@@ -128,8 +128,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="URI de inicialização" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Comando URI personalizado (opcional)." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="URI de inicialização" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Comando URI personalizado (opcional)." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="UriBox" Grid.Column="1"/>
                     </Grid>
@@ -139,8 +139,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Pasta de trabalho" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Diretório de trabalho do jogo (opcional)." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Pasta de trabalho" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Diretório de trabalho do jogo (opcional)." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="WorkingDirectoryBox" Grid.Column="1" Margin="0,0,8,0"/>
                         <Button Grid.Column="2" Content="PROCURAR" Width="104" Click="BrowseWorkingDirectory_Click"/>
@@ -151,8 +151,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Privilégios" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Use apenas quando o jogo exigir." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Privilégios" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Use apenas quando o jogo exigir." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <CheckBox x:Name="RunAsAdministratorCheck" Grid.Column="1"
                                   Content="Executar como administrador" VerticalAlignment="Center"/>
@@ -163,8 +163,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Ícone personalizado" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Imagem ou ícone do jogo (opcional)." Foreground="{StaticResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
+                            <TextBlock Text="Ícone personalizado" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Imagem ou ícone do jogo (opcional)." Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11" Margin="0,3,12,0"/>
                         </StackPanel>
                         <TextBox x:Name="IconPathBox" Grid.Column="1" Margin="0,0,8,0" IsReadOnly="True"/>
                         <Button Grid.Column="2" Content="PROCURAR" Width="104" Click="BrowseIcon_Click"/>
