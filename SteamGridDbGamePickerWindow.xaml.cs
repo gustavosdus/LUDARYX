@@ -13,6 +13,7 @@ public partial class SteamGridDbGamePickerWindow : Window
     public SteamGridDbGamePickerWindow(string initialQuery, string apiKey, SteamGridDbService service)
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(new JsonSettingsService().Load());
         _service = service;
         _apiKey = apiKey;
         LocalizationService.Apply(this);
