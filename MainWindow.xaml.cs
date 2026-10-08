@@ -3154,6 +3154,8 @@ public partial class MainWindow : Window
 
     private void ApplyVisualSettings()
     {
+        LudaryxThemeService.Apply(_settings);
+
         NeonSeparator.Background = _settings.NeonLineColor == "LightBlue"
             ? (Brush)FindResource("NeonBlue")
             : (Brush)FindResource("NeonRed");
