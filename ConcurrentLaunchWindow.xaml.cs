@@ -36,7 +36,7 @@ public partial class ConcurrentLaunchWindow : Window
 
     private void SetBrush(string key, string color) =>
         Resources[key] = new SolidColorBrush(
-            (Color)ColorConverter.ConvertFromString(color));
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
 
     private void KeepCurrent_Click(object sender, RoutedEventArgs e) => KeepCurrent();
 
