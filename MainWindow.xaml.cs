@@ -131,6 +131,17 @@ public partial class MainWindow : Window
             await Task.WhenAll(startupAnimationTask, libraryTask);
             _ = MaybeCheckForUpdatesAsync();
         };
+        Activated += (_, _) =>
+        {
+            if (_fullscreen)
+                Topmost = false;
+        };
+        Deactivated += (_, _) =>
+        {
+            if (_fullscreen)
+                Topmost = false;
+        };
+
         Closing += MainWindow_Closing;
         Closed += (_, _) =>
         {
@@ -2595,6 +2606,11 @@ public partial class MainWindow : Window
             }
         }
 
+        // Nunca mantenha o LUDARYX acima do jogo durante a transição
+        // de lançamento, inclusive quando o launcher está em fullscreen.
+        if (_fullscreen)
+            Topmost = false;
+
         using var launchCts = new CancellationTokenSource();
         _gameLaunchCts = launchCts;
         var token = launchCts.Token;
@@ -2942,7 +2958,9 @@ public partial class MainWindow : Window
                 chrome.ResizeBorderThickness = new Thickness(0);
             }
 
-            Topmost = true;
+            // Fullscreen deve ocupar o monitor inteiro, mas não pode ser
+            // "sempre no topo": jogos precisam conseguir assumir a frente normalmente.
+            Topmost = false;
             ApplyFullscreenBounds();
 
             // 1.1.5: o mouse permanece visível no modo tela cheia para que todas
