@@ -8,6 +8,7 @@ public partial class AboutWindow : Window
     public AboutWindow()
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(new JsonSettingsService().Load());
         LocalizationService.Apply(this);
         DiagnosticsText.Text = DiagnosticLogService.GetSystemSummary();
         VersionText.Text = $"{LocalizationService.Translate("Versão")} {GitHubUpdateService.GetCurrentVersionDisplay()}";
