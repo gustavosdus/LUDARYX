@@ -71,6 +71,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Button Grid.Row="2" Content="FECHAR" Width="110" HorizontalAlignment="Right" Margin="0,16,0,0" Click="Close_Click"/>
+        <Button x:Name="CloseButton" Grid.Row="2" Content="FECHAR" Width="110" HorizontalAlignment="Right" Margin="0,16,0,0" Click="Close_Click"/>
     </Grid>
 </Window>
