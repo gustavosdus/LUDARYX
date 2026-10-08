@@ -1,0 +1,15 @@
+# LUDARYX 1.2.0
+
+Versão em desenvolvimento.
+
+## Tema e interface
+- Padronização global de tema claro/escuro em janelas principais e secundárias.
+- Configurações, estatísticas locais, jogo manual, detalhes/personalização e edição de inicialização seguem a mesma paleta.
+- Seletores do SteamGridDB agora usam moldura integrada do LUDARYX e respeitam o tema.
+- Exportar/restaurar backup e Sobre/Créditos usam shell própria do LUDARYX em vez da moldura padrão do Windows.
+- Janela de progresso de atualização também passa a usar a mesma shell integrada.
+- Atalho Ctrl+F, badges de plataforma e dicas do rodapé acompanham o tema claro/escuro.
+- Botões, inputs, listas, barras de rolagem, progresso e badges usam recursos dinâmicos compartilhados.
+
+## Em desenvolvimento
+Estas notas serão ampliadas conforme a 1.2.0 receber novas funcionalidades e correções.
