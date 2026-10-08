@@ -22,6 +22,12 @@ public partial class ConcurrentLaunchWindow : Window
         SetBrush("PrimaryText", light ? "#111827" : "#FFFFFF");
         SetBrush("SecondaryText", light ? "#566273" : "#A7B3C4");
         SetBrush("Accent", light ? "#FF163D" : "#66F5FF");
+        SetBrush("ButtonBg", light ? "#E7EBF0" : "#101B2A");
+        SetBrush("ButtonHoverBg", light ? "#DDE3EA" : "#172A3D");
+        SetBrush("ButtonPressedBg", light ? "#CDD5DE" : "#0D1622");
+        SetBrush("PrimaryButtonBg", light ? "#BDEBFF" : "#153247");
+        SetBrush("PrimaryButtonHoverBg", light ? "#A4E2FC" : "#1A405A");
+        SetBrush("WarningPanelBg", light ? "#FFF8FAFC" : "#16000000");
 
         TitleText.Text = requestedGame.Name;
         CurrentGameText.Text = $"Em execução agora: {activeGame.Name}";
