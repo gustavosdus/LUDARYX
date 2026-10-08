@@ -58,6 +58,9 @@ public static class LudaryxThemeService
         Set("LudaryxSeparator", light ? "#C4CCD6" : "#203044");
         Set("LudaryxSelectedPanelBackground", light ? "#EEF1F5" : "#0A1421");
         Set("LudaryxSelectedPanelBorder", light ? "#A8B2C0" : "#1E3850");
+        Set("LudaryxDangerBackground", light ? "#FFF0F3" : "#24111B");
+        Set("LudaryxDangerBorder", light ? "#D9153C" : "#7D233A");
+        Set("LudaryxDangerForeground", light ? "#9B1230" : "#FF93A7");
 
         Set("SelectionAccentBorder", light ? "#FF163D" : "#66F5FF");
         Set("SearchCaretBrush", light ? "#000000" : "#FFFFFF");
