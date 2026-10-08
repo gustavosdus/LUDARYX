@@ -371,6 +371,8 @@ public partial class MainWindow : Window
 
             // Publica imediatamente os jogos encontrados antes de qualquer acesso de rede.
             EnsureDuplicatePrimarySelections(loadedGames);
+            if (DuplicateMetadataService.Synchronize(loadedGames, _settings))
+                _settingsService.Save(_settings);
             PublishLoadedGames(loadedGames);
             StatusText.Text = $"{_games.Count} jogos na biblioteca";
 
@@ -381,6 +383,8 @@ public partial class MainWindow : Window
             // enriquecimento para que o filtro reflita os nomes finais e versões copiadas.
             _duplicates.Detect(loadedGames);
             EnsureDuplicatePrimarySelections(loadedGames);
+            if (DuplicateMetadataService.Synchronize(loadedGames, _settings))
+                _settingsService.Save(_settings);
 
             // Reaplica somente a apresentação depois do enriquecimento, sem substituir
             // a geração de objetos já exibida.
@@ -1584,6 +1588,16 @@ public partial class MainWindow : Window
         _controllerConnected = true;
         ControllerStatusText.Text = GetControllerStatusText(includeSelectedGame: true);
 
+        if (GameLaunchOverlay.Visibility == Visibility.Visible)
+        {
+            if (_gamepad.WasPressed(GamepadButtons.A, state) ||
+                _gamepad.WasPressed(GamepadButtons.B, state))
+            {
+                CancelGameLaunch_Click(CancelGameLaunchButton, new RoutedEventArgs());
+            }
+            return;
+        }
+
         // A legenda do rodapé acompanha o último método realmente usado. O evento
         // do controle é publicado continuamente, então só trocamos o ícone quando
         // existe entrada significativa para não sobrescrever o teclado por inércia.
@@ -2550,9 +2564,17 @@ public partial class MainWindow : Window
         if (activeGame is not null)
         {
             activeGame.IsRunning = true;
-            StatusText.Text = $"{activeGame.Name} já está em execução";
-            ShowToast($"Feche {activeGame.Name} antes de iniciar outro jogo.");
-            return;
+
+            var choice = new ConcurrentLaunchWindow(activeGame, game, _settings)
+            {
+                Owner = this
+            };
+
+            if (choice.ShowDialog() != true || !choice.AllowConcurrentLaunch)
+            {
+                StatusText.Text = $"Mantendo sessão atual: {activeGame.Name}";
+                return;
+            }
         }
 
         using var launchCts = new CancellationTokenSource();
@@ -2714,6 +2736,9 @@ public partial class MainWindow : Window
 
         GameLaunchOverlay.Visibility = Visibility.Visible;
         GameLaunchOverlay.Opacity = 0;
+
+        CancelGameLaunchButton.Focus();
+        Keyboard.Focus(CancelGameLaunchButton);
 
         var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140));
         GameLaunchOverlay.BeginAnimation(OpacityProperty, fadeIn);
@@ -3281,6 +3306,16 @@ public partial class MainWindow : Window
 
         // Qualquer uso do teclado torna as dicas Enter/Espaço as dicas ativas.
         SetFooterInputMode(FooterInputMode.Keyboard);
+
+        if (GameLaunchOverlay.Visibility == Visibility.Visible)
+        {
+            if (e.Key is Key.Enter or Key.Escape)
+            {
+                CancelGameLaunch_Click(CancelGameLaunchButton, new RoutedEventArgs());
+                e.Handled = true;
+            }
+            return;
+        }
 
         // Equivalentes de teclado para os atalhos globais dos controles.
         // Page Up/Down = LB/RB (coleções); Ctrl+Page Up/Down = LT/RT (plataformas).
