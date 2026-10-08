@@ -28,6 +28,7 @@ public partial class SettingsWindow : Window
         });
         _games = games.ToList();
         _settings = Clone(settings);
+        LudaryxThemeService.Apply(_settings);
         ShowHiddenCheck.IsChecked = _settings.ShowHiddenApps;
         HideGameDetailsPanelsCheck.IsChecked = _settings.HideGameDetailsPanels;
         AutoStartClientsCheck.IsChecked = _settings.StartClientsAutomatically;
