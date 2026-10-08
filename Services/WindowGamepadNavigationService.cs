@@ -18,6 +18,7 @@ public sealed class WindowGamepadNavigationService : IDisposable
     private readonly IReadOnlyList<Control>? _focusControls;
     private int _focusIndex;
     private DateTime _nextNavigationAllowedUtc = DateTime.MinValue;
+    private bool _waitForNeutralInput = true;
     private bool _disposed;
 
     public WindowGamepadNavigationService(
@@ -59,6 +60,28 @@ public sealed class WindowGamepadNavigationService : IDisposable
     {
         if (_disposed || !_window.IsActive || !state.Connected)
             return;
+
+        // Uma janela modal pode ser aberta pelo mesmo A/Enter usado na tela anterior.
+        // Espera o controle voltar ao neutro antes de aceitar qualquer ação para evitar
+        // que o botão ainda segurado confirme imediatamente a opção padrão.
+        if (_waitForNeutralInput)
+        {
+            const short neutralAxisThreshold = 9000;
+            var neutral =
+                state.Buttons == GamepadButtons.None &&
+                Math.Abs(state.LeftX) < neutralAxisThreshold &&
+                Math.Abs(state.LeftY) < neutralAxisThreshold &&
+                state.LeftTrigger < 24 &&
+                state.RightTrigger < 24;
+
+            if (neutral)
+            {
+                _waitForNeutralInput = false;
+                _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(80);
+            }
+
+            return;
+        }
 
         if (_gamepad.WasPressed(GamepadButtons.B, state))
         {
