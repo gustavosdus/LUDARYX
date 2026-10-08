@@ -23,6 +23,7 @@ public partial class SteamGridDbArtworkPickerWindow : Window
         int gameId)
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(settings);
         _game = game;
         _settings = settings;
         _service = service;
