@@ -12,6 +12,7 @@ public partial class StatisticsWindow : Window
     public StatisticsWindow(IEnumerable<Game> games)
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(new JsonSettingsService().Load());
         _controllerNavigation = new WindowGamepadNavigationService(this, Close, StatsScrollViewer);
         Loaded += (_, _) =>
         {
