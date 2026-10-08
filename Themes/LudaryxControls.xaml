@@ -38,9 +38,14 @@
         <Setter Property="Margin" Value="0,0,0,5"/>
     </Style>
 
+    <SolidColorBrush x:Key="LudaryxButtonBackground" Color="#111D2C"/>
+    <SolidColorBrush x:Key="LudaryxButtonHoverBackground" Color="#17273A"/>
+    <SolidColorBrush x:Key="LudaryxButtonPressedBackground" Color="#1B324A"/>
+    <SolidColorBrush x:Key="LudaryxButtonForeground" Color="#F5F7FA"/>
+
     <Style x:Key="LudaryxButton" TargetType="Button">
-        <Setter Property="Foreground" Value="{StaticResource LudaryxTextPrimary}"/>
-        <Setter Property="Background" Value="#111D2C"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxButtonForeground}"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxButtonBackground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource LudaryxBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="14,7"/>
@@ -65,11 +70,11 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="#17273A"/>
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource LudaryxButtonHoverBackground}"/>
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="#1B324A"/>
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource LudaryxButtonPressedBackground}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
