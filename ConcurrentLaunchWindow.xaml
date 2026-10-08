@@ -1,0 +1,106 @@
+<Window x:Class="UnifiedGameLauncher.ConcurrentLaunchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LUDARYX" Width="620" Height="390"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None" ResizeMode="NoResize"
+        Background="#05070B"
+        ShowInTaskbar="False">
+    <Window.Resources>
+        <SolidColorBrush x:Key="PanelBg" Color="#0A111B"/>
+        <SolidColorBrush x:Key="PanelBorder" Color="#2A3A4E"/>
+        <SolidColorBrush x:Key="PrimaryText" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryText" Color="#A7B3C4"/>
+        <SolidColorBrush x:Key="Accent" Color="#66F5FF"/>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Background" Value="#101B2A"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Chrome" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource PanelBg}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Background="{DynamicResource Accent}"/>
+
+        <Grid Grid.Row="1" Margin="30,26">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="OUTRO JOGO JÁ ESTÁ EM EXECUÇÃO"
+                       Foreground="{DynamicResource SecondaryText}"
+                       FontSize="11" FontWeight="SemiBold"/>
+
+            <TextBlock x:Name="TitleText" Grid.Row="1"
+                       Margin="0,8,0,0"
+                       Foreground="{DynamicResource PrimaryText}"
+                       FontSize="25" FontWeight="Bold"
+                       TextWrapping="Wrap"/>
+
+            <Border Grid.Row="2" Margin="0,18,0,0" Padding="16"
+                    Background="#16000000"
+                    BorderBrush="{DynamicResource PanelBorder}"
+                    BorderThickness="1" CornerRadius="8">
+                <StackPanel>
+                    <TextBlock x:Name="CurrentGameText"
+                               Foreground="{DynamicResource PrimaryText}"
+                               FontSize="12" FontWeight="SemiBold"/>
+                    <TextBlock Text="Executar dois jogos ao mesmo tempo pode aumentar o uso de CPU, GPU e memória, reduzir FPS, causar travamentos ou deixar o sistema menos responsivo."
+                               Margin="0,8,0,0"
+                               Foreground="{DynamicResource SecondaryText}"
+                               FontSize="11"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Grid.Row="3"
+                       Margin="0,18,0,0"
+                       Text="Você pode manter apenas a sessão atual ou continuar e abrir o novo jogo também."
+                       Foreground="{DynamicResource SecondaryText}"
+                       FontSize="11" TextWrapping="Wrap"/>
+
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                <Button x:Name="KeepCurrentButton" Content="MANTER JOGO ATUAL" Width="170" Click="KeepCurrent_Click"/>
+                <Button x:Name="OpenBothButton" Content="ABRIR TAMBÉM" Width="150" Click="OpenBoth_Click"
+                        Background="#153247"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
