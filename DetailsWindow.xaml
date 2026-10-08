@@ -74,10 +74,10 @@
                     <TextBlock x:Name="PlatformText" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="13" Margin="0,5,0,8"/>
 
                     <Border x:Name="DuplicatePrimaryBadge"
-                            Background="#102638" BorderBrush="#285D7D" BorderThickness="1"
+                            Background="{DynamicResource LudaryxBadgeBackground}" BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1"
                             CornerRadius="6" Padding="9,5" HorizontalAlignment="Left"
                             Margin="0,0,0,10" Visibility="Collapsed">
-                        <TextBlock x:Name="DuplicatePrimaryBadgeText" Foreground="#77D6FF" FontSize="11" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="DuplicatePrimaryBadgeText" Foreground="{DynamicResource LudaryxBadgeForeground}" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
 
                     <WrapPanel Margin="0,0,0,12">
@@ -135,8 +135,8 @@
                     <Border Style="{StaticResource LudaryxCard}" Margin="0,0,0,10">
                         <StackPanel>
                             <TextBlock Text="Descrição" Style="{StaticResource LudaryxSectionTitle}"/>
-                            <TextBlock x:Name="DescriptionText" Foreground="#D4DCE7" TextWrapping="Wrap" LineHeight="21"/>
-                            <TextBlock x:Name="MetadataSourceText" Foreground="#6F829A" FontSize="10" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="DescriptionText" Foreground="{DynamicResource LudaryxTextPrimary}" TextWrapping="Wrap" LineHeight="21"/>
+                            <TextBlock x:Name="MetadataSourceText" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="10" TextWrapping="Wrap" Margin="0,8,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -229,7 +229,7 @@
             </ScrollViewer>
         </Grid>
 
-        <Border Grid.Row="2" Background="#080C13" BorderBrush="#1B2A3B" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Background="{DynamicResource LudaryxTitleBarBackground}" BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,1,0,0">
             <Grid Margin="24,9">
                 <Button Content="FECHAR" Width="120" HorizontalAlignment="Left" Click="Close_Click"/>
                 <Button Content="SALVAR CLASSIFICAÇÃO MANUAL" Width="230"
