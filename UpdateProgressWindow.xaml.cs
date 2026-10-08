@@ -10,6 +10,7 @@ public partial class UpdateProgressWindow : Window
     public UpdateProgressWindow()
     {
         InitializeComponent();
+        LudaryxThemeService.Apply(new JsonSettingsService().Load());
         LocalizationService.Apply(this);
     }
 
@@ -50,4 +51,19 @@ public partial class UpdateProgressWindow : Window
         _cancellationTokenSource.Dispose();
         base.OnClosed(e);
     }
+    private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            DragMove();
+    }
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_cancellationTokenSource.IsCancellationRequested)
+            _cancellationTokenSource.Cancel();
+        Close();
+    }
+
 }
