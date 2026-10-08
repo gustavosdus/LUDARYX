@@ -41,6 +41,9 @@
     <SolidColorBrush x:Key="LudaryxSeparator" Color="#203044"/>
     <SolidColorBrush x:Key="LudaryxSelectedPanelBackground" Color="#0A1421"/>
     <SolidColorBrush x:Key="LudaryxSelectedPanelBorder" Color="#1E3850"/>
+    <SolidColorBrush x:Key="LudaryxDangerBackground" Color="#24111B"/>
+    <SolidColorBrush x:Key="LudaryxDangerBorder" Color="#7D233A"/>
+    <SolidColorBrush x:Key="LudaryxDangerForeground" Color="#FF93A7"/>
 
     <Style x:Key="LudaryxCard" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackground}"/>
@@ -123,9 +126,9 @@
     </Style>
 
     <Style x:Key="LudaryxDangerButton" TargetType="Button" BasedOn="{StaticResource LudaryxButton}">
-        <Setter Property="Background" Value="#24111B"/>
-        <Setter Property="BorderBrush" Value="#7D233A"/>
-        <Setter Property="Foreground" Value="#FF93A7"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxDangerBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxDangerBorder}"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxDangerForeground}"/>
     </Style>
 
     <Style x:Key="LudaryxWindowButton" TargetType="Button" BasedOn="{StaticResource LudaryxButton}">
@@ -403,6 +406,8 @@
                 <ControlTemplate TargetType="ListBoxItem">
                     <Border x:Name="ItemChrome"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource LudaryxBorder}"
+                            BorderThickness="1"
                             CornerRadius="6"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter/>
