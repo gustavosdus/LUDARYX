@@ -15,17 +15,21 @@ public sealed class WindowGamepadNavigationService : IDisposable
     private readonly Action _backAction;
     private readonly GamepadService _gamepad;
     private readonly ScrollViewer? _scrollViewer;
+    private readonly IReadOnlyList<Control>? _focusControls;
+    private int _focusIndex;
     private DateTime _nextNavigationAllowedUtc = DateTime.MinValue;
     private bool _disposed;
 
     public WindowGamepadNavigationService(
         Window window,
         Action backAction,
-        ScrollViewer? scrollViewer = null)
+        ScrollViewer? scrollViewer = null,
+        IReadOnlyList<Control>? focusControls = null)
     {
         _window = window;
         _backAction = backAction;
         _scrollViewer = scrollViewer;
+        _focusControls = focusControls;
         _gamepad = new GamepadService(window);
         _gamepad.StateChanged += Gamepad_StateChanged;
 
@@ -37,8 +41,15 @@ public sealed class WindowGamepadNavigationService : IDisposable
     {
         _window.Dispatcher.BeginInvoke(() =>
         {
-            if (Keyboard.FocusedElement is null)
+            if (_focusControls is { Count: > 0 })
+            {
+                _focusIndex = Math.Clamp(_focusIndex, 0, _focusControls.Count - 1);
+                FocusExplicitControl();
+            }
+            else if (Keyboard.FocusedElement is null)
+            {
                 _window.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }
 
             BringFocusedIntoView();
         }, System.Windows.Threading.DispatcherPriority.Input);
@@ -85,6 +96,15 @@ public sealed class WindowGamepadNavigationService : IDisposable
             return;
         }
 
+        if (_focusControls is { Count: > 0 } && (up || down || left || right))
+        {
+            var delta = (down || right) ? 1 : -1;
+            _focusIndex = Math.Clamp(_focusIndex + delta, 0, _focusControls.Count - 1);
+            FocusExplicitControl();
+            _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(160);
+            return;
+        }
+
         if (focused is ComboBox combo)
         {
             if (combo.IsDropDownOpen)
@@ -123,6 +143,20 @@ public sealed class WindowGamepadNavigationService : IDisposable
             MoveFocus(FocusNavigationDirection.Next);
             _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(160);
         }
+    }
+
+    private void FocusExplicitControl()
+    {
+        if (_focusControls is not { Count: > 0 })
+            return;
+
+        var control = _focusControls[Math.Clamp(_focusIndex, 0, _focusControls.Count - 1)];
+        if (!control.IsEnabled || control.Visibility != Visibility.Visible)
+            return;
+
+        control.Focus();
+        Keyboard.Focus(control);
+        control.BringIntoView();
     }
 
     private static void ChangeComboSelection(ComboBox combo, int delta)
