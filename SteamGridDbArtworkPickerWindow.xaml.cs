@@ -113,4 +113,25 @@ public partial class SteamGridDbArtworkPickerWindow : Window
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            return;
+        }
+
+        if (e.LeftButton == MouseButtonState.Pressed)
+            DragMove();
+    }
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void MaximizeWindow_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void CloseWindow_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
 }
