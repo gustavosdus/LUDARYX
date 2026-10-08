@@ -52,10 +52,10 @@ public static class LudaryxThemeService
 
     private static void Set(string key, string color)
     {
-        if (Application.Current is null)
+        if (System.Windows.Application.Current is null)
             return;
 
-        Application.Current.Resources[key] = new SolidColorBrush(
-            (Color)ColorConverter.ConvertFromString(color));
+        System.Windows.Application.Current.Resources[key] = new SolidColorBrush(
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
     }
 }
