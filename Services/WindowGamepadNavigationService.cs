@@ -14,13 +14,18 @@ public sealed class WindowGamepadNavigationService : IDisposable
     private readonly Window _window;
     private readonly Action _backAction;
     private readonly GamepadService _gamepad;
+    private readonly ScrollViewer? _scrollViewer;
     private DateTime _nextNavigationAllowedUtc = DateTime.MinValue;
     private bool _disposed;
 
-    public WindowGamepadNavigationService(Window window, Action backAction)
+    public WindowGamepadNavigationService(
+        Window window,
+        Action backAction,
+        ScrollViewer? scrollViewer = null)
     {
         _window = window;
         _backAction = backAction;
+        _scrollViewer = scrollViewer;
         _gamepad = new GamepadService(window);
         _gamepad.StateChanged += Gamepad_StateChanged;
 
@@ -66,6 +71,20 @@ public sealed class WindowGamepadNavigationService : IDisposable
             return;
 
         var focused = Keyboard.FocusedElement as FrameworkElement;
+
+        if (_scrollViewer is not null && (up || down))
+        {
+            var delta = Math.Max(48, _scrollViewer.ViewportHeight * 0.14);
+            _scrollViewer.ScrollToVerticalOffset(
+                Math.Clamp(
+                    _scrollViewer.VerticalOffset + (down ? delta : -delta),
+                    0,
+                    Math.Max(0, _scrollViewer.ScrollableHeight)));
+
+            _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(140);
+            return;
+        }
+
         if (focused is ComboBox combo)
         {
             if (combo.IsDropDownOpen)
