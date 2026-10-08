@@ -118,7 +118,7 @@
     <Style x:Key="LudaryxPrimaryButton" TargetType="Button" BasedOn="{StaticResource LudaryxButton}">
         <Setter Property="Background" Value="#D9153C"/>
         <Setter Property="BorderBrush" Value="#FF3158"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
         <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
@@ -167,7 +167,7 @@
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBorderHover}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBlue}"/>
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Chrome" Property="Opacity" Value="0.78"/>
@@ -207,7 +207,7 @@
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBorderHover}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBlue}"/>
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -256,7 +256,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource LudaryxBlue}"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Box" Property="Background" Value="{StaticResource LudaryxRed}"/>
@@ -264,7 +264,7 @@
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource LudaryxBlue}"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource LudaryxDisabled}"/>
@@ -298,7 +298,7 @@
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource LudaryxComboItemSelectedBackground}"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -379,7 +379,7 @@
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBorderHover}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource LudaryxBlue}"/>
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Chrome" Property="Opacity" Value="0.55"/>
@@ -444,7 +444,7 @@
                                         Background="{TemplateBinding Background}" CornerRadius="3"/>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource LudaryxBlue}"/>
+                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource SelectionAccentBorder}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -472,7 +472,7 @@
                                         Background="{TemplateBinding Background}" CornerRadius="3"/>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource LudaryxBlue}"/>
+                                        <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource SelectionAccentBorder}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -503,7 +503,7 @@
     <Style TargetType="ProgressBar">
         <Setter Property="Height" Value="12"/>
         <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackgroundAlt}"/>
-        <Setter Property="Foreground" Value="{DynamicResource LudaryxBlue}"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxBadgeForeground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
