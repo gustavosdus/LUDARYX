@@ -216,10 +216,13 @@ public partial class DetailsWindow : Window
             if (activeGame is not null)
             {
                 activeGame.IsRunning = true;
-                MessageBox.Show(this,
-                    $"Feche {activeGame.Name} antes de iniciar outro jogo.",
-                    "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                var choice = new ConcurrentLaunchWindow(activeGame, _game, _settings)
+                {
+                    Owner = this
+                };
+
+                if (choice.ShowDialog() != true || !choice.AllowConcurrentLaunch)
+                    return;
             }
 
             await _launcher.LaunchAsync(_game);
@@ -288,6 +291,10 @@ public partial class DetailsWindow : Window
         {
             Mouse.OverrideCursor = Cursors.Wait;
             await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true);
+
+            if (DuplicateMetadataService.Synchronize(_libraryGames, _settings))
+                new JsonSettingsService().Save(_settings);
+
             _metadata.SaveCacheSnapshot();
             LoadData();
             LocalizationService.Apply(this);
@@ -363,35 +370,27 @@ public partial class DetailsWindow : Window
 
         _settings.ManualGames.Add(copy);
 
-        // A cópia deve nascer visualmente idêntica à entrada de origem.
-        // Nem todo jogo manual possui ManualMetadata explícito: metadados automáticos
-        // podem existir apenas em _game.Metadata. Por isso usamos o estado efetivamente
-        // exibido como fallback e persistimos tudo na nova entrada manual.
+        // A cópia mantém somente overrides realmente manuais da entrada original.
+        // Metadados automáticos não são mais transformados em ManualMetadata, pois isso
+        // congelava descrição/gêneros/empresas e impedia localização futura.
         _settings.ManualMetadata.TryGetValue(_game.ProviderId, out var sourceMetadata);
         var currentMetadata = _game.Metadata;
 
         _settings.ManualMetadata[$"Manual:{copy.Id}"] = new ManualGameMetadata
         {
             Name = sourceMetadata?.Name ?? _game.Name,
-            Description = sourceMetadata?.Description ?? currentMetadata.Description,
-            Genres = sourceMetadata?.Genres is { Count: > 0 }
-                ? sourceMetadata.Genres.ToList()
-                : currentMetadata.Genres.ToList(),
-            Developer = sourceMetadata?.Developer ?? currentMetadata.Developer,
-            Publisher = sourceMetadata?.Publisher ?? currentMetadata.Publisher,
-            ReleaseYear = sourceMetadata?.ReleaseYear ?? currentMetadata.ReleaseYear,
+            Description = sourceMetadata?.Description,
+            Genres = sourceMetadata?.Genres?.ToList() ?? new(),
+            Developer = sourceMetadata?.Developer,
+            Publisher = sourceMetadata?.Publisher,
+            ReleaseYear = sourceMetadata?.ReleaseYear,
             AgeRatings = new Dictionary<string, string>(
-                sourceMetadata?.AgeRatings is { Count: > 0 }
-                    ? sourceMetadata.AgeRatings
-                    : currentMetadata.AgeRatings ?? new(),
+                sourceMetadata?.AgeRatings ?? new(),
                 StringComparer.OrdinalIgnoreCase),
             HorizontalCoverUrl = sourceMetadata?.HorizontalCoverUrl
-                ?? currentMetadata.CustomHorizontalCoverLocalPath
-                ?? currentMetadata.HorizontalCoverLocalPath,
+                ?? currentMetadata.CustomHorizontalCoverLocalPath,
             VerticalCoverUrl = sourceMetadata?.VerticalCoverUrl
-                ?? currentMetadata.CustomVerticalCoverLocalPath
-                ?? currentMetadata.VerticalCoverLocalPath
-                ?? currentMetadata.CoverLocalPath,
+                ?? currentMetadata.CustomVerticalCoverLocalPath,
             DisableAutomaticSteamGridDbVertical = sourceMetadata?.DisableAutomaticSteamGridDbVertical ?? false,
             DisableAutomaticSteamGridDbHorizontal = sourceMetadata?.DisableAutomaticSteamGridDbHorizontal ?? false
         };
