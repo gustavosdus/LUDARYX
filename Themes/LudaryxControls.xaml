@@ -397,10 +397,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ItemChrome" Property="Background" Value="#101D2A"/>
+                            <Setter TargetName="ItemChrome" Property="Background" Value="{DynamicResource LudaryxItemHoverBackground}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="ItemChrome" Property="Background" Value="#142A3D"/>
+                            <Setter TargetName="ItemChrome" Property="Background" Value="{DynamicResource LudaryxPanelBackgroundAlt}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -425,7 +425,7 @@
                     <RepeatButton Command="ScrollBar.PageUpCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Background="#36536E" MinHeight="34">
+                    <Thumb Background="{DynamicResource LudaryxBorder}" MinHeight="34">
                         <Thumb.Template>
                             <ControlTemplate TargetType="Thumb">
                                 <Border x:Name="ThumbChrome" Width="6" Margin="2,0"
@@ -453,7 +453,7 @@
                     <RepeatButton Command="ScrollBar.PageLeftCommand" Background="Transparent" BorderThickness="0" Focusable="False"/>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Background="#36536E" MinWidth="34">
+                    <Thumb Background="{DynamicResource LudaryxBorder}" MinWidth="34">
                         <Thumb.Template>
                             <ControlTemplate TargetType="Thumb">
                                 <Border x:Name="ThumbChrome" Height="6" Margin="0,2"
@@ -490,7 +490,7 @@
 
     <Style TargetType="ProgressBar">
         <Setter Property="Height" Value="12"/>
-        <Setter Property="Background" Value="#0A1420"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackgroundAlt}"/>
         <Setter Property="Foreground" Value="{DynamicResource LudaryxBlue}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -547,8 +547,8 @@
     </Style>
 
     <Style x:Key="LudaryxGameBadge" TargetType="Border">
-        <Setter Property="Background" Value="#D90A1420"/>
-        <Setter Property="BorderBrush" Value="#344C66"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxBadgeBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="5"/>
         <Setter Property="Padding" Value="6,3"/>
