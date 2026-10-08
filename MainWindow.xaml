@@ -562,8 +562,8 @@
             </Setter>
         </Style>
         <Style x:Key="FooterHintChip" TargetType="Border">
-            <Setter Property="Background" Value="#101923"/>
-            <Setter Property="BorderBrush" Value="#34475D"/>
+            <Setter Property="Background" Value="{DynamicResource LudaryxFooterChipBackground}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource LudaryxFooterChipBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="5"/>
             <Setter Property="Padding" Value="8,4"/>
@@ -644,8 +644,9 @@
                                  ToolTip="Buscar jogos, gêneros, plataformas, desenvolvedoras e publicadoras"/>
                         <Border HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Margin="0,0,8,0" Padding="7,3" CornerRadius="4"
-                                Background="#0D1724" BorderBrush="#263A50" BorderThickness="1">
-                            <TextBlock Text="Ctrl+F" Foreground="#7D91A9" FontSize="9"/>
+                                Background="{DynamicResource LudaryxBadgeBackground}"
+                                BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1">
+                            <TextBlock Text="Ctrl+F" Foreground="{DynamicResource LudaryxBadgeForeground}" FontSize="9"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -1013,7 +1014,7 @@
 
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7">
-                                                    <TextBlock Text="{Binding PlatformDisplay}" Foreground="#D9E9F8"
+                                                    <TextBlock Text="{Binding PlatformDisplay}" Foreground="{DynamicResource LudaryxBadgeForeground}"
                                                                FontSize="8" FontWeight="SemiBold"/>
                                                 </Border>
 
@@ -1127,37 +1128,37 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <StackPanel x:Name="XboxFooterHints" Orientation="Horizontal" Visibility="Collapsed">
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="XboxSelectHintText" Text="A  JOGAR" Foreground="#DFFFE7" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="XboxSelectHintText" Text="A  JOGAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="XboxCustomizeHintText" Text="X  PERSONALIZAR" Foreground="#DDEEFF" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="XboxCustomizeHintText" Text="X  PERSONALIZAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="XboxExtraHintText" Text="Y  FAVORITO" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="XboxExtraHintText" Text="Y  FAVORITO" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
 
                     <StackPanel x:Name="PlayStationFooterHints" Orientation="Horizontal" Visibility="Collapsed">
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="PlayStationSelectHintText" Text="X  JOGAR" Foreground="#DDEEFF" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="PlayStationSelectHintText" Text="X  JOGAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="PlayStationCustomizeHintText" Text="□  PERSONALIZAR" Foreground="#F1DEFF" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="PlayStationCustomizeHintText" Text="□  PERSONALIZAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="PlayStationExtraHintText" Text="△  FAVORITO" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="PlayStationExtraHintText" Text="△  FAVORITO" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
 
                     <StackPanel x:Name="KeyboardFooterHints" Orientation="Horizontal">
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="KeyboardSelectHintText" Text="ENTER  JOGAR" Foreground="White" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="KeyboardSelectHintText" Text="ENTER  JOGAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="KeyboardCustomizeHintText" Text="SPACE  PERSONALIZAR" Foreground="White" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="KeyboardCustomizeHintText" Text="SPACE  PERSONALIZAR" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                         <Border Style="{StaticResource FooterHintChip}">
-                            <TextBlock x:Name="KeyboardExtraHintText" Text="F  FAVORITO   •   F11  TELA CHEIA" Foreground="#C9D5E4" FontSize="9" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="KeyboardExtraHintText" Text="F  FAVORITO   •   F11  TELA CHEIA" Foreground="{DynamicResource LudaryxFooterChipText}" FontSize="9" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
