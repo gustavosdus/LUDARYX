@@ -1456,6 +1456,8 @@ public partial class MainWindow
         var startedAt = DateTime.UtcNow;
         var deadline = startedAt + timeout;
 
+        var securityHintShown = false;
+
         while (DateTime.UtcNow < deadline)
         {
             token.ThrowIfCancellationRequested();
@@ -1468,6 +1470,14 @@ public partial class MainWindow
             var elapsedSeconds = Math.Max(0, (DateTime.UtcNow - startedAt).TotalSeconds);
             var waitProgress = 52 + (43 * (1 - Math.Exp(-elapsedSeconds / 10.0)));
             SetGameLaunchProgress(Math.Min(95, waitProgress));
+
+            if (!securityHintShown && elapsedSeconds >= 15)
+            {
+                securityHintShown = true;
+                GameLaunchSecurityHintText.Text = LocalizationService.Translate(
+                    "Se o jogo não abrir e o Windows Security mostrar uma notificação, permita o aplicativo e tente novamente.");
+                GameLaunchSecurityHintText.Visibility = Visibility.Visible;
+            }
 
             await Task.Delay(250, token);
         }
@@ -1500,6 +1510,8 @@ public partial class MainWindow
         CancelGameLaunchButton.Content = LocalizationService.Translate("INTERROMPER");
         CancelGameLaunchButton.IsEnabled = true;
         SetGameLaunchProgress(0);
+        GameLaunchSecurityHintText.Text = string.Empty;
+        GameLaunchSecurityHintText.Visibility = Visibility.Collapsed;
 
         var verticalArtwork = game.VerticalCover;
         GameLaunchCoverImage.Source = LoadHomeArtwork(verticalArtwork);
@@ -1525,6 +1537,8 @@ public partial class MainWindow
             GameLaunchOverlay.Visibility = Visibility.Collapsed;
             GameLaunchOverlay.Opacity = 1;
             GameLaunchCoverImage.Source = null;
+            GameLaunchSecurityHintText.Text = string.Empty;
+            GameLaunchSecurityHintText.Visibility = Visibility.Collapsed;
             SetGameLaunchProgress(0);
             CancelGameLaunchButton.IsEnabled = true;
         };
