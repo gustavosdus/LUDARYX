@@ -73,6 +73,56 @@ public sealed class ClassIndOpenDataService
         return NormalizeRating(match.Rating);
     }
 
+    private static ClassIndEntry? FindStrongUniquePartialMatch(
+        IReadOnlyList<ClassIndEntry> entries,
+        string normalizedGameTitle)
+    {
+        if (normalizedGameTitle.Length < 8)
+            return null;
+
+        var candidates = entries
+            .Select(entry => new
+            {
+                Entry = entry,
+                Brazil = NormalizeTitle(entry.TitleBrazil),
+                Series = NormalizeTitle(entry.TitleSeries)
+            })
+            .Where(candidate =>
+                IsStrongPartialTitleMatch(normalizedGameTitle, candidate.Brazil) ||
+                IsStrongPartialTitleMatch(normalizedGameTitle, candidate.Series))
+            .Select(candidate => candidate.Entry)
+            .Distinct()
+            .Take(2)
+            .ToList();
+
+        // Só aceita o fallback quando há exatamente um registro oficial possível.
+        return candidates.Count == 1 ? candidates[0] : null;
+    }
+
+    private static bool IsStrongPartialTitleMatch(string requested, string official)
+    {
+        if (requested.Length < 8 || official.Length < 8)
+            return false;
+
+        var shorter = requested.Length <= official.Length ? requested : official;
+        var longer = requested.Length > official.Length ? requested : official;
+
+        if (!longer.Contains(shorter, StringComparison.Ordinal))
+            return false;
+
+        // Casos como "... Ultimate All-Stars Wii" normalmente mantêm quase todo
+        // o título do jogo cadastrado no LUDARYX.
+        var ratio = (double)shorter.Length / longer.Length;
+        if (ratio >= 0.60)
+            return true;
+
+        // Também cobre nomes oficiais com subtítulo descritivo longo, como
+        // "Castle of Illusion Starring Mickey Mouse". A exigência de título
+        // suficientemente longo + candidato único reduz colisões entre jogos.
+        return shorter.Length >= 12 &&
+               longer.StartsWith(shorter, StringComparison.Ordinal);
+    }
+
     private async Task<IReadOnlyList<ClassIndEntry>> GetEntriesAsync(CancellationToken token)
     {
         if (_entries is not null && DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
