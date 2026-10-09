@@ -69,7 +69,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Width="210" Height="245" Margin="6" Padding="5" Background="{DynamicResource LudaryxItemBackground}" CornerRadius="8">
+                    <Border Width="210" Height="265" Margin="6" Padding="5" Background="{DynamicResource LudaryxItemBackground}" CornerRadius="8">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="175"/>
@@ -81,7 +81,7 @@
                                 <TextBlock Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="11" TextWrapping="Wrap">
                                     <Run Text="Pontuação: "/><Run Text="{Binding Score}"/>
                                 </TextBlock>
-                                <Button Content="USAR ESTA ARTE" Tag="{Binding}" Click="Use_Click" Margin="0,4,0,0" Height="28"/>
+                                <Button Content="USAR ESTA ARTE" Tag="{Binding}" Click="Use_Click" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Border>
