@@ -33,7 +33,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v2.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v3.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -201,6 +201,31 @@ public sealed class ClassIndOpenDataService
             return Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3);
         }
 
+        if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE)
+            return Encoding.Unicode.GetString(bytes, 2, bytes.Length - 2);
+
+        if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
+            return Encoding.BigEndianUnicode.GetString(bytes, 2, bytes.Length - 2);
+
+        // Alguns exports governamentais/Excel chegam como UTF-16 sem BOM.
+        // A presença regular de NULs permite detectar isso sem depender do header HTTP.
+        var evenNulls = 0;
+        var oddNulls = 0;
+        var sampleLength = Math.Min(bytes.Length, 512);
+        for (var i = 0; i < sampleLength; i++)
+        {
+            if (bytes[i] != 0)
+                continue;
+
+            if ((i & 1) == 0) evenNulls++;
+            else oddNulls++;
+        }
+
+        if (oddNulls > sampleLength / 8)
+            return Encoding.Unicode.GetString(bytes);
+        if (evenNulls > sampleLength / 8)
+            return Encoding.BigEndianUnicode.GetString(bytes);
+
         var utf8 = Encoding.UTF8.GetString(bytes);
         if (!utf8.Contains('�'))
             return utf8;
@@ -274,9 +299,10 @@ public sealed class ClassIndOpenDataService
     private static List<List<string>> ParseCsv(string csv)
     {
         var firstLine = csv.Split(new[] { "\r\n", "\n" }, 2, StringSplitOptions.None)[0];
-        var delimiter = CountOutsideQuotes(firstLine, ';') >= CountOutsideQuotes(firstLine, ',')
-            ? ';'
-            : ',';
+        var delimiterCandidates = new[] { ';', ',', '\t' };
+        var delimiter = delimiterCandidates
+            .OrderByDescending(candidate => CountOutsideQuotes(firstLine, candidate))
+            .First();
 
         var rows = new List<List<string>>();
         var row = new List<string>();
