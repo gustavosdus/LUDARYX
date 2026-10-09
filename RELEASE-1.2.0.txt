@@ -1,15 +1,44 @@
 # LUDARYX 1.2.0
 
-Versão em desenvolvimento.
+A versão 1.2.0 consolida uma ampla revisão visual e estrutural do LUDARYX, melhora a navegação por controle/teclado, torna a abertura de jogos mais clara e amplia a coleta de classificações indicativas pelas fontes de metadados já suportadas.
 
-## Tema e interface
-- Padronização global de tema claro/escuro em janelas principais e secundárias.
-- Configurações, estatísticas locais, jogo manual, detalhes/personalização e edição de inicialização seguem a mesma paleta.
-- Seletores do SteamGridDB agora usam moldura integrada do LUDARYX e respeitam o tema.
-- Exportar/restaurar backup e Sobre/Créditos usam shell própria do LUDARYX em vez da moldura padrão do Windows.
-- Janela de progresso de atualização também passa a usar a mesma shell integrada.
-- Atalho Ctrl+F, badges de plataforma e dicas do rodapé acompanham o tema claro/escuro.
-- Botões, inputs, listas, barras de rolagem, progresso e badges usam recursos dinâmicos compartilhados.
+## Interface e temas
+- Nova paleta global do LUDARYX 1.2 aplicada de forma consistente aos temas claro e escuro.
+- Configurações, Estatísticas, Jogo Manual, Detalhes/Personalização, Backup, Sobre/Créditos, SteamGridDB e progresso de atualização agora seguem a mesma identidade visual.
+- Janelas secundárias importantes usam moldura integrada ao LUDARYX em vez da aparência padrão do Windows.
+- Botões, campos, listas, barras de rolagem, badges, checkboxes, combos, separadores e estados de foco acompanham corretamente o tema ativo.
+- Ajustes adicionais em cabeçalho, rodapé, dicas de atalhos, badges de plataforma e ações destrutivas.
+- Correção do recorte do botão de uso de arte no seletor do SteamGridDB.
 
-## Em desenvolvimento
-Estas notas serão ampliadas conforme a 1.2.0 receber novas funcionalidades e correções.
+## Abertura e execução de jogos
+- Nova tela de abertura com progresso visual e detecção do processo do jogo.
+- A cor dos detalhes da tela de abertura acompanha a linha neon do tema; barra de progresso e porcentagem permanecem amarelas.
+- Quando a abertura demora, o LUDARYX exibe uma orientação discreta caso o Windows Security/Acesso controlado a pastas tenha bloqueado o launcher ou o jogo.
+- Jogos abertos podem assumir corretamente o primeiro plano mesmo quando o LUDARYX está em tela cheia.
+- Ao tentar iniciar outro jogo enquanto um já está em execução, o usuário pode decidir se deseja permitir uma inicialização simultânea.
+
+## Controle, teclado e navegação
+- Navegação por controle ampliada em janelas modais e Estatísticas.
+- Ordem de foco explícita para controles em diálogos.
+- Rolagem por controle em janelas e áreas de estatísticas.
+- Melhor debounce ao abrir modais para evitar ações duplicadas.
+- Janela de confirmação de inicialização simultânea totalmente navegável por controle.
+
+## Biblioteca, duplicatas e metadados
+- Metadados podem ser sincronizados entre entradas duplicadas para reduzir inconsistências.
+- Entradas manuais duplicadas mantêm nomes e dados alinhados com a versão principal quando aplicável.
+- Itens secundários de duplicatas ocultados automaticamente continuam acessíveis pelo filtro de ocultos.
+- Classificações indicativas complementares podem ser obtidas pela Steam em diferentes regiões, Wikidata e IGDB quando configurado.
+- Melhor reconhecimento de ESRB em dados e assets da Steam.
+- ClassInd continua suportada quando uma das fontes normais de metadados a fornece; o LUDARYX não depende de uma consulta direta a portal governamental.
+- A prioridade de exibição regional das classificações foi corrigida, sem converter valores entre sistemas diferentes.
+
+## Organização interna
+- MainWindow foi reorganizada em arquivos parciais separados para Biblioteca, Controle, Fullscreen, Tema e Ações.
+- Serviços e fluxos de atualização de metadados foram reorganizados para facilitar manutenção e futuras edições manuais.
+- Código e documentação de fontes externas foram revisados para refletir o comportamento atual.
+
+## Atualização
+A versão 1.2.0 usa o mesmo AppId das versões anteriores e pode ser instalada sobre a 1.1.4, preservando configurações e dados locais compatíveis.
+
+O atualizador valida o instalador por SHA-256 antes de permitir a instalação automática.
