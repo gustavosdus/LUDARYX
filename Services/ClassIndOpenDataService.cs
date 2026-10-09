@@ -534,7 +534,7 @@ public sealed class ClassIndOpenDataService
         var headerColumnCount = rows[headerRowIndex.Index].Count;
 
         // Esquema oficial de "DADOS DOS JOGOS ELETRÔNICOS" do ClassInd:
-        // B = Título no Brasil; C = Título da Série; M = Classificação atribuída.
+        // B = Título no Brasil; C = Título original; M = Classificação atribuída.
         // Usa os nomes primeiro e as posições oficiais como fallback, porque o portal
         // já alterou acentos/capitalização de cabeçalhos entre exportações.
         var titleBrazilIndex = FindHeader(headers,
@@ -547,7 +547,11 @@ public sealed class ClassIndOpenDataService
             titleBrazilIndex = 1;
 
         var titleSeriesIndex = FindHeader(headers,
-            "titulodaserie", "tituloserie", "serie");
+            "titulooriginal",
+            "titulooriginal",
+            "titulodaserie",
+            "tituloserie",
+            "serie");
         if (titleSeriesIndex < 0 && headerColumnCount > 2)
             titleSeriesIndex = 2;
 
