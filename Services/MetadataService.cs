@@ -347,6 +347,12 @@ public sealed class MetadataService
             _cache[key] = metadata;
 
         Apply(game, metadata);
+
+        // A atualização geral também deve preencher classificação indicativa para
+        // jogos fora da Steam. Só faz a consulta complementar quando nenhuma fonte
+        // já forneceu classificação, evitando rede desnecessária na biblioteca.
+        if (game.Metadata.AgeRatings is null || game.Metadata.AgeRatings.Count == 0)
+            await EnsureLocalizedAgeRatingAsync(game, settings, token);
     }
 
     public void SaveCacheSnapshot() => SaveCache();
