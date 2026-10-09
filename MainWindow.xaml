@@ -67,6 +67,10 @@
         <SolidColorBrush x:Key="LaunchOverlayArtworkBackground" Color="#07111C"/>
         <SolidColorBrush x:Key="LaunchOverlayArtworkBorder" Color="#26384C"/>
         <SolidColorBrush x:Key="LaunchProgressTrack" Color="#26313D"/>
+        <Color x:Key="LaunchOverlayNeonColor">#66F5FF</Color>
+        <SolidColorBrush x:Key="LaunchOverlayNeon" Color="#66F5FF"/>
+        <SolidColorBrush x:Key="LaunchOverlayNeonSoft" Color="#2666F5FF"/>
+        <SolidColorBrush x:Key="LaunchOverlayNeonMedium" Color="#6666F5FF"/>
         <SolidColorBrush x:Key="LaunchProgressNeon" Color="#FFE600"/>
 
         <Style x:Key="WindowButton" TargetType="Button">
@@ -1208,12 +1212,12 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Yellow neon launch accent. -->
+                    <!-- Launch accent follows the active neon outline. -->
                     <Border Grid.Row="0"
-                            Background="{DynamicResource LaunchProgressNeon}"
+                            Background="{DynamicResource LaunchOverlayNeon}"
                             CornerRadius="16,16,0,0">
                         <Border.Effect>
-                            <DropShadowEffect Color="#FFE600" BlurRadius="14" ShadowDepth="0" Opacity="0.72"/>
+                            <DropShadowEffect Color="{DynamicResource LaunchOverlayNeonColor}" BlurRadius="14" ShadowDepth="0" Opacity="0.72"/>
                         </Border.Effect>
                     </Border>
 
@@ -1233,16 +1237,17 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
                                 <Border Padding="9,4"
-                                        Background="#26FFE600"
-                                        BorderBrush="#66FFE600"
+                                        Background="{DynamicResource LaunchOverlayNeonSoft}"
+                                        BorderBrush="{DynamicResource LaunchOverlayNeonMedium}"
                                         BorderThickness="1"
                                         CornerRadius="5">
                                     <TextBlock Text="LUDARYX"
-                                               Foreground="{DynamicResource LaunchProgressNeon}"
+                                               Foreground="{DynamicResource LaunchOverlayNeon}"
                                                FontSize="10"
                                                FontWeight="Bold"/>
                                 </Border>
@@ -1289,10 +1294,10 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Ellipse Width="8" Height="8"
-                                             Fill="{DynamicResource LaunchProgressNeon}"
+                                             Fill="{DynamicResource LaunchOverlayNeon}"
                                              VerticalAlignment="Center">
                                         <Ellipse.Effect>
-                                            <DropShadowEffect Color="#FFE600" BlurRadius="10" ShadowDepth="0" Opacity="0.85"/>
+                                            <DropShadowEffect Color="{DynamicResource LaunchOverlayNeonColor}" BlurRadius="10" ShadowDepth="0" Opacity="0.85"/>
                                         </Ellipse.Effect>
                                     </Ellipse>
                                     <TextBlock x:Name="GameLaunchStatusText"
@@ -1306,7 +1311,15 @@
                                 </Grid>
                             </Border>
 
-                            <Grid Grid.Row="4" Margin="0,22,0,0">
+                            <TextBlock x:Name="GameLaunchSecurityHintText"
+                                       Grid.Row="4"
+                                       Visibility="Collapsed"
+                                       Margin="0,10,0,0"
+                                       Foreground="{DynamicResource LaunchOverlayTextSecondary}"
+                                       FontSize="10"
+                                       TextWrapping="Wrap"/>
+
+                            <Grid Grid.Row="5" Margin="0,22,0,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -1338,7 +1351,7 @@
                                              BorderThickness="0"/>
                             </Grid>
 
-                            <Grid Grid.Row="5" Margin="0,24,0,0">
+                            <Grid Grid.Row="6" Margin="0,24,0,0">
                                 <TextBlock Text="O LUDARYX manterá esta tela aberta até detectar o processo do jogo."
                                            Foreground="{DynamicResource LaunchOverlayTextSecondary}"
                                            FontSize="10"
@@ -1367,7 +1380,7 @@
                               Width="210"
                               Height="315"
                               VerticalAlignment="Center">
-                            <Border Background="#18FFE600"
+                            <Border Background="{DynamicResource LaunchOverlayNeonSoft}"
                                     CornerRadius="13"
                                     Margin="-5">
                                 <Border.Effect>
@@ -1384,7 +1397,7 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
                             </Border>
-                            <Border BorderBrush="#66FFE600"
+                            <Border BorderBrush="{DynamicResource LaunchOverlayNeonMedium}"
                                     BorderThickness="1"
                                     CornerRadius="11"
                                     IsHitTestVisible="False"/>
