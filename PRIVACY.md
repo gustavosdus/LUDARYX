@@ -18,7 +18,6 @@ LUDARYX may contact third-party services for documented application features:
 
 - Steam, GOG, PCGamingWiki, Wikidata/Wikipedia and other documented sources for game metadata;
 - Steam may also provide regional age-rating metadata when available;
-- the MJSP open-data portal (`dados.mj.gov.br`) may be contacted to obtain the official Brazilian ClassInd game dataset; the downloaded dataset is cached locally;
 - Wikidata may provide structured age-rating facts for non-Brazilian rating systems; LUDARYX does not intentionally scrape the public ESRB, PEGI, USK, CERO, ACB or BBFC sites;
 - SteamGridDB and other documented artwork sources when artwork features are used;
 - GitHub Releases to check for LUDARYX updates and, after user confirmation, download release assets.
