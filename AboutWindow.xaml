@@ -75,13 +75,13 @@
 
                 <TextBlock Text="Fontes de dados" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="18" FontWeight="SemiBold"/>
                 <TextBlock Foreground="{DynamicResource LudaryxTextPrimary}" TextWrapping="Wrap" Margin="0,6,0,6"
-                           Text="Metadados podem ser obtidos de Steam, GOG, Wikidata, Wikipedia, PCGamingWiki e IGDB, conforme disponibilidade e configuração. Capas podem ser obtidas da Steam e SteamGridDB. A fonte efetivamente usada em cada jogo é exibida na tela de detalhes."/>
+                           Text="Metadados podem ser obtidos de Steam, GOG, Wikidata, Wikipedia, PCGamingWiki e IGDB, conforme disponibilidade e configuração. A ClassInd brasileira é consultada pela base oficial de dados abertos do Ministério da Justiça e Segurança Pública (dados.mj.gov.br). Capas podem ser obtidas da Steam e SteamGridDB. A fonte efetivamente usada em cada jogo é exibida na tela de detalhes."/>
                 <TextBlock Foreground="{DynamicResource LudaryxTextSecondary}" TextWrapping="Wrap" Margin="0,0,0,16"
                            Text="Marcas, nomes de produtos, capas, artes e textos de terceiros pertencem aos seus respectivos titulares. O LUDARYX não incorpora bibliotecas de capas baixadas no instalador; conteúdo externo é obtido no computador do usuário quando necessário."/>
 
                 <TextBlock Text="Licenças e atribuições" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="18" FontWeight="SemiBold"/>
                 <TextBlock Foreground="{DynamicResource LudaryxTextPrimary}" TextWrapping="Wrap" Margin="0,6,0,6"
-                           Text="Wikidata: dados estruturados sob CC0. Wikipedia: texto normalmente sob CC BY-SA. PCGamingWiki: conteúdo sob CC BY-NC-SA, salvo indicação diferente; o LUDARYX limita essa integração a dados estruturados/factuais. As dependências de software e seus avisos estão listados em THIRD-PARTY-NOTICES.txt."/>
+                           Text="ClassInd/MJSP: conjunto oficial de dados abertos sob Creative Commons Atribuição. Wikidata: dados estruturados sob CC0. Wikipedia: texto normalmente sob CC BY-SA. PCGamingWiki: conteúdo sob CC BY-NC-SA, salvo indicação diferente; o LUDARYX limita essa integração a dados estruturados/factuais. ESRB, PEGI, USK, CERO, ACB e BBFC não são raspados diretamente pelo LUDARYX; classificações desses sistemas podem vir de fontes estruturadas permitidas, como Steam ou Wikidata. As dependências de software e seus avisos estão listados em THIRD-PARTY-NOTICES.txt."/>
                 <TextBlock Foreground="{DynamicResource LudaryxTextSecondary}" TextWrapping="Wrap" Margin="0,0,0,16"
                            Text="Para distribuição comercial futura, revise novamente as licenças e os termos das fontes de dados antes do lançamento."/>
 
