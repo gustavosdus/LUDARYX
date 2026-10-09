@@ -18,7 +18,7 @@
     <Description>Launcher unificado para jogos de PC</Description>
     <Copyright>Copyright © 2026 Gustavo José da Silva</Copyright>
 
-    <!-- Versão em desenvolvimento 1.2.0 -->
+    <!-- Versão estável 1.2.0 -->
     <Version>1.2.0</Version>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
