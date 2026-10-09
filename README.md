@@ -28,7 +28,7 @@
 
 ## Versão
 
-**LUDARYX 1.2.0 (em desenvolvimento)** — nova etapa focada em consistência visual, tema claro/escuro, janelas integradas e evolução da experiência de biblioteca/TV.
+**LUDARYX 1.2.0** — versão estável com revisão visual completa, tema claro/escuro consistente, janelas integradas, melhorias de navegação por controle/teclado, nova experiência de abertura de jogos e refinamentos de metadados/classificações indicativas.
 
 ## Requisitos para desenvolvimento
 
