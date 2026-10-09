@@ -33,7 +33,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v4.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v5.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -56,9 +56,16 @@ public sealed class ClassIndOpenDataService
         if (normalized.Length == 0)
             return null;
 
+        // 1) Correspondência exata continua sendo a regra principal.
         var match = entries.FirstOrDefault(entry =>
             NormalizeTitle(entry.TitleBrazil) == normalized ||
             NormalizeTitle(entry.TitleSeries) == normalized);
+
+        // 2) A base oficial às vezes acrescenta subtítulo/plataforma ao título
+        // (ex.: "... Ultimate All-Stars Wii" ou "... Starring Mickey Mouse").
+        // Aceita apenas uma correspondência parcial forte e inequívoca para não
+        // associar classificações entre jogos diferentes da mesma série.
+        match ??= FindStrongUniquePartialMatch(entries, normalized);
 
         if (match is null)
             return null;
@@ -314,11 +321,7 @@ public sealed class ClassIndOpenDataService
 
     private static List<List<string>> ParseCsv(string csv)
     {
-        var firstLine = csv.Split(new[] { "\r\n", "\n" }, 2, StringSplitOptions.None)[0];
-        var delimiterCandidates = new[] { ';', ',', '\t' };
-        var delimiter = delimiterCandidates
-            .OrderByDescending(candidate => CountOutsideQuotes(firstLine, candidate))
-            .First();
+        var delimiter = DetectDelimiter(csv);
 
         var rows = new List<List<string>>();
         var row = new List<string>();
@@ -374,6 +377,83 @@ public sealed class ClassIndOpenDataService
             rows.Add(row);
 
         return rows;
+    }
+
+    private static char DetectDelimiter(string csv)
+    {
+        var candidates = new[] { ';', ',', '\t' };
+        var lines = csv
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Take(12)
+            .ToList();
+
+        // Prefere o delimitador que revela os cabeçalhos oficiais. Isso é mais
+        // confiável do que olhar apenas a primeira linha, que pode ser "sep=;"
+        // ou conter metadados exportados pelo portal.
+        foreach (var candidate in candidates)
+        {
+            foreach (var line in lines)
+            {
+                var fields = SplitHeaderLine(line, candidate);
+                var normalized = fields.Select(NormalizeHeader).ToList();
+                if (normalized.Any(value =>
+                        value is "titulonobrasil" or "titulobrasil" or "titulonacional") &&
+                    normalized.Any(value =>
+                        value is "classificacaoatribuida" or
+                                 "classificacaoindicativaatribuida" or
+                                 "classificacaoindicativa" or
+                                 "classificacao" or
+                                 "faixaetaria" or
+                                 "indicacaoetaria"))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return candidates
+            .OrderByDescending(candidate =>
+                lines.Take(5).Sum(line => CountOutsideQuotes(line, candidate)))
+            .First();
+    }
+
+    private static List<string> SplitHeaderLine(string line, char delimiter)
+    {
+        var fields = new List<string>();
+        var field = new StringBuilder();
+        var quoted = false;
+
+        for (var i = 0; i < line.Length; i++)
+        {
+            var ch = line[i];
+            if (ch == '"')
+            {
+                if (quoted && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    field.Append('"');
+                    i++;
+                }
+                else
+                {
+                    quoted = !quoted;
+                }
+
+                continue;
+            }
+
+            if (!quoted && ch == delimiter)
+            {
+                fields.Add(field.ToString());
+                field.Clear();
+                continue;
+            }
+
+            field.Append(ch);
+        }
+
+        fields.Add(field.ToString());
+        return fields;
     }
 
     private static int CountOutsideQuotes(string line, char value)
