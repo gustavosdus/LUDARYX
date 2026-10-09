@@ -523,8 +523,11 @@ public sealed class MetadataService
 
         if (appId <= 0)
         {
-            if (!HasPreferredAgeRating(game.Metadata, settings.Language))
-                await EnsureWikidataAgeRatingsAsync(game, settings, token);
+            await EnsureWikidataAgeRatingsAsync(game, settings, token);
+
+            if (settings.UseIgdbMetadata)
+                await EnsureIgdbAgeRatingsAsync(game, settings, token);
+
             return;
         }
 
@@ -652,10 +655,127 @@ public sealed class MetadataService
             _steamStoreGate.Release();
         }
 
-        // Wikidata continua sendo apenas complemento estruturado quando a classificação
-        // preferida ainda não foi encontrada em uma fonte de loja válida.
-        if (!HasPreferredAgeRating(game.Metadata, settings.Language))
-            await EnsureWikidataAgeRatingsAsync(game, settings, token);
+        // Reúne também classificações complementares estruturadas. Isso permite que
+        // uma troca posterior de idioma use ESRB/PEGI/etc. já armazenados, em vez de
+        // manter apenas a classificação da região consultada primeiro.
+        await EnsureWikidataAgeRatingsAsync(game, settings, token);
+
+        if (settings.UseIgdbMetadata)
+            await EnsureIgdbAgeRatingsAsync(game, settings, token);
+    }
+
+    private async Task EnsureIgdbAgeRatingsAsync(
+        Game game,
+        LauncherSettings settings,
+        CancellationToken token)
+    {
+        var clientId = settings.IgdbClientId ?? Environment.GetEnvironmentVariable("IGDB_CLIENT_ID");
+        var clientSecret = settings.IgdbClientSecret ?? Environment.GetEnvironmentVariable("IGDB_CLIENT_SECRET");
+        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+            return;
+
+        try
+        {
+            await EnsureIgdbTokenAsync(clientId, clientSecret, token);
+            if (string.IsNullOrWhiteSpace(_igdbToken))
+                return;
+
+            var query =
+                $"search \"{EscapeApicalypse(game.Name)}\"; " +
+                "fields name,age_ratings.organization.name,age_ratings.rating_category.rating; " +
+                "limit 5;";
+
+            using var req = new HttpRequestMessage(HttpMethod.Post, "https://api.igdb.com/v4/games");
+            req.Headers.Add("Client-ID", clientId);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _igdbToken);
+            req.Content = new StringContent(query, Encoding.UTF8, "text/plain");
+
+            using var res = await _http.SendAsync(req, token);
+            if (!res.IsSuccessStatusCode)
+                return;
+
+            using var doc = JsonDocument.Parse(
+                await SafeHttpResponseService.ReadTextAsync(res, cancellationToken: token));
+            if (doc.RootElement.ValueKind != JsonValueKind.Array ||
+                doc.RootElement.GetArrayLength() == 0)
+            {
+                return;
+            }
+
+            JsonElement? exactGame = null;
+            foreach (var candidate in doc.RootElement.EnumerateArray())
+            {
+                var candidateName = candidate.TryGetProperty("name", out var nameElement)
+                    ? nameElement.GetString()
+                    : null;
+
+                if (TitlesMatch(game.Name, candidateName))
+                {
+                    exactGame = candidate;
+                    break;
+                }
+            }
+
+            if (exactGame is null)
+                return;
+
+            var selected = exactGame.Value;
+            if (!selected.TryGetProperty("age_ratings", out var ageRatings) ||
+                ageRatings.ValueKind != JsonValueKind.Array)
+            {
+                return;
+            }
+
+            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+            var changed = false;
+
+            foreach (var ageRating in ageRatings.EnumerateArray())
+            {
+                if (!ageRating.TryGetProperty("organization", out var organization) ||
+                    organization.ValueKind != JsonValueKind.Object ||
+                    !organization.TryGetProperty("name", out var organizationNameElement) ||
+                    !ageRating.TryGetProperty("rating_category", out var ratingCategory) ||
+                    ratingCategory.ValueKind != JsonValueKind.Object ||
+                    !ratingCategory.TryGetProperty("rating", out var ratingElement))
+                {
+                    continue;
+                }
+
+                var organizationName = organizationNameElement.GetString();
+                var ratingValue = ratingElement.GetString();
+                var key = AgeRatingService.NormalizeSystem(organizationName);
+
+                if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(ratingValue))
+                    continue;
+
+                if (game.Metadata.AgeRatings.TryGetValue(key, out var existing) &&
+                    !string.IsNullOrWhiteSpace(existing))
+                {
+                    continue;
+                }
+
+                game.Metadata.AgeRatings[key] = ratingValue.Trim();
+                changed = true;
+            }
+
+            if (!changed)
+                return;
+
+            game.Metadata.Source = CombineMetadataSources(game.Metadata.Source, "IGDB");
+            game.Metadata.UpdatedAtUtc = DateTime.UtcNow;
+
+            lock (_cacheSync)
+                _cache[game.ProviderId] = game.Metadata;
+            SaveCache();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // IGDB é complementar; mantém as classificações obtidas por outras fontes.
+        }
     }
 
     private async Task EnsureOfficialClassIndRatingAsync(
