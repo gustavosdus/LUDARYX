@@ -293,6 +293,13 @@ public partial class DetailsWindow : Window
             Mouse.OverrideCursor = Cursors.Wait;
             await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true);
 
+            // A atualização manual deve reconsultar a classificação regional mesmo
+            // quando uma tentativa anterior falhou e deixou cache local sem resultado.
+            await _metadata.EnsureLocalizedAgeRatingAsync(
+                _game,
+                _settings,
+                forceRefresh: true);
+
             if (DuplicateMetadataService.Synchronize(_libraryGames, _settings))
                 new JsonSettingsService().Save(_settings);
 
