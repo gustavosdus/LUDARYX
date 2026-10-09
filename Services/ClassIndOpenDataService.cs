@@ -33,7 +33,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v3.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v4.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -239,9 +239,25 @@ public sealed class ClassIndOpenDataService
         if (rows.Count < 2)
             return new();
 
-        var headers = rows[0]
-            .Select((value, index) => new HeaderEntry(index, NormalizeHeader(value)))
-            .ToList();
+        // Alguns exports CSV incluem uma linha "sep=;" antes do cabeçalho.
+        // Localiza o cabeçalho real em vez de assumir que ele sempre é rows[0].
+        var headerRowIndex = rows
+            .Take(Math.Min(10, rows.Count))
+            .Select((row, index) => new
+            {
+                Index = index,
+                Headers = row
+                    .Select((value, column) => new HeaderEntry(column, NormalizeHeader(value)))
+                    .ToList()
+            })
+            .FirstOrDefault(candidate =>
+                FindHeader(candidate.Headers, "titulonobrasil", "titulobrasil", "titulonacional") >= 0);
+
+        if (headerRowIndex is null)
+            return new();
+
+        var headers = headerRowIndex.Headers;
+        var headerColumnCount = rows[headerRowIndex.Index].Count;
 
         // Esquema oficial de "DADOS DOS JOGOS ELETRÔNICOS" do ClassInd:
         // B = Título no Brasil; C = Título da Série; M = Classificação atribuída.
@@ -249,12 +265,12 @@ public sealed class ClassIndOpenDataService
         // já alterou acentos/capitalização de cabeçalhos entre exportações.
         var titleBrazilIndex = FindHeader(headers,
             "titulonobrasil", "titulobrasil", "titulonacional");
-        if (titleBrazilIndex < 0 && rows[0].Count > 1)
+        if (titleBrazilIndex < 0 && headerColumnCount > 1)
             titleBrazilIndex = 1;
 
         var titleSeriesIndex = FindHeader(headers,
             "titulodaserie", "tituloserie", "serie");
-        if (titleSeriesIndex < 0 && rows[0].Count > 2)
+        if (titleSeriesIndex < 0 && headerColumnCount > 2)
             titleSeriesIndex = 2;
 
         var ratingIndex = FindHeader(headers,
@@ -264,7 +280,7 @@ public sealed class ClassIndOpenDataService
             "classificacao",
             "faixaetaria",
             "indicacaoetaria");
-        if (ratingIndex < 0 && rows[0].Count > 12)
+        if (ratingIndex < 0 && headerColumnCount > 12)
             ratingIndex = 12;
 
         if (titleBrazilIndex < 0 && titleSeriesIndex < 0)
@@ -272,9 +288,9 @@ public sealed class ClassIndOpenDataService
         if (ratingIndex < 0)
             return new();
 
-        var entries = new List<ClassIndEntry>(rows.Count - 1);
+        var entries = new List<ClassIndEntry>(Math.Max(0, rows.Count - headerRowIndex.Index - 1));
 
-        foreach (var row in rows.Skip(1))
+        foreach (var row in rows.Skip(headerRowIndex.Index + 1))
         {
             var titleBrazil = GetCell(row, titleBrazilIndex);
             var titleSeries = GetCell(row, titleSeriesIndex);
