@@ -204,7 +204,14 @@ public sealed class MetadataService
         if (cacheIsFresh && steamCacheIsAuthoritative && !cacheIsOnlyLocal &&
             !missingAutomaticArtwork && !missingUsefulMetadata &&
             !shouldRetryCrossPlatform && !forceArtworkRefresh)
+        {
+            // Metadados textuais frescos não significam que a classificação regional
+            // preferida já exista. Em pt-BR, por exemplo, ClassInd pode ser preenchida
+            // depois a partir da base oficial do MJSP.
+            if (!HasPreferredAgeRating(game.Metadata, settings.Language))
+                await EnsureLocalizedAgeRatingAsync(game, settings, token);
             return;
+        }
 
         GameMetadata? metadata = null;
         var authoritativeSteamMetadataLoaded = false;
