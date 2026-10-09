@@ -33,7 +33,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v2.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -58,7 +58,7 @@ public sealed class ClassIndOpenDataService
 
         var match = entries.FirstOrDefault(entry =>
             NormalizeTitle(entry.TitleBrazil) == normalized ||
-            NormalizeTitle(entry.TitleOriginal) == normalized);
+            NormalizeTitle(entry.TitleSeries) == normalized);
 
         if (match is null)
             return null;
@@ -218,14 +218,31 @@ public sealed class ClassIndOpenDataService
             .Select((value, index) => new HeaderEntry(index, NormalizeHeader(value)))
             .ToList();
 
+        // Esquema oficial de "DADOS DOS JOGOS ELETRÔNICOS" do ClassInd:
+        // B = Título no Brasil; C = Título da Série; M = Classificação atribuída.
+        // Usa os nomes primeiro e as posições oficiais como fallback, porque o portal
+        // já alterou acentos/capitalização de cabeçalhos entre exportações.
         var titleBrazilIndex = FindHeader(headers,
             "titulonobrasil", "titulobrasil", "titulonacional");
-        var titleOriginalIndex = FindHeader(headers,
-            "titulooriginal", "titulooriginal");
-        var ratingIndex = FindHeader(headers,
-            "classificacaoindicativa", "classificacao", "faixaetaria", "indicacaoetaria");
+        if (titleBrazilIndex < 0 && rows[0].Count > 1)
+            titleBrazilIndex = 1;
 
-        if (titleBrazilIndex < 0 && titleOriginalIndex < 0)
+        var titleSeriesIndex = FindHeader(headers,
+            "titulodaserie", "tituloserie", "serie");
+        if (titleSeriesIndex < 0 && rows[0].Count > 2)
+            titleSeriesIndex = 2;
+
+        var ratingIndex = FindHeader(headers,
+            "classificacaoatribuida",
+            "classificacaoindicativaatribuida",
+            "classificacaoindicativa",
+            "classificacao",
+            "faixaetaria",
+            "indicacaoetaria");
+        if (ratingIndex < 0 && rows[0].Count > 12)
+            ratingIndex = 12;
+
+        if (titleBrazilIndex < 0 && titleSeriesIndex < 0)
             return new();
         if (ratingIndex < 0)
             return new();
@@ -235,11 +252,11 @@ public sealed class ClassIndOpenDataService
         foreach (var row in rows.Skip(1))
         {
             var titleBrazil = GetCell(row, titleBrazilIndex);
-            var titleOriginal = GetCell(row, titleOriginalIndex);
+            var titleSeries = GetCell(row, titleSeriesIndex);
             var rating = GetCell(row, ratingIndex);
 
             if ((string.IsNullOrWhiteSpace(titleBrazil) &&
-                 string.IsNullOrWhiteSpace(titleOriginal)) ||
+                 string.IsNullOrWhiteSpace(titleSeries)) ||
                 string.IsNullOrWhiteSpace(rating))
             {
                 continue;
@@ -247,7 +264,7 @@ public sealed class ClassIndOpenDataService
 
             entries.Add(new ClassIndEntry(
                 titleBrazil?.Trim() ?? string.Empty,
-                titleOriginal?.Trim() ?? string.Empty,
+                titleSeries?.Trim() ?? string.Empty,
                 rating.Trim()));
         }
 
@@ -454,7 +471,7 @@ public sealed class ClassIndOpenDataService
 
     private sealed record ClassIndEntry(
         string TitleBrazil,
-        string TitleOriginal,
+        string TitleSeries,
         string Rating);
 
     private sealed record ClassIndCache(
