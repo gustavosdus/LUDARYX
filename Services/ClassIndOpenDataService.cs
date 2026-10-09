@@ -53,12 +53,13 @@ public sealed class ClassIndOpenDataService
 
     public async Task<string?> GetRatingAsync(
         string? gameName,
-        CancellationToken token = default)
+        CancellationToken token = default,
+        bool forceRefresh = false)
     {
         if (string.IsNullOrWhiteSpace(gameName))
             return null;
 
-        var entries = await GetEntriesAsync(token);
+        var entries = await GetEntriesAsync(token, forceRefresh);
         if (entries.Count == 0)
             return null;
 
@@ -163,9 +164,12 @@ public sealed class ClassIndOpenDataService
                longer.StartsWith(shorter, StringComparison.Ordinal);
     }
 
-    private async Task<IReadOnlyList<ClassIndEntry>> GetEntriesAsync(CancellationToken token)
+    private async Task<IReadOnlyList<ClassIndEntry>> GetEntriesAsync(
+        CancellationToken token,
+        bool forceRefresh)
     {
-        if (_entries is { Count: > 0 } &&
+        if (!forceRefresh &&
+            _entries is { Count: > 0 } &&
             DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
         {
             return _entries;
@@ -174,13 +178,15 @@ public sealed class ClassIndOpenDataService
         await _gate.WaitAsync(token);
         try
         {
-            if (_entries is { Count: > 0 } &&
+            if (!forceRefresh &&
+                _entries is { Count: > 0 } &&
                 DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
             {
                 return _entries;
             }
 
-            if (TryLoadDiskCache(out var diskEntries, out var cachedAtUtc) &&
+            if (!forceRefresh &&
+                TryLoadDiskCache(out var diskEntries, out var cachedAtUtc) &&
                 DateTime.UtcNow - cachedAtUtc < CacheLifetime)
             {
                 _entries = diskEntries;
