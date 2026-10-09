@@ -1115,6 +1115,23 @@ public sealed class MetadataService
         _ => Array.Empty<string>()
     };
 
+    private static IReadOnlyList<(string Language, string Country, string LudaryxLanguage)> GetSteamAgeRatingLocales(
+        string language)
+    {
+        var selected = GetSteamLocale(language);
+        var locales = new List<(string Language, string Country, string LudaryxLanguage)>
+        {
+            (selected.Language, selected.Country, language),
+            ("brazilian", "BR", "pt-BR"),
+            ("english", "US", "en-US"),
+            ("english", "GB", "en-GB")
+        };
+
+        return locales
+            .DistinctBy(locale => (locale.Language.ToLowerInvariant(), locale.Country.ToUpperInvariant()))
+            .ToList();
+    }
+
     private static (string Language, string Country) GetSteamLocale(string language) => language switch
     {
         "pt-BR" => ("brazilian", "BR"),
