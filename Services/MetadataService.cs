@@ -91,7 +91,6 @@ public sealed class MetadataService
         };
     private readonly SteamGridDbService _steamGridDb = new();
     private readonly PcGamingWikiService _pcGamingWiki = new();
-    private readonly ClassIndOpenDataService _classInd = new();
     private readonly SemaphoreSlim _steamAppListGate = new(1, 1);
     private readonly SemaphoreSlim _steamStoreGate = new(2, 2);
     private Dictionary<string, List<int>>? _steamAppIdsByNormalizedName;
@@ -206,8 +205,8 @@ public sealed class MetadataService
             !shouldRetryCrossPlatform && !forceArtworkRefresh)
         {
             // Metadados textuais frescos não significam que a classificação regional
-            // preferida já exista. Em pt-BR, por exemplo, ClassInd pode ser preenchida
-            // depois a partir da base oficial do MJSP.
+            // preferida já exista. Tenta completar pelas fontes de metadados já
+            // suportadas, sem depender de um portal governamental específico.
             if (!HasPreferredAgeRating(game.Metadata, settings.Language))
                 await EnsureLocalizedAgeRatingAsync(game, settings, token);
             return;
@@ -505,17 +504,8 @@ public sealed class MetadataService
     public async Task EnsureLocalizedAgeRatingAsync(
         Game game,
         LauncherSettings settings,
-        CancellationToken token = default,
-        bool forceRefresh = false)
+        CancellationToken token = default)
     {
-        // ClassInd brasileira vem exclusivamente da base oficial aberta do MJSP.
-        // Não usamos scraping do portal público nem convertemos notas de outros órgãos.
-        if (AgeRatingService.GetPreferredSystemKey(settings.Language)
-                .Equals("dejus", StringComparison.OrdinalIgnoreCase))
-        {
-            await EnsureOfficialClassIndRatingAsync(game, token, forceRefresh);
-        }
-
         var appId = 0;
         if (game.Platform == GamePlatform.Steam)
             int.TryParse(game.Id, out appId);
@@ -776,49 +766,6 @@ public sealed class MetadataService
         catch
         {
             // IGDB é complementar; mantém as classificações obtidas por outras fontes.
-        }
-    }
-
-    private async Task EnsureOfficialClassIndRatingAsync(
-        Game game,
-        CancellationToken token,
-        bool forceRefresh)
-    {
-        game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
-
-        if (!forceRefresh &&
-            game.Metadata.AgeRatings.Any(pair =>
-                AgeRatingService.NormalizeSystem(pair.Key)
-                    .Equals("dejus", StringComparison.OrdinalIgnoreCase) &&
-                !string.IsNullOrWhiteSpace(pair.Value)))
-        {
-            return;
-        }
-
-        try
-        {
-            var rating = await _classInd.GetRatingAsync(game.Name, token, forceRefresh);
-            if (string.IsNullOrWhiteSpace(rating))
-                return;
-
-            game.Metadata.AgeRatings["dejus"] = rating;
-            game.Metadata.Source = CombineMetadataSources(
-                game.Metadata.Source,
-                "ClassInd/MJSP (dados abertos)");
-            game.Metadata.UpdatedAtUtc = DateTime.UtcNow;
-
-            lock (_cacheSync)
-                _cache[game.ProviderId] = game.Metadata;
-            SaveCache();
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch
-        {
-            // A classificação brasileira é complementar. Mantém os dados existentes
-            // se o catálogo oficial estiver temporariamente indisponível.
         }
     }
 
