@@ -215,7 +215,7 @@ public sealed class ClassIndOpenDataService
             return new();
 
         var headers = rows[0]
-            .Select((value, index) => new { Index = index, Name = NormalizeHeader(value) })
+            .Select((value, index) => new HeaderEntry(index, NormalizeHeader(value)))
             .ToList();
 
         var titleBrazilIndex = FindHeader(headers,
@@ -334,15 +334,15 @@ public sealed class ClassIndOpenDataService
     }
 
     private static int FindHeader(
-        IEnumerable<dynamic> headers,
+        IEnumerable<HeaderEntry> headers,
         params string[] candidates)
     {
         foreach (var candidate in candidates)
         {
             foreach (var header in headers)
             {
-                if (string.Equals((string)header.Name, candidate, StringComparison.Ordinal))
-                    return (int)header.Index;
+                if (string.Equals(header.Name, candidate, StringComparison.Ordinal))
+                    return header.Index;
             }
         }
 
@@ -449,6 +449,8 @@ public sealed class ClassIndOpenDataService
             // Cache local não é obrigatório para o funcionamento.
         }
     }
+
+    private sealed record HeaderEntry(int Index, string Name);
 
     private sealed record ClassIndEntry(
         string TitleBrazil,
