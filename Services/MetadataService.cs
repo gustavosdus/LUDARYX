@@ -528,88 +528,96 @@ public sealed class MetadataService
             return;
         }
 
-        var (steamLanguage, countryCode) = GetSteamLocale(settings.Language);
         var changed = false;
+        var locales = GetSteamAgeRatingLocales(settings.Language);
 
         await _steamStoreGate.WaitAsync(token);
         try
         {
-            // 1) A API estruturada é preferida quando realmente traz o bloco ratings.
-            try
+            // Classificações da Steam podem variar conforme o país consultado.
+            // Consulta um conjunto pequeno e estável de regiões para reunir ESRB,
+            // PEGI e ClassInd quando a própria Steam realmente os publica.
+            foreach (var (steamLanguage, countryCode, ludaryxLanguage) in locales)
             {
-                var apiUrl = $"https://store.steampowered.com/api/appdetails?appids={appId}" +
-                             $"&l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
-                using var apiResponse = await _http.GetAsync(apiUrl, token);
-                if (apiResponse.IsSuccessStatusCode)
+                token.ThrowIfCancellationRequested();
+
+                try
                 {
-                    using var doc = JsonDocument.Parse(
-                        await SafeHttpResponseService.ReadTextAsync(apiResponse, cancellationToken: token));
-
-                    var appIdText = appId.ToString(CultureInfo.InvariantCulture);
-                    if (doc.RootElement.TryGetProperty(appIdText, out var entry) &&
-                        entry.TryGetProperty("success", out var success) &&
-                        success.GetBoolean() &&
-                        entry.TryGetProperty("data", out var data))
+                    var apiUrl = $"https://store.steampowered.com/api/appdetails?appids={appId}" +
+                                 $"&l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
+                    using var apiResponse = await _http.GetAsync(apiUrl, token);
+                    if (apiResponse.IsSuccessStatusCode)
                     {
-                        if (data.TryGetProperty("ratings", out var ratings) &&
-                            ratings.ValueKind == JsonValueKind.Object)
+                        using var doc = JsonDocument.Parse(
+                            await SafeHttpResponseService.ReadTextAsync(apiResponse, cancellationToken: token));
+
+                        var appIdText = appId.ToString(CultureInfo.InvariantCulture);
+                        if (doc.RootElement.TryGetProperty(appIdText, out var entry) &&
+                            entry.TryGetProperty("success", out var success) &&
+                            success.GetBoolean() &&
+                            entry.TryGetProperty("data", out var data))
                         {
-                            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
-                            foreach (var ratingProperty in ratings.EnumerateObject())
+                            if (data.TryGetProperty("ratings", out var ratings) &&
+                                ratings.ValueKind == JsonValueKind.Object)
                             {
-                                var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
-                                if (string.IsNullOrWhiteSpace(ratingValue))
-                                    continue;
+                                game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+                                foreach (var ratingProperty in ratings.EnumerateObject())
+                                {
+                                    var ratingValue = ReadSteamAgeRatingValue(ratingProperty.Value);
+                                    if (string.IsNullOrWhiteSpace(ratingValue))
+                                        continue;
 
-                                var key = AgeRatingService.NormalizeSystem(ratingProperty.Name);
-                                if (string.IsNullOrWhiteSpace(key))
-                                    key = ratingProperty.Name;
+                                    var key = AgeRatingService.NormalizeSystem(ratingProperty.Name);
+                                    if (string.IsNullOrWhiteSpace(key))
+                                        key = ratingProperty.Name;
 
-                                game.Metadata.AgeRatings[key] = ratingValue;
-                                changed = true;
+                                    if (!game.Metadata.AgeRatings.TryGetValue(key, out var existing) ||
+                                        string.IsNullOrWhiteSpace(existing))
+                                    {
+                                        game.Metadata.AgeRatings[key] = ratingValue;
+                                        changed = true;
+                                    }
+                                }
                             }
-                        }
 
-                        if (!game.Metadata.ReleaseYear.HasValue &&
-                            data.TryGetProperty("release_date", out var releaseDate) &&
-                            releaseDate.TryGetProperty("date", out var date))
-                        {
-                            var year = TryExtractYear(date.GetString());
-                            if (year.HasValue)
+                            if (!game.Metadata.ReleaseYear.HasValue &&
+                                data.TryGetProperty("release_date", out var releaseDate) &&
+                                releaseDate.TryGetProperty("date", out var date))
                             {
-                                game.Metadata.ReleaseYear = year.Value;
-                                changed = true;
+                                var year = TryExtractYear(date.GetString());
+                                if (year.HasValue)
+                                {
+                                    game.Metadata.ReleaseYear = year.Value;
+                                    changed = true;
+                                }
                             }
                         }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch
-            {
-                // Continua para a página da própria Steam.
-            }
-
-            // 2) A página da Steam costuma exibir classificações regionais que a API
-            // appdetails omite (por exemplo ClassInd no Brasil). Este fallback só lê
-            // a classificação publicada pela própria loja; não converte uma nota em outra.
-            try
-            {
-                var pageUrl = $"https://store.steampowered.com/app/{appId}/" +
-                              $"?l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
-                using var pageResponse = await _http.GetAsync(pageUrl, token);
-                if (pageResponse.IsSuccessStatusCode)
+                catch (OperationCanceledException)
                 {
+                    throw;
+                }
+                catch
+                {
+                    // Continua para a página regional da própria Steam.
+                }
+
+                try
+                {
+                    var pageUrl = $"https://store.steampowered.com/app/{appId}/" +
+                                  $"?l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
+                    using var pageResponse = await _http.GetAsync(pageUrl, token);
+                    if (!pageResponse.IsSuccessStatusCode)
+                        continue;
+
                     var html = await SafeHttpResponseService.ReadTextAsync(
                         pageResponse, maxBytes: 4 * 1024 * 1024, cancellationToken: token);
 
                     game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
                     changed |= ExtractSteamAgeRatingsFromHtml(
                         html,
-                        settings.Language,
+                        ludaryxLanguage,
                         game.Metadata.AgeRatings);
 
                     if (!game.Metadata.ReleaseYear.HasValue)
@@ -622,14 +630,14 @@ public sealed class MetadataService
                         }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch
-            {
-                // Mantém os valores já existentes no cache.
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    // Uma região indisponível não impede as demais.
+                }
             }
 
             if (changed)
@@ -644,6 +652,8 @@ public sealed class MetadataService
             _steamStoreGate.Release();
         }
 
+        // Wikidata continua sendo apenas complemento estruturado quando a classificação
+        // preferida ainda não foi encontrada em uma fonte de loja válida.
         if (!HasPreferredAgeRating(game.Metadata, settings.Language))
             await EnsureWikidataAgeRatingsAsync(game, settings, token);
     }
