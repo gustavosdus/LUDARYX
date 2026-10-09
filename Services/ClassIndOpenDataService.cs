@@ -43,7 +43,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v7.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v8.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -165,14 +165,20 @@ public sealed class ClassIndOpenDataService
 
     private async Task<IReadOnlyList<ClassIndEntry>> GetEntriesAsync(CancellationToken token)
     {
-        if (_entries is not null && DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
+        if (_entries is { Count: > 0 } &&
+            DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
+        {
             return _entries;
+        }
 
         await _gate.WaitAsync(token);
         try
         {
-            if (_entries is not null && DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
+            if (_entries is { Count: > 0 } &&
+                DateTime.UtcNow - _loadedAtUtc < CacheLifetime)
+            {
                 return _entries;
+            }
 
             if (TryLoadDiskCache(out var diskEntries, out var cachedAtUtc) &&
                 DateTime.UtcNow - cachedAtUtc < CacheLifetime)
@@ -230,9 +236,11 @@ public sealed class ClassIndOpenDataService
                 return _entries;
             }
 
-            _entries = new();
-            _loadedAtUtc = DateTime.UtcNow;
-            return _entries;
+            // Falha total: não transforma "zero registros" em cache válido.
+            // A próxima atualização manual deve tentar a rede novamente.
+            _entries = null;
+            _loadedAtUtc = DateTime.MinValue;
+            return Array.Empty<ClassIndEntry>();
         }
         finally
         {
@@ -357,7 +365,7 @@ public sealed class ClassIndOpenDataService
         // Alguns exports CSV incluem uma linha "sep=;" antes do cabeçalho.
         // Localiza o cabeçalho real em vez de assumir que ele sempre é rows[0].
         var headerRowIndex = rows
-            .Take(Math.Min(10, rows.Count))
+            .Take(Math.Min(100, rows.Count))
             .Select((row, index) => new
             {
                 Index = index,
@@ -366,7 +374,12 @@ public sealed class ClassIndOpenDataService
                     .ToList()
             })
             .FirstOrDefault(candidate =>
-                FindHeader(candidate.Headers, "titulonobrasil", "titulobrasil", "titulonacional") >= 0);
+                FindHeader(candidate.Headers,
+                    "titulonobrasil",
+                    "titulobrasil",
+                    "titulonacional",
+                    "nomedojogo",
+                    "titulojogo") >= 0);
 
         if (headerRowIndex is null)
             return new();
@@ -379,7 +392,11 @@ public sealed class ClassIndOpenDataService
         // Usa os nomes primeiro e as posições oficiais como fallback, porque o portal
         // já alterou acentos/capitalização de cabeçalhos entre exportações.
         var titleBrazilIndex = FindHeader(headers,
-            "titulonobrasil", "titulobrasil", "titulonacional");
+            "titulonobrasil",
+            "titulobrasil",
+            "titulonacional",
+            "nomedojogo",
+            "titulojogo");
         if (titleBrazilIndex < 0 && headerColumnCount > 1)
             titleBrazilIndex = 1;
 
