@@ -71,12 +71,27 @@ public static class AgeRatingService
         if (string.IsNullOrWhiteSpace(value)) return string.Empty;
         var normalized = new string(value.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
 
-        if (normalized is "dejus" or "djctq" or "classind" or "brazil")
+        if (normalized is "dejus" or "djctq" or "classind" or "brazil" ||
+            normalized.Contains("classificacaoindicativa", StringComparison.Ordinal))
             return "dejus";
-        if (normalized.Contains("pegi"))
+        if (normalized.Contains("pegi", StringComparison.Ordinal) ||
+            normalized.Contains("paneuropeangameinformation", StringComparison.Ordinal))
             return "pegi";
-        if (normalized.Contains("esrb"))
+        if (normalized.Contains("esrb", StringComparison.Ordinal) ||
+            normalized.Contains("entertainmentsoftwareratingboard", StringComparison.Ordinal))
             return "esrb";
+        if (normalized.Contains("unterhaltungssoftwareselbstkontrolle", StringComparison.Ordinal) ||
+            normalized == "usk")
+            return "usk";
+        if (normalized.Contains("computementertainmentratingorganization", StringComparison.Ordinal) ||
+            normalized == "cero")
+            return "cero";
+        if (normalized.Contains("australianclassification", StringComparison.Ordinal) ||
+            normalized == "acb")
+            return "acb";
+        if (normalized.Contains("britishboardoffilmclassification", StringComparison.Ordinal) ||
+            normalized == "bbfc")
+            return "bbfc";
 
         return normalized;
     }
