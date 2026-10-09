@@ -79,9 +79,16 @@ public sealed class ClassIndOpenDataService
         match ??= FindStrongUniquePartialMatch(entries, normalized);
 
         if (match is null)
+        {
+            DiagnosticLogService.LogInfo(
+                $"ClassInd lookup: no title match among {entries.Count} parsed records.");
             return null;
+        }
 
-        return NormalizeRating(match.Rating);
+        var normalizedRating = NormalizeRating(match.Rating);
+        DiagnosticLogService.LogInfo(
+            $"ClassInd lookup: match found; rating={(string.IsNullOrWhiteSpace(normalizedRating) ? "empty" : "present")}.");
+        return normalizedRating;
     }
 
     private static ClassIndEntry? FindStrongUniquePartialMatch(
@@ -257,6 +264,8 @@ public sealed class ClassIndOpenDataService
     private async Task<string?> ResolveCurrentCsvUrlAsync(CancellationToken token)
     {
         using var response = await _http.GetAsync(PackageApi, token);
+        DiagnosticLogService.LogInfo(
+            $"ClassInd CKAN: HTTP {(int)response.StatusCode} {response.StatusCode}.");
         if (!response.IsSuccessStatusCode)
             return null;
 
@@ -297,6 +306,7 @@ public sealed class ClassIndOpenDataService
             if (normalizedName.Contains("listajogosdadosabertos", StringComparison.Ordinal) ||
                 normalizedName.Contains("jogoseletronicos", StringComparison.Ordinal))
             {
+                DiagnosticLogService.LogInfo("ClassInd CKAN: CSV resource discovered.");
                 return url;
             }
         }
@@ -309,15 +319,20 @@ public sealed class ClassIndOpenDataService
         CancellationToken token)
     {
         using var response = await _http.GetAsync(url, token);
+        DiagnosticLogService.LogInfo(
+            $"ClassInd CSV: HTTP {(int)response.StatusCode} {response.StatusCode}.");
         if (!response.IsSuccessStatusCode)
             return new();
 
         var bytes = await response.Content.ReadAsByteArrayAsync(token);
+        DiagnosticLogService.LogInfo($"ClassInd CSV: received {bytes.Length} bytes.");
         if (bytes.Length == 0)
             return new();
 
         var text = DecodeCsv(bytes);
-        return ParseEntries(text);
+        var entries = ParseEntries(text);
+        DiagnosticLogService.LogInfo($"ClassInd CSV: parsed {entries.Count} records.");
+        return entries;
     }
 
     private static string DecodeCsv(byte[] bytes)
@@ -388,7 +403,13 @@ public sealed class ClassIndOpenDataService
                     "titulojogo") >= 0);
 
         if (headerRowIndex is null)
+        {
+            DiagnosticLogService.LogInfo("ClassInd CSV: header row not found.");
             return new();
+        }
+
+        DiagnosticLogService.LogInfo(
+            $"ClassInd CSV: header row detected at index {headerRowIndex.Index}.");
 
         var headers = headerRowIndex.Headers;
         var headerColumnCount = rows[headerRowIndex.Index].Count;
