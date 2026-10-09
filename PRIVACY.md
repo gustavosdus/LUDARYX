@@ -1,6 +1,6 @@
-# Privacy Notice — LUDARYX 1.1.0
+# Privacy Notice — LUDARYX 1.2.0
 
-This notice describes the current LUDARYX 1.1.0 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
+This notice describes the current LUDARYX 1.2.0 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
 
 ## Local data
 
@@ -18,6 +18,8 @@ LUDARYX may contact third-party services for documented application features:
 
 - Steam, GOG, PCGamingWiki, Wikidata/Wikipedia and other documented sources for game metadata;
 - Steam may also provide regional age-rating metadata when available;
+- the MJSP open-data portal (`dados.mj.gov.br`) may be contacted to obtain the official Brazilian ClassInd game dataset; the downloaded dataset is cached locally;
+- Wikidata may provide structured age-rating facts for non-Brazilian rating systems; LUDARYX does not intentionally scrape the public ESRB, PEGI, USK, CERO, ACB or BBFC sites;
 - SteamGridDB and other documented artwork sources when artwork features are used;
 - GitHub Releases to check for LUDARYX updates and, after user confirmation, download release assets.
 
@@ -35,7 +37,7 @@ When an update is downloaded, LUDARYX validates the installer against the releas
 
 ## No first-party telemetry
 
-LUDARYX 1.1.0 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
+LUDARYX 1.2.0 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
 
 ## Diagnostics
 
