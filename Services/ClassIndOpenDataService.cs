@@ -43,7 +43,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v6.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v7.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -182,19 +182,10 @@ public sealed class ClassIndOpenDataService
                 return _entries;
             }
 
+            string? resourceUrl = null;
             try
             {
-                var resourceUrl = await ResolveCurrentCsvUrlAsync(token)
-                    ?? CurrentCsvFallback;
-
-                var fresh = await DownloadEntriesAsync(resourceUrl, token);
-                if (fresh.Count > 0)
-                {
-                    _entries = fresh;
-                    _loadedAtUtc = DateTime.UtcNow;
-                    SaveDiskCache(_entries, _loadedAtUtc);
-                    return _entries;
-                }
+                resourceUrl = await ResolveCurrentCsvUrlAsync(token);
             }
             catch (OperationCanceledException)
             {
@@ -202,7 +193,34 @@ public sealed class ClassIndOpenDataService
             }
             catch
             {
-                // Usa cache antigo abaixo se o portal estiver temporariamente indisponível.
+                // A API CKAN pode estar indisponível mesmo quando o arquivo CSV
+                // continua acessível. Nesse caso, ainda tentamos o recurso oficial
+                // conhecido em vez de abortar toda a atualização.
+            }
+
+            foreach (var candidateUrl in new[] { resourceUrl, CurrentCsvFallback }
+                         .Where(url => !string.IsNullOrWhiteSpace(url))
+                         .Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    var fresh = await DownloadEntriesAsync(candidateUrl!, token);
+                    if (fresh.Count == 0)
+                        continue;
+
+                    _entries = fresh;
+                    _loadedAtUtc = DateTime.UtcNow;
+                    SaveDiskCache(_entries, _loadedAtUtc);
+                    return _entries;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    // Tenta o próximo endereço oficial disponível.
+                }
             }
 
             if (TryLoadDiskCache(out diskEntries, out cachedAtUtc))
