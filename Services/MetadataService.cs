@@ -916,17 +916,41 @@ public sealed class MetadataService
             changed = true;
         }
 
-        // ESRB: captura os nomes públicos comuns sem tentar traduzi-los/converter.
+        // ESRB: primeiro tenta o texto visível. Em várias páginas da Steam a
+        // classificação existe apenas como imagem/alt e desaparece quando removemos
+        // as tags HTML, então também reconhecemos os códigos usados nos assets.
         var esrb = Regex.Match(
             plain,
             @"(?<value>Adults\s+Only(?:\s*18\+)?|Mature(?:\s*17\+)?|Teen|Everyone\s*10\+|Everyone|Rating\s+Pending)\s*(?:\([^)]*\))?",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         if (esrb.Success &&
             (plain.Contains("ESRB", StringComparison.OrdinalIgnoreCase) ||
+             html.Contains("ESRB", StringComparison.OrdinalIgnoreCase) ||
              language.Equals("en-US", StringComparison.OrdinalIgnoreCase)))
         {
             ratings["esrb"] = esrb.Groups["value"].Value.Trim();
             changed = true;
+        }
+        else
+        {
+            var esrbAsset = Regex.Match(
+                html,
+                @"esrb(?:[_/\-])(?<code>e10\+?|e10|e|t|m|ao|rp)(?=[^a-z0-9]|$)",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+            if (esrbAsset.Success)
+            {
+                ratings["esrb"] = esrbAsset.Groups["code"].Value.ToUpperInvariant() switch
+                {
+                    "E10" or "E10+" => "E10+",
+                    "E" => "E",
+                    "T" => "T",
+                    "M" => "M",
+                    "AO" => "AO",
+                    "RP" => "RP",
+                    _ => esrbAsset.Groups["code"].Value.ToUpperInvariant()
+                };
+                changed = true;
+            }
         }
 
         return changed;
