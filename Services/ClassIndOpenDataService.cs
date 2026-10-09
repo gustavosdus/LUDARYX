@@ -13,6 +13,12 @@ namespace UnifiedGameLauncher.Services;
 /// </summary>
 public sealed class ClassIndOpenDataService
 {
+    private const string ResourceId =
+        "a59c1601-12d3-4e6d-a1d0-b036632fe00e";
+
+    private const string ResourceApi =
+        "https://dados.mj.gov.br/api/3/action/resource_show?id=" + ResourceId;
+
     private const string PackageApi =
         "https://dados.mj.gov.br/api/3/action/package_show?id=5138a6ca-8009-4ffb-b95a-052f76d62a33";
 
@@ -283,52 +289,118 @@ public sealed class ClassIndOpenDataService
 
     private async Task<string?> ResolveCurrentCsvUrlAsync(CancellationToken token)
     {
-        using var response = await _http.GetAsync(PackageApi, token);
-        DiagnosticLogService.LogInfo(
-            $"ClassInd CKAN: HTTP {(int)response.StatusCode} {response.StatusCode}.");
-        if (!response.IsSuccessStatusCode)
-            return null;
-
-        using var doc = JsonDocument.Parse(
-            await SafeHttpResponseService.ReadTextAsync(
-                response,
-                maxBytes: 2 * 1024 * 1024,
-                cancellationToken: token));
-
-        if (!doc.RootElement.TryGetProperty("success", out var success) ||
-            !success.GetBoolean() ||
-            !doc.RootElement.TryGetProperty("result", out var result) ||
-            !result.TryGetProperty("resources", out var resources) ||
-            resources.ValueKind != JsonValueKind.Array)
+        // O recurso de Jogos Eletrônicos possui UUID estável no CKAN. Consultá-lo
+        // diretamente evita depender da enumeração completa do dataset e reduz a
+        // chance de falha quando outros recursos do conjunto mudam.
+        try
         {
-            return null;
+            using var resourceResponse = await _http.GetAsync(ResourceApi, token);
+            DiagnosticLogService.LogInfo(
+                $"ClassInd resource_show: HTTP {(int)resourceResponse.StatusCode} {resourceResponse.StatusCode}.");
+
+            if (resourceResponse.IsSuccessStatusCode)
+            {
+                using var resourceDoc = JsonDocument.Parse(
+                    await SafeHttpResponseService.ReadTextAsync(
+                        resourceResponse,
+                        maxBytes: 1024 * 1024,
+                        cancellationToken: token));
+
+                if (resourceDoc.RootElement.TryGetProperty("success", out var resourceSuccess) &&
+                    resourceSuccess.GetBoolean() &&
+                    resourceDoc.RootElement.TryGetProperty("result", out var resourceResult))
+                {
+                    var format = resourceResult.TryGetProperty("format", out var formatElement)
+                        ? formatElement.GetString()
+                        : null;
+                    var url = resourceResult.TryGetProperty("url", out var urlElement)
+                        ? urlElement.GetString()
+                        : null;
+
+                    if (!string.IsNullOrWhiteSpace(url) &&
+                        (string.IsNullOrWhiteSpace(format) ||
+                         string.Equals(format, "CSV", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        DiagnosticLogService.LogInfo(
+                            "ClassInd resource_show: current CSV URL discovered.");
+                        return url;
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("ClassInd resource_show", ex);
         }
 
-        foreach (var resource in resources.EnumerateArray())
+        // Compatibilidade: se resource_show estiver temporariamente indisponível,
+        // ainda tenta localizar o mesmo recurso na descrição completa do dataset.
+        try
         {
-            var name = resource.TryGetProperty("name", out var nameElement)
-                ? nameElement.GetString()
-                : null;
-            var format = resource.TryGetProperty("format", out var formatElement)
-                ? formatElement.GetString()
-                : null;
-            var url = resource.TryGetProperty("url", out var urlElement)
-                ? urlElement.GetString()
-                : null;
+            using var response = await _http.GetAsync(PackageApi, token);
+            DiagnosticLogService.LogInfo(
+                $"ClassInd package_show: HTTP {(int)response.StatusCode} {response.StatusCode}.");
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-            if (string.IsNullOrWhiteSpace(url) ||
-                !string.Equals(format, "CSV", StringComparison.OrdinalIgnoreCase))
+            using var doc = JsonDocument.Parse(
+                await SafeHttpResponseService.ReadTextAsync(
+                    response,
+                    maxBytes: 2 * 1024 * 1024,
+                    cancellationToken: token));
+
+            if (!doc.RootElement.TryGetProperty("success", out var success) ||
+                !success.GetBoolean() ||
+                !doc.RootElement.TryGetProperty("result", out var result) ||
+                !result.TryGetProperty("resources", out var resources) ||
+                resources.ValueKind != JsonValueKind.Array)
             {
-                continue;
+                return null;
             }
 
-            var normalizedName = NormalizeHeader(name);
-            if (normalizedName.Contains("listajogosdadosabertos", StringComparison.Ordinal) ||
-                normalizedName.Contains("jogoseletronicos", StringComparison.Ordinal))
+            foreach (var resource in resources.EnumerateArray())
             {
-                DiagnosticLogService.LogInfo("ClassInd CKAN: CSV resource discovered.");
-                return url;
+                var id = resource.TryGetProperty("id", out var idElement)
+                    ? idElement.GetString()
+                    : null;
+                var name = resource.TryGetProperty("name", out var nameElement)
+                    ? nameElement.GetString()
+                    : null;
+                var format = resource.TryGetProperty("format", out var formatElement)
+                    ? formatElement.GetString()
+                    : null;
+                var url = resource.TryGetProperty("url", out var urlElement)
+                    ? urlElement.GetString()
+                    : null;
+
+                if (string.IsNullOrWhiteSpace(url) ||
+                    !string.Equals(format, "CSV", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var normalizedName = NormalizeHeader(name);
+                if (string.Equals(id, ResourceId, StringComparison.OrdinalIgnoreCase) ||
+                    normalizedName.Contains("listajogosdadosabertos", StringComparison.Ordinal) ||
+                    normalizedName.Contains("jogoseletronicos", StringComparison.Ordinal))
+                {
+                    DiagnosticLogService.LogInfo(
+                        "ClassInd package_show: CSV resource discovered.");
+                    return url;
+                }
             }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("ClassInd package_show", ex);
         }
 
         return null;
@@ -584,7 +656,7 @@ public sealed class ClassIndOpenDataService
         var lines = csv
             .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
             .Where(line => !string.IsNullOrWhiteSpace(line))
-            .Take(12)
+            .Take(120)
             .ToList();
 
         // Prefere o delimitador que revela os cabeçalhos oficiais. Isso é mais
@@ -613,7 +685,7 @@ public sealed class ClassIndOpenDataService
 
         return candidates
             .OrderByDescending(candidate =>
-                lines.Take(5).Sum(line => CountOutsideQuotes(line, candidate)))
+                lines.Take(40).Sum(line => CountOutsideQuotes(line, candidate)))
             .First();
     }
 
