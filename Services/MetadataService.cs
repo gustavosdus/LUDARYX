@@ -505,14 +505,15 @@ public sealed class MetadataService
     public async Task EnsureLocalizedAgeRatingAsync(
         Game game,
         LauncherSettings settings,
-        CancellationToken token = default)
+        CancellationToken token = default,
+        bool forceRefresh = false)
     {
         // ClassInd brasileira vem exclusivamente da base oficial aberta do MJSP.
         // Não usamos scraping do portal público nem convertemos notas de outros órgãos.
         if (AgeRatingService.GetPreferredSystemKey(settings.Language)
                 .Equals("dejus", StringComparison.OrdinalIgnoreCase))
         {
-            await EnsureOfficialClassIndRatingAsync(game, token);
+            await EnsureOfficialClassIndRatingAsync(game, token, forceRefresh);
         }
 
         var appId = 0;
@@ -780,11 +781,13 @@ public sealed class MetadataService
 
     private async Task EnsureOfficialClassIndRatingAsync(
         Game game,
-        CancellationToken token)
+        CancellationToken token,
+        bool forceRefresh)
     {
         game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
 
-        if (game.Metadata.AgeRatings.Any(pair =>
+        if (!forceRefresh &&
+            game.Metadata.AgeRatings.Any(pair =>
                 AgeRatingService.NormalizeSystem(pair.Key)
                     .Equals("dejus", StringComparison.OrdinalIgnoreCase) &&
                 !string.IsNullOrWhiteSpace(pair.Value)))
@@ -794,7 +797,7 @@ public sealed class MetadataService
 
         try
         {
-            var rating = await _classInd.GetRatingAsync(game.Name, token);
+            var rating = await _classInd.GetRatingAsync(game.Name, token, forceRefresh);
             if (string.IsNullOrWhiteSpace(rating))
                 return;
 
