@@ -500,7 +500,10 @@ public sealed class MetadataService
             int.TryParse(game.Metadata.ExternalId, out appId);
 
         if (appId <= 0)
+        {
+            await EnsureWikidataAgeRatingsAsync(game, settings, token);
             return;
+        }
 
         var (steamLanguage, countryCode) = GetSteamLocale(settings.Language);
         var changed = false;
@@ -616,6 +619,67 @@ public sealed class MetadataService
         finally
         {
             _steamStoreGate.Release();
+        }
+
+        if (!HasPreferredAgeRating(game.Metadata, settings.Language))
+            await EnsureWikidataAgeRatingsAsync(game, settings, token);
+    }
+
+    private static bool HasPreferredAgeRating(GameMetadata metadata, string language)
+    {
+        metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+        var preferred = AgeRatingService.GetPreferredSystemKey(language);
+        return metadata.AgeRatings.Any(pair =>
+            AgeRatingService.NormalizeSystem(pair.Key)
+                .Equals(preferred, StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(pair.Value));
+    }
+
+    private async Task EnsureWikidataAgeRatingsAsync(
+        Game game,
+        LauncherSettings settings,
+        CancellationToken token)
+    {
+        try
+        {
+            var wikidata = await GetWikidataMetadataByExactNameAsync(game, token);
+            if (wikidata?.AgeRatings is null || wikidata.AgeRatings.Count == 0)
+                return;
+
+            game.Metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+            var changed = false;
+
+            foreach (var pair in wikidata.AgeRatings)
+            {
+                var key = AgeRatingService.NormalizeSystem(pair.Key);
+                if (string.IsNullOrWhiteSpace(key) ||
+                    string.IsNullOrWhiteSpace(pair.Value) ||
+                    game.Metadata.AgeRatings.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                game.Metadata.AgeRatings[key] = pair.Value.Trim();
+                changed = true;
+            }
+
+            if (!changed)
+                return;
+
+            game.Metadata.Source = CombineMetadataSources(game.Metadata.Source, "Wikidata");
+            game.Metadata.UpdatedAtUtc = DateTime.UtcNow;
+
+            lock (_cacheSync)
+                _cache[game.ProviderId] = game.Metadata;
+            SaveCache();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // Mantém classificações já armazenadas se o fallback estiver indisponível.
         }
     }
 
@@ -3018,7 +3082,27 @@ public sealed class MetadataService
                 var developerIds = ReadWikidataEntityIds(claims, "P178");
                 var publisherIds = ReadWikidataEntityIds(claims, "P123");
                 var genreIds = ReadWikidataEntityIds(claims, "P136");
-                var allIds = developerIds.Concat(publisherIds).Concat(genreIds).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+                // Classificações oficiais estruturadas no Wikidata. Essas propriedades
+                // representam diretamente os sistemas de cada região; não fazemos
+                // conversão entre ESRB/PEGI/ClassInd ou qualquer outro órgão.
+                var ratingIds = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["esrb"] = ReadWikidataEntityIds(claims, "P852"),
+                    ["pegi"] = ReadWikidataEntityIds(claims, "P908"),
+                    ["dejus"] = ReadWikidataEntityIds(claims, "P3216"),
+                    ["usk"] = ReadWikidataEntityIds(claims, "P914"),
+                    ["cero"] = ReadWikidataEntityIds(claims, "P853"),
+                    ["acb"] = ReadWikidataEntityIds(claims, "P3156"),
+                    ["bbfc"] = ReadWikidataEntityIds(claims, "P2629")
+                };
+
+                var allIds = developerIds
+                    .Concat(publisherIds)
+                    .Concat(genreIds)
+                    .Concat(ratingIds.Values.SelectMany(ids => ids))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
                 var labels = await GetWikidataLabelsAsync(allIds, token);
 
                 metadata.Developer = JoinWikidataLabels(developerIds, labels);
@@ -3027,6 +3111,18 @@ public sealed class MetadataService
                 {
                     if (labels.TryGetValue(id, out var genre))
                         metadata.Genres.Add(genre);
+                }
+
+                foreach (var pair in ratingIds)
+                {
+                    foreach (var id in pair.Value)
+                    {
+                        if (!labels.TryGetValue(id, out var label) || string.IsNullOrWhiteSpace(label))
+                            continue;
+
+                        metadata.AgeRatings[pair.Key] = NormalizeWikidataAgeRatingLabel(pair.Key, label);
+                        break;
+                    }
                 }
             }
 
@@ -3292,6 +3388,24 @@ public sealed class MetadataService
         }
 
         return null;
+    }
+
+    private static string NormalizeWikidataAgeRatingLabel(string system, string label)
+    {
+        var value = WebUtility.HtmlDecode(label).Trim();
+        return AgeRatingService.NormalizeSystem(system) switch
+        {
+            "pegi" => Regex.Replace(value, @"^PEGI\s*", string.Empty, RegexOptions.IgnoreCase).Trim(),
+            "dejus" => Regex.Replace(
+                value,
+                @"^(?:ClassInd|Classifica(?:ção|cao)\s+Indicativa)\s*",
+                string.Empty,
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Trim(),
+            "usk" => Regex.Replace(value, @"^USK\s*", string.Empty, RegexOptions.IgnoreCase).Trim(),
+            "cero" => Regex.Replace(value, @"^CERO\s*", string.Empty, RegexOptions.IgnoreCase).Trim(),
+            "bbfc" => Regex.Replace(value, @"^BBFC\s*", string.Empty, RegexOptions.IgnoreCase).Trim(),
+            _ => value
+        };
     }
 
     private static List<string> ReadWikidataEntityIds(JsonElement claims, string propertyId)
