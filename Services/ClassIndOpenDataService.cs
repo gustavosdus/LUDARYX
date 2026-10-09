@@ -46,6 +46,7 @@ public sealed class ClassIndOpenDataService
 
     private List<ClassIndEntry>? _entries;
     private DateTime _loadedAtUtc;
+    private DateTime _networkUnavailableUntilUtc;
 
     public ClassIndOpenDataService()
     {
@@ -214,6 +215,12 @@ public sealed class ClassIndOpenDataService
             }
 
             string? resourceUrl = null;
+            if (!forceRefresh && DateTime.UtcNow < _networkUnavailableUntilUtc)
+            {
+                DiagnosticLogService.LogInfo(
+                    "ClassInd network: previous DNS/network failure; skipping repeated online attempt in this session.");
+            }
+            else
             try
             {
                 resourceUrl = await ResolveCurrentCsvUrlAsync(token);
@@ -221,6 +228,11 @@ public sealed class ClassIndOpenDataService
             catch (OperationCanceledException)
             {
                 throw;
+            }
+            catch (HttpRequestException ex)
+            {
+                _networkUnavailableUntilUtc = DateTime.UtcNow.AddMinutes(5);
+                DiagnosticLogService.LogException("ClassInd network discovery", ex);
             }
             catch
             {
@@ -233,6 +245,8 @@ public sealed class ClassIndOpenDataService
                          .Where(url => !string.IsNullOrWhiteSpace(url))
                          .Distinct(StringComparer.OrdinalIgnoreCase))
             {
+                if (!forceRefresh && DateTime.UtcNow < _networkUnavailableUntilUtc)
+                    break;
                 try
                 {
                     var fresh = await DownloadEntriesAsync(candidateUrl!, token);
