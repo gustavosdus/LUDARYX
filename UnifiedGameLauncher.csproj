@@ -32,7 +32,6 @@
     <Content Include="DATA-SOURCES.md" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="PRIVACY.md" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="LEGAL-NOTICE.md" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="Data\ClassInd\ListaJogosDadosAbertos.csv" CopyToOutputDirectory="PreserveNewest" Condition="Exists('Data\ClassInd\ListaJogosDadosAbertos.csv')" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\LUDARYX.png" />
