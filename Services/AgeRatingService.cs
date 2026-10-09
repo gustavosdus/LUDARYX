@@ -7,7 +7,7 @@ public static class AgeRatingService
     private static readonly IReadOnlyDictionary<string, string[]> PreferredSystems =
         new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            ["pt-BR"] = ["dejus", "classind", "pegi", "esrb"],
+            ["pt-BR"] = ["dejus", "classind", "esrb", "pegi"],
             ["pt-PT"] = ["pegi", "esrb", "dejus"],
             ["en-US"] = ["esrb", "pegi", "dejus"],
             ["en-GB"] = ["pegi", "esrb", "dejus"],
