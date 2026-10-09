@@ -35,6 +35,7 @@ public sealed class ClassIndOpenDataService
         Timeout = TimeSpan.FromSeconds(18)
     };
     private readonly string _cacheFile;
+    private readonly string _bundledCsvPath;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     private List<ClassIndEntry>? _entries;
@@ -43,7 +44,12 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v8.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v9.json");
+        _bundledCsvPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Data",
+            "ClassInd",
+            "ListaJogosDadosAbertos.csv");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -242,6 +248,20 @@ public sealed class ClassIndOpenDataService
                 }
             }
 
+            // O portal de dados do MJSP já apresentou indisponibilidade/erros ao servir
+            // diretamente o CSV. Quando a build inclui um snapshot oficial atribuído,
+            // usa essa cópia local como fallback sem depender da rede e sem hardcode por jogo.
+            var bundledEntries = TryLoadBundledCsv();
+            if (bundledEntries.Count > 0)
+            {
+                _entries = bundledEntries;
+                _loadedAtUtc = DateTime.UtcNow;
+                SaveDiskCache(_entries, _loadedAtUtc);
+                DiagnosticLogService.LogInfo(
+                    $"ClassInd bundled CSV: loaded {_entries.Count} records.");
+                return _entries;
+            }
+
             if (TryLoadDiskCache(out diskEntries, out cachedAtUtc))
             {
                 _entries = diskEntries;
@@ -333,6 +353,33 @@ public sealed class ClassIndOpenDataService
         var entries = ParseEntries(text);
         DiagnosticLogService.LogInfo($"ClassInd CSV: parsed {entries.Count} records.");
         return entries;
+    }
+
+    private List<ClassIndEntry> TryLoadBundledCsv()
+    {
+        try
+        {
+            if (!File.Exists(_bundledCsvPath))
+            {
+                DiagnosticLogService.LogInfo("ClassInd bundled CSV: file not present.");
+                return new();
+            }
+
+            var bytes = File.ReadAllBytes(_bundledCsvPath);
+            if (bytes.Length == 0)
+                return new();
+
+            var text = DecodeCsv(bytes);
+            var entries = ParseEntries(text);
+            DiagnosticLogService.LogInfo(
+                $"ClassInd bundled CSV: parsed {entries.Count} records.");
+            return entries;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLogService.LogException("ClassInd bundled CSV", ex);
+            return new();
+        }
     }
 
     private static string DecodeCsv(byte[] bytes)
