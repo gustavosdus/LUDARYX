@@ -14,7 +14,7 @@ namespace UnifiedGameLauncher.Services;
 public sealed class ClassIndOpenDataService
 {
     private const string PackageApi =
-        "https://dados.mj.gov.br/api/3/action/package_show?id=classind-sistema-gerencial-da-classificacao-indicativa";
+        "https://dados.mj.gov.br/api/3/action/package_show?id=5138a6ca-8009-4ffb-b95a-052f76d62a33";
 
     // Fallback apenas para indisponibilidade temporária do endpoint CKAN.
     // A descoberta dinâmica acima continua sendo a rota principal.
@@ -23,7 +23,17 @@ public sealed class ClassIndOpenDataService
 
     private static readonly TimeSpan CacheLifetime = TimeSpan.FromDays(30);
 
-    private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(18) };
+    private readonly HttpClient _http = new(
+        new HttpClientHandler
+        {
+            AutomaticDecompression =
+                DecompressionMethods.GZip |
+                DecompressionMethods.Deflate |
+                DecompressionMethods.Brotli
+        })
+    {
+        Timeout = TimeSpan.FromSeconds(18)
+    };
     private readonly string _cacheFile;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -33,7 +43,7 @@ public sealed class ClassIndOpenDataService
     public ClassIndOpenDataService()
     {
         AppDataService.EnsureMigrated();
-        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v5.json");
+        _cacheFile = Path.Combine(AppDataService.RootDirectory, "classind-open-data-v6.json");
 
         _http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "LUDARYX/1.2.0 (+https://github.com/gustavosdus/LUDARYX)");
@@ -91,12 +101,42 @@ public sealed class ClassIndOpenDataService
                 IsStrongPartialTitleMatch(normalizedGameTitle, candidate.Brazil) ||
                 IsStrongPartialTitleMatch(normalizedGameTitle, candidate.Series))
             .Select(candidate => candidate.Entry)
-            .Distinct()
-            .Take(2)
             .ToList();
 
-        // Só aceita o fallback quando há exatamente um registro oficial possível.
-        return candidates.Count == 1 ? candidates[0] : null;
+        if (candidates.Count == 0)
+            return null;
+
+        // O mesmo jogo pode aparecer mais de uma vez na base oficial por plataforma,
+        // mídia ou novo requerimento. Várias linhas não tornam o título ambíguo quando
+        // todas elas chegam à mesma classificação atribuída.
+        var distinctRatings = candidates
+            .Select(candidate => NormalizeRating(candidate.Rating))
+            .Where(rating => !string.IsNullOrWhiteSpace(rating))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (distinctRatings.Count != 1)
+            return null;
+
+        return candidates
+            .OrderByDescending(candidate =>
+                Math.Max(
+                    CommonTitleLength(normalizedGameTitle, NormalizeTitle(candidate.TitleBrazil)),
+                    CommonTitleLength(normalizedGameTitle, NormalizeTitle(candidate.TitleSeries))))
+            .FirstOrDefault();
+    }
+
+    private static int CommonTitleLength(string requested, string official)
+    {
+        if (string.IsNullOrEmpty(requested) || string.IsNullOrEmpty(official))
+            return 0;
+
+        if (requested.Contains(official, StringComparison.Ordinal))
+            return official.Length;
+        if (official.Contains(requested, StringComparison.Ordinal))
+            return requested.Length;
+
+        return 0;
     }
 
     private static bool IsStrongPartialTitleMatch(string requested, string official)
