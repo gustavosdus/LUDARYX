@@ -140,6 +140,17 @@ public partial class MainWindow
             lightTheme ? "#B3BDC9" : "#26384C");
         var launchProgressTrackColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(
             lightTheme ? "#CBD2DA" : "#26313D");
+        var launchOverlayNeonColor = selectionBorderColor;
+        var launchOverlayNeonSoftColor = System.Windows.Media.Color.FromArgb(
+            0x26,
+            launchOverlayNeonColor.R,
+            launchOverlayNeonColor.G,
+            launchOverlayNeonColor.B);
+        var launchOverlayNeonMediumColor = System.Windows.Media.Color.FromArgb(
+            0x66,
+            launchOverlayNeonColor.R,
+            launchOverlayNeonColor.G,
+            launchOverlayNeonColor.B);
 
         MainRoot.Background = topBrush;
         HeaderGrid.Background = topBrush;
@@ -186,6 +197,10 @@ public partial class MainWindow
         SetOrUpdateBrushResource("LaunchOverlayArtworkBackground", launchOverlayArtworkBackgroundColor);
         SetOrUpdateBrushResource("LaunchOverlayArtworkBorder", launchOverlayArtworkBorderColor);
         SetOrUpdateBrushResource("LaunchProgressTrack", launchProgressTrackColor);
+        Resources["LaunchOverlayNeonColor"] = launchOverlayNeonColor;
+        SetOrUpdateBrushResource("LaunchOverlayNeon", launchOverlayNeonColor);
+        SetOrUpdateBrushResource("LaunchOverlayNeonSoft", launchOverlayNeonSoftColor);
+        SetOrUpdateBrushResource("LaunchOverlayNeonMedium", launchOverlayNeonMediumColor);
 
         var heroPlayBackground = new SolidColorBrush(heroPlayBackgroundColor);
         var heroPlayBorder = new SolidColorBrush(heroPlayBorderColor);
