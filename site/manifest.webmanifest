@@ -1,0 +1,17 @@
+{
+  "name": "LUDARYX",
+  "short_name": "LUDARYX",
+  "description": "Unified PC game launcher for Windows.",
+  "start_url": "/LUDARYX/",
+  "scope": "/LUDARYX/",
+  "display": "standalone",
+  "background_color": "#05090f",
+  "theme_color": "#07111d",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
