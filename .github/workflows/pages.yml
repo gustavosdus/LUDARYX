@@ -1,0 +1,55 @@
+name: Deploy LUDARYX website
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "site/**"
+      - "Assets/LUDARYX.png"
+      - "Assets/LUDARYX-icon.png"
+      - "Docs/Screenshots/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build static Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site/assets _site/screenshots
+          cp -a site/. _site/
+          cp Assets/LUDARYX.png _site/assets/logo.png
+          cp Assets/LUDARYX-icon.png _site/assets/icon.png
+          cp Docs/Screenshots/library.png _site/screenshots/library.png
+          cp Docs/Screenshots/settings.png _site/screenshots/settings.png
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
