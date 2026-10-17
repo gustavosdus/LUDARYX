@@ -6,6 +6,8 @@
 
 **LUDARYX** é um launcher unificado e gratuito para Windows que organiza e inicia jogos instalados em diferentes plataformas em uma única biblioteca.
 
+🌐 **Site oficial:** https://gustavosdus.github.io/LUDARYX/
+
 ![Biblioteca do LUDARYX](Docs/Screenshots/library.png)
 
 ## Recursos
