@@ -21,6 +21,8 @@
   <a href="https://gustavosdus.github.io/LUDARYX/download/">Download</a> •
   <a href="https://gustavosdus.github.io/LUDARYX/features/">Recursos</a> •
   <a href="https://gustavosdus.github.io/LUDARYX/supported-launchers/">Plataformas</a> •
+  <a href="https://gustavosdus.github.io/LUDARYX/faq/">FAQ</a> •
+  <a href="https://gustavosdus.github.io/LUDARYX/press-kit/">Press kit</a> •
   <a href="https://github.com/gustavosdus/LUDARYX/issues">Issues</a>
 </p>
 
@@ -38,6 +40,8 @@ Ele reúne **Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Conne
 - **Open source:** código sob licença MIT, documentação pública e releases verificadas por SHA-256.
 
 ![Biblioteca do LUDARYX](Docs/Screenshots/library.png)
+
+> Se o LUDARYX for útil para você, uma star no GitHub ajuda outras pessoas a encontrar o projeto e acompanhar novas releases.
 
 ## Recursos
 
