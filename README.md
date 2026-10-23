@@ -4,9 +4,38 @@
   <img src="Assets/LUDARYX.png" alt="LUDARYX" width="620">
 </p>
 
+<p align="center">
+  <a href="https://github.com/gustavosdus/LUDARYX/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/gustavosdus/LUDARYX?display_name=tag&style=flat-square"></a>
+  <a href="https://github.com/gustavosdus/LUDARYX/actions/workflows/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/gustavosdus/LUDARYX/build.yml?branch=main&style=flat-square&label=build"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/gustavosdus/LUDARYX?style=flat-square"></a>
+  <a href="https://github.com/gustavosdus/LUDARYX/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/gustavosdus/LUDARYX/total?style=flat-square"></a>
+</p>
+
+<p align="center">
+  <strong>One library. All your games.</strong><br>
+  Launcher unificado, gratuito e open source para Windows.
+</p>
+
+<p align="center">
+  <a href="https://gustavosdus.github.io/LUDARYX/">Site oficial</a> •
+  <a href="https://gustavosdus.github.io/LUDARYX/download/">Download</a> •
+  <a href="https://gustavosdus.github.io/LUDARYX/features/">Recursos</a> •
+  <a href="https://gustavosdus.github.io/LUDARYX/supported-launchers/">Plataformas</a> •
+  <a href="https://github.com/gustavosdus/LUDARYX/issues">Issues</a>
+</p>
+
 **LUDARYX** é um launcher unificado e gratuito para Windows que organiza e inicia jogos instalados em diferentes plataformas em uma única biblioteca.
 
-🌐 **Site oficial:** https://gustavosdus.github.io/LUDARYX/
+Ele reúne **Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Connect, Battle.net e Riot Client**, além de jogos adicionados manualmente, mantendo os clientes originais quando eles são necessários para licenças, atualizações ou serviços online.
+
+## Por que LUDARYX?
+
+- **Uma biblioteca de verdade:** várias plataformas, filtros, pesquisa, favoritos, ocultos, duplicatas e versão principal.
+- **Desktop e TV:** interface padrão e modo fullscreen/TV pensado para navegação à distância.
+- **Controle sem abandonar teclado:** Xbox/XInput, DualSense, teclado e mouse com ações equivalentes.
+- **Visual personalizável:** capas horizontais/verticais, arte própria e integração opcional com SteamGridDB.
+- **Dados locais:** estatísticas de sessão e preferências ficam no computador; a versão atual não possui telemetria própria.
+- **Open source:** código sob licença MIT, documentação pública e releases verificadas por SHA-256.
 
 ![Biblioteca do LUDARYX](Docs/Screenshots/library.png)
 
