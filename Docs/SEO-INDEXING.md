@@ -73,3 +73,28 @@ Atualize:
 - conteúdo do site caso plataformas ou recursos suportados mudem.
 
 Os links `/releases/latest` não precisam ser alterados a cada versão.
+
+
+## Páginas públicas de descoberta
+
+Além da página inicial, o site mantém URLs próprias para intenções específicas de busca:
+
+- `/features/` — recursos do LUDARYX;
+- `/download/` — versão estável e download oficial;
+- `/supported-launchers/` — plataformas suportadas;
+- `/fullscreen-tv-mode/` — modo TV/fullscreen;
+- `/controllers/` — Xbox/XInput, DualSense, teclado e mouse;
+- `/screenshots/` — galeria pública;
+- `/faq/` — dúvidas de compatibilidade e privacidade, com FAQ estruturada;
+- `/en/` — landing page em inglês;
+- `/press-kit/` — resumo, logo, screenshots e links para cobertura externa.
+
+Todas as páginas indexáveis devem permanecer no `site/sitemap.xml` e usar URL canônica própria.
+
+## Após mudanças importantes no site
+
+1. Confirme que o workflow **Deploy LUDARYX website** terminou com sucesso.
+2. Abra o sitemap público e confirme que as URLs novas estão presentes.
+3. No Search Console, reenvie o sitemap apenas se houver erro de leitura; normalmente o mesmo sitemap é relido automaticamente.
+4. Use Inspeção de URL nas páginas mais importantes quando elas forem novas ou sofrerem mudança substancial.
+5. Não solicite indexação repetidamente sem alterações relevantes.
