@@ -88,7 +88,30 @@ public sealed class GameStateService
         if (!string.IsNullOrWhiteSpace(manual.Publisher)) game.Metadata.Publisher = manual.Publisher;
         if (manual.ReleaseYear.HasValue) game.Metadata.ReleaseYear = manual.ReleaseYear;
         if (manual.AgeRatings is { Count: > 0 })
-            game.Metadata.AgeRatings = new Dictionary<string, string>(manual.AgeRatings, StringComparer.OrdinalIgnoreCase);
+        {
+            game.Metadata.AgeRatings ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            // Classificações adicionadas manualmente complementam as classificações
+            // automáticas em vez de substituir o dicionário inteiro. Assim, por exemplo,
+            // uma ClassInd manual não apaga uma ESRB automática (e vice-versa), permitindo
+            // que a troca de idioma escolha imediatamente o sistema regional adequado.
+            foreach (var manualRating in manual.AgeRatings)
+            {
+                var normalizedManualSystem = AgeRatingService.NormalizeSystem(manualRating.Key);
+                var existingAlias = game.Metadata.AgeRatings.Keys.FirstOrDefault(key =>
+                    AgeRatingService.NormalizeSystem(key).Equals(
+                        normalizedManualSystem,
+                        StringComparison.OrdinalIgnoreCase));
+
+                if (existingAlias is not null &&
+                    !existingAlias.Equals(normalizedManualSystem, StringComparison.OrdinalIgnoreCase))
+                {
+                    game.Metadata.AgeRatings.Remove(existingAlias);
+                }
+
+                game.Metadata.AgeRatings[normalizedManualSystem] = manualRating.Value;
+            }
+        }
         if (!string.IsNullOrWhiteSpace(manual.HorizontalCoverUrl)) game.Metadata.CustomHorizontalCoverLocalPath = manual.HorizontalCoverUrl;
         if (!string.IsNullOrWhiteSpace(manual.VerticalCoverUrl)) game.Metadata.CustomVerticalCoverLocalPath = manual.VerticalCoverUrl;
 
