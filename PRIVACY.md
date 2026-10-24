@@ -36,7 +36,7 @@ When an update is downloaded, LUDARYX validates the installer against the releas
 
 ## No first-party telemetry
 
-LUDARYX 1.2.0 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
+LUDARYX 1.2.1 does not include first-party analytics or telemetry that uploads the user's game library, play history, recorded session time, or usage statistics to a LUDARYX-operated server.
 
 ## Diagnostics
 
