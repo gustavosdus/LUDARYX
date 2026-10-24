@@ -12,6 +12,8 @@ public partial class SettingsWindow : Window
     private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly JsonSettingsService _settingsService = new();
     private readonly LauncherSettings _settings;
+    private readonly LauncherSettings _sourceSettings;
+    private bool _suppressParentalControlSelection;
     private readonly ObservableCollection<GameVisibilityItem> _items = new();
     private readonly List<Game> _games;
 
@@ -27,10 +29,12 @@ public partial class SettingsWindow : Window
             }
         });
         _games = games.ToList();
+        _sourceSettings = settings;
         _settings = Clone(settings);
         LudaryxThemeService.Apply(_settings);
         ShowHiddenCheck.IsChecked = _settings.ShowHiddenApps;
         HideGameDetailsPanelsCheck.IsChecked = _settings.HideGameDetailsPanels;
+        SelectParentalControlMode(_settings.ParentalControlMode);
         AutoStartClientsCheck.IsChecked = _settings.StartClientsAutomatically;
         KeepLauncherOpenCheck.IsChecked = _settings.KeepLauncherOpen;
         StartWithWindowsCheck.IsChecked = StartupService.IsEnabled();
@@ -92,7 +96,7 @@ public partial class SettingsWindow : Window
     private void SettingsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
         var query = SettingsSearchBox.Text.Trim();
-        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero");
+        SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero controle parental idade pin classificação indicativa");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
         SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
@@ -118,6 +122,111 @@ public partial class SettingsWindow : Window
             : Visibility.Collapsed;
     }
 
+    private void SelectParentalControlMode(string? mode)
+    {
+        _suppressParentalControlSelection = true;
+        var normalized = ParentalControlService.NormalizeMode(mode);
+        ParentalControlCombo.SelectedItem = ParentalControlCombo.Items
+            .OfType<System.Windows.Controls.ComboBoxItem>()
+            .FirstOrDefault(item =>
+                string.Equals(item.Tag?.ToString(), normalized, StringComparison.OrdinalIgnoreCase))
+            ?? ParentalControlCombo.Items[0];
+        _suppressParentalControlSelection = false;
+    }
+
+    private bool EnsureParentalControlUnlocked()
+    {
+        if (ParentalControlService.IsSessionUnlocked)
+            return true;
+
+        var pinWindow = new ParentalPinWindow(_settings) { Owner = this };
+        if (pinWindow.ShowDialog() != true)
+            return false;
+
+        if (pinWindow.PinChanged)
+        {
+            // O PIN é uma credencial separada das demais alterações desta janela.
+            // Persiste imediatamente sem salvar opções ainda não confirmadas.
+            _sourceSettings.ProtectedParentalPin = _settings.ProtectedParentalPin;
+            _settingsService.Save(_sourceSettings);
+        }
+
+        return ParentalControlService.IsSessionUnlocked;
+    }
+
+    private void ParentalControlCombo_PreviewMouseLeftButtonDown(
+        object sender,
+        System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (ParentalControlService.IsSessionUnlocked)
+            return;
+
+        e.Handled = true;
+        if (EnsureParentalControlUnlocked())
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                ParentalControlCombo.Focus();
+                ParentalControlCombo.IsDropDownOpen = true;
+            });
+        }
+    }
+
+    private void ParentalControlCombo_PreviewMouseWheel(
+        object sender,
+        System.Windows.Input.MouseWheelEventArgs e)
+    {
+        if (ParentalControlService.IsSessionUnlocked)
+            return;
+
+        e.Handled = true;
+        EnsureParentalControlUnlocked();
+    }
+
+    private void ParentalControlCombo_PreviewKeyDown(
+        object sender,
+        System.Windows.Input.KeyEventArgs e)
+    {
+        if (ParentalControlService.IsSessionUnlocked)
+            return;
+
+        if (e.Key is not (System.Windows.Input.Key.Up or
+                          System.Windows.Input.Key.Down or
+                          System.Windows.Input.Key.Home or
+                          System.Windows.Input.Key.End or
+                          System.Windows.Input.Key.PageUp or
+                          System.Windows.Input.Key.PageDown or
+                          System.Windows.Input.Key.Enter or
+                          System.Windows.Input.Key.Space))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        if (EnsureParentalControlUnlocked())
+            ParentalControlCombo.IsDropDownOpen = true;
+    }
+
+    private void ParentalControlCombo_SelectionChanged(
+        object sender,
+        System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (_suppressParentalControlSelection ||
+            ParentalControlCombo.SelectedItem is not System.Windows.Controls.ComboBoxItem item)
+        {
+            return;
+        }
+
+        if (!ParentalControlService.IsSessionUnlocked)
+        {
+            SelectParentalControlMode(_settings.ParentalControlMode);
+            return;
+        }
+
+        _settings.ParentalControlMode =
+            ParentalControlService.NormalizeMode(item.Tag?.ToString());
+    }
+
     private void ManageItemsSearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
         var view = System.Windows.Data.CollectionViewSource.GetDefaultView(_items);
@@ -139,6 +248,7 @@ public partial class SettingsWindow : Window
     {
         _settings.ShowHiddenApps = ShowHiddenCheck.IsChecked == true;
         _settings.HideGameDetailsPanels = HideGameDetailsPanelsCheck.IsChecked == true;
+        _settings.ParentalControlMode = ParentalControlService.NormalizeMode(_settings.ParentalControlMode);
         _settings.StartClientsAutomatically = AutoStartClientsCheck.IsChecked == true;
         _settings.KeepLauncherOpen = KeepLauncherOpenCheck.IsChecked == true;
         _settings.StartWithWindows = StartWithWindowsCheck.IsChecked == true;
@@ -442,6 +552,8 @@ public partial class SettingsWindow : Window
         StartFullscreen = source.StartFullscreen,
         ShowHiddenApps = source.ShowHiddenApps,
         HideGameDetailsPanels = source.HideGameDetailsPanels,
+        ParentalControlMode = ParentalControlService.NormalizeMode(source.ParentalControlMode),
+        ProtectedParentalPin = source.ProtectedParentalPin,
         LibraryColumns = Math.Clamp(source.LibraryColumns, 4, 6),
         HiddenGameIds = source.HiddenGameIds.ToList(),
         ExcludedGameIds = source.ExcludedGameIds.ToList(),
