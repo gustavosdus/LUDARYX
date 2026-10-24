@@ -173,7 +173,7 @@ public static class ParentalControlService
             HashAlgorithmName.SHA256,
             32);
 
-        return $"v1$${iterations}$${Convert.ToBase64String(salt)}$${Convert.ToBase64String(hash)}";
+        return string.Join("$", "v1", iterations.ToString(CultureInfo.InvariantCulture), Convert.ToBase64String(salt), Convert.ToBase64String(hash));
     }
 
     private static void ValidatePin(string pin)
