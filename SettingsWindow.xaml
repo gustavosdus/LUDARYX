@@ -57,7 +57,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="Configurações" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="30" FontWeight="Bold"/>
-                <TextBlock Text="Controle a biblioteca, aparência, integrações, backup e itens locais."
+                <TextBlock Text="Controle a biblioteca, integrações, backup e itens locais."
                            Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,4,0,0"/>
             </StackPanel>
             <Border Grid.Column="1" Background="{DynamicResource LudaryxInputBackground}" BorderBrush="{DynamicResource LudaryxBorder}"
@@ -87,7 +87,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <Border x:Name="LibrarySection" Grid.Column="0" Style="{StaticResource LudaryxCard}" Margin="0,0,10,10">
@@ -110,36 +109,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Border x:Name="AppearanceSection" Grid.Column="2" Style="{StaticResource LudaryxCard}" Margin="0,0,0,10">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Text="Aparência" Style="{StaticResource LudaryxSectionTitle}"/>
-                            <Grid Grid.Row="1" Margin="0,2,0,7">
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <TextBlock Text="Linha neon" Foreground="{DynamicResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="NeonLineColorCombo" Grid.Column="1">
-                                    <ComboBoxItem Content="Vermelha" Tag="Red"/>
-                                    <ComboBoxItem Content="Azul claro" Tag="LightBlue"/>
-                                </ComboBox>
-                            </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <TextBlock Text="Idioma" Foreground="{DynamicResource LudaryxTextSecondary}" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="LanguageCombo" Grid.Column="1">
-                                    <ComboBoxItem Content="Português (Brasil)" Tag="pt-BR"/>
-                                    <ComboBoxItem Content="Português (Portugal)" Tag="pt-PT"/>
-                                    <ComboBoxItem Content="English (US)" Tag="en-US"/>
-                                    <ComboBoxItem Content="English (UK)" Tag="en-GB"/>
-                                    <ComboBoxItem Content="Español (Latinoamérica)" Tag="es-419"/>
-                                    <ComboBoxItem Content="Español (España)" Tag="es-ES"/>
-                                </ComboBox>
-                            </Grid>
-                        </Grid>
-                    </Border>
+
                 </Grid>
 
                 <Grid>
