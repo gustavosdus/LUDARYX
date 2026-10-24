@@ -95,7 +95,7 @@ public static class ParentalControlService
         foreach (var pair in metadata.AgeRatings)
         {
             var system = AgeRatingService.NormalizeSystem(pair.Key);
-            if (system is not ("dejus" or "esrb" or "pegi"))
+            if (system is not ("dejus" or "esrb" or "pegi" or "cero"))
                 continue;
 
             var result = ParseRatingLevel(system, pair.Value);
@@ -142,6 +142,23 @@ public static class ParentalControlService
                 "AO" or "AO18+" or "ADULTSONLY" or "ADULTSONLY18+" or "ADULTSONLY18PLUS" => RatingParseResult.Known(4),
                 _ when compact.Any(char.IsLetter) => RatingParseResult.Unknown,
                 _ => ParseNumericFallback(raw)
+            };
+        }
+
+        if (system == "cero")
+        {
+            var compact = Regex.Replace(
+                raw.ToUpperInvariant(),
+                @"[^A-Z]",
+                "");
+
+            return compact switch
+            {
+                "A" => RatingParseResult.Known(1),
+                "B" => RatingParseResult.Known(2),
+                "C" => RatingParseResult.Known(3),
+                "D" or "Z" => RatingParseResult.Known(4),
+                _ => RatingParseResult.Unknown
             };
         }
 
