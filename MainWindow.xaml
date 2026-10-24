@@ -733,10 +733,19 @@
                             <ComboBoxItem Content="PLATAFORMA" Tag="Platform"/>
                             <ComboBoxItem Content="DATA DE LANÇAMENTO" Tag="ReleaseDate"/>
                         </ComboBox>
-                        <ComboBox x:Name="SortDirectionCombo" Width="145" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="SortDirectionCombo_SelectionChanged" ToolTip="Ordem da classificação">
-                            <ComboBoxItem Content="CRESCENTE" Tag="Ascending"/>
-                            <ComboBoxItem Content="DECRESCENTE" Tag="Descending"/>
-                        </ComboBox>
+                        <Button x:Name="SortDirectionButton"
+                                Content="↕"
+                                Width="40"
+                                MinWidth="40"
+                                Height="32"
+                                Padding="0"
+                                Margin="3"
+                                FontSize="17"
+                                FontWeight="Bold"
+                                Opacity="0.9"
+                                Style="{StaticResource NavButton}"
+                                Click="SortDirectionButton_Click"
+                                ToolTip="Ordem padrão"/>
 
                         <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
                         <Button x:Name="ClearFiltersButton" Content="LIMPAR" Style="{StaticResource NavButton}" Click="ClearFilters_Click"/>
