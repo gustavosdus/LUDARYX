@@ -672,6 +672,28 @@
                         </Canvas>
                     </Viewbox>
                 </Button>
+                <Button x:Name="GlobalLanguageButton"
+                        Style="{StaticResource IntegratedIconButton}"
+                        Click="CycleLanguage_Click"
+                        ToolTip="Idioma"
+                        Width="58"
+                        Margin="0,0,2,0">
+                    <TextBlock x:Name="GlobalLanguageText"
+                               Text="PT (BR)"
+                               Foreground="{DynamicResource LudaryxTextPrimary}"
+                               FontSize="10"
+                               FontWeight="Bold"/>
+                </Button>
+                <Button x:Name="GlobalNeonColorButton"
+                        Style="{StaticResource IntegratedIconButton}"
+                        Click="ToggleNeonColor_Click"
+                        ToolTip="Cor da linha neon"
+                        Margin="0,0,2,0">
+                    <Ellipse x:Name="GlobalNeonColorDot"
+                             Width="12"
+                             Height="12"
+                             Fill="{StaticResource NeonRed}"/>
+                </Button>
                 <Button x:Name="GlobalSettingsButton" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0">
                     <TextBlock Text="⚙" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="17"/>
                 </Button>
@@ -735,15 +757,12 @@
                         </ComboBox>
                         <Button x:Name="SortDirectionButton"
                                 Content="↕"
-                                Width="40"
-                                MinWidth="40"
+                                Width="38"
                                 Height="32"
-                                Padding="0"
                                 Margin="3"
                                 FontSize="17"
                                 FontWeight="Bold"
-                                Opacity="0.9"
-                                Style="{StaticResource NavButton}"
+                                Style="{StaticResource IntegratedIconButton}"
                                 Click="SortDirectionButton_Click"
                                 ToolTip="Ordem padrão"/>
 
@@ -810,6 +829,23 @@
                                       Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
                             </Canvas>
                         </Viewbox>
+                    </Button>
+                    <Button x:Name="FullscreenLanguageButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="CycleLanguage_Click"
+                            ToolTip="Idioma" Width="58">
+                        <TextBlock x:Name="FullscreenLanguageText"
+                                   Text="PT (BR)"
+                                   Foreground="{DynamicResource LudaryxTextPrimary}"
+                                   FontSize="10"
+                                   FontWeight="Bold"/>
+                    </Button>
+                    <Button x:Name="FullscreenNeonColorButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="ToggleNeonColor_Click"
+                            ToolTip="Cor da linha neon">
+                        <Ellipse x:Name="FullscreenNeonColorDot"
+                                 Width="12"
+                                 Height="12"
+                                 Fill="{StaticResource NeonRed}"/>
                     </Button>
                     <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Settings_Click"
