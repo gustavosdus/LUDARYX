@@ -329,7 +329,6 @@ public static class LocalizationService
 
         new("Escolher arte do SteamGridDB", "Escolher arte do SteamGridDB", "Choose SteamGridDB artwork", "Choose SteamGridDB artwork", "Elegir arte de SteamGridDB", "Elegir arte de SteamGridDB"),
         new("ESCOLHER ARTE", "ESCOLHER ARTE", "CHOOSE ARTWORK", "CHOOSE ARTWORK", "ELEGIR ARTE", "ELEGIR ARTE"),
-        new("Pontuação: ", "Pontuação: ", "Score: ", "Score: ", "Puntuación: ", "Puntuación: "),
         new("USAR ESTA ARTE", "USAR ESTA ARTE", "USE THIS ARTWORK", "USE THIS ARTWORK", "USAR ESTE ARTE", "USAR ESTE ARTE"),
         new("USAR SELECIONADA", "USAR SELECIONADA", "USE SELECTED", "USE SELECTED", "USAR SELECCIONADA", "USAR SELECCIONADA"),
         new("Escolher jogo no SteamGridDB", "Escolher jogo no SteamGridDB", "Choose SteamGridDB game", "Choose SteamGridDB game", "Elegir juego en SteamGridDB", "Elegir juego en SteamGridDB"),
