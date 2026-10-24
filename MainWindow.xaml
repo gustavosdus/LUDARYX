@@ -623,7 +623,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="205"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="430"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" VerticalAlignment="Center" Margin="18,0,0,0">
@@ -676,8 +676,10 @@
                         Style="{StaticResource IntegratedIconButton}"
                         Click="CycleLanguage_Click"
                         ToolTip="Idioma"
-                        Width="58"
-                        Margin="0,0,2,0">
+                        Width="68"
+                        MinWidth="68"
+                        Margin="0,0,2,0"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <TextBlock x:Name="GlobalLanguageText"
                                Text="PT (BR)"
                                Foreground="{DynamicResource LudaryxTextPrimary}"
@@ -688,10 +690,16 @@
                         Style="{StaticResource IntegratedIconButton}"
                         Click="ToggleNeonColor_Click"
                         ToolTip="Cor da linha neon"
-                        Margin="0,0,2,0">
+                        Width="44"
+                        MinWidth="44"
+                        Height="40"
+                        Margin="0,0,2,0"
+                        Background="Transparent"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <Ellipse x:Name="GlobalNeonColorDot"
-                             Width="12"
-                             Height="12"
+                             Width="18"
+                             Height="18"
+                             IsHitTestVisible="False"
                              Fill="{StaticResource NeonRed}"/>
                 </Button>
                 <Button x:Name="GlobalSettingsButton" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0">
@@ -832,7 +840,7 @@
                     </Button>
                     <Button x:Name="FullscreenLanguageButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="CycleLanguage_Click"
-                            ToolTip="Idioma" Width="58">
+                            ToolTip="Idioma" Width="68" MinWidth="68">
                         <TextBlock x:Name="FullscreenLanguageText"
                                    Text="PT (BR)"
                                    Foreground="{DynamicResource LudaryxTextPrimary}"
@@ -841,10 +849,13 @@
                     </Button>
                     <Button x:Name="FullscreenNeonColorButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="ToggleNeonColor_Click"
-                            ToolTip="Cor da linha neon">
+                            ToolTip="Cor da linha neon"
+                            Width="44" MinWidth="44" Height="42"
+                            Background="Transparent">
                         <Ellipse x:Name="FullscreenNeonColorDot"
-                                 Width="12"
-                                 Height="12"
+                                 Width="18"
+                                 Height="18"
+                                 IsHitTestVisible="False"
                                  Fill="{StaticResource NeonRed}"/>
                     </Button>
                     <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
