@@ -15,7 +15,8 @@ public static class AgeRatingService
             // es-419 representa uma região, não um único país. Não convertemos notas
             // entre órgãos: mostramos a primeira classificação realmente fornecida
             // pela fonte, priorizando ESRB por ser comum em catálogos latino-americanos.
-            ["es-419"] = ["esrb", "dejus", "pegi"]
+            ["es-419"] = ["esrb", "dejus", "pegi"],
+            ["ja-JP"] = ["cero", "esrb", "pegi", "dejus"]
         };
 
     public static string GetDisplay(GameMetadata metadata, string language)
@@ -109,6 +110,7 @@ public static class AgeRatingService
         "dejus" => "ClassInd",
         "pegi" => "PEGI",
         "esrb" => "ESRB",
+        "cero" => "CERO",
         _ => system.ToUpperInvariant()
     };
 
