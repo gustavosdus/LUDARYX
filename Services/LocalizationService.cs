@@ -19,6 +19,7 @@ public static class LocalizationService
     // Mexican Spanish as the baseline for Latin-American wording.
     public const string SpanishLatinAmerica = "es-419";
     public const string SpanishEurope = "es-ES";
+    public const string JapaneseJapan = "ja-JP";
 
     public static string CurrentLanguage { get; private set; } = PortugueseBrazil;
 
@@ -29,7 +30,8 @@ public static class LocalizationService
         (EnglishUnitedStates, "English (US)"),
         (EnglishUnitedKingdom, "English (UK)"),
         (SpanishLatinAmerica, "Español (Latinoamérica — México)"),
-        (SpanishEurope, "Español (España)")
+        (SpanishEurope, "Español (España)"),
+        (JapaneseJapan, "日本語")
     ];
 
     private sealed record Translation(
@@ -39,6 +41,95 @@ public static class LocalizationService
         string EnGb,
         string Es419,
         string EsEs);
+
+    private static readonly IReadOnlyDictionary<string, string> JapaneseTranslations =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Configurações"] = "設定",
+            ["CONFIGURAÇÕES"] = "設定",
+            ["Biblioteca"] = "ライブラリ",
+            ["Controle parental"] = "ペアレンタルコントロール",
+            ["Faixa etária permitida na biblioteca"] = "ライブラリで許可する年齢区分",
+            ["PADRÃO — MOSTRAR TODOS"] = "標準 — すべて表示",
+            ["IDADE DE 3 A 9 ANOS"] = "3～9歳",
+            ["IDADE DE 10 A 13 ANOS"] = "10～13歳",
+            ["IDADE DE 14 A 17 ANOS"] = "14～17歳",
+            ["ACIMA DE 18 ANOS"] = "18歳以上",
+            ["Idioma"] = "言語",
+            ["Cor da linha neon"] = "ネオンラインの色",
+            ["Atualizar biblioteca"] = "ライブラリを更新",
+            ["Atualizações"] = "アップデート",
+            ["Atualização do LUDARYX"] = "LUDARYX アップデート",
+            ["Baixando atualização"] = "アップデートをダウンロード中",
+            ["Preparando download..."] = "ダウンロードを準備中...",
+            ["Cancelando..."] = "キャンセル中...",
+            ["CANCELAR"] = "キャンセル",
+            ["SALVAR"] = "保存",
+            ["CONFIRMAR"] = "確認",
+            ["CRIAR PIN"] = "PINを作成",
+            ["DESBLOQUEAR"] = "ロック解除",
+            ["Alterar PIN"] = "PINを変更",
+            ["Alterar PIN do controle parental"] = "ペアレンタルコントロールのPINを変更",
+            ["PIN atual"] = "現在のPIN",
+            ["Confirmar PIN atual"] = "現在のPINを確認",
+            ["Criar novo PIN"] = "新しいPINを作成",
+            ["Novo PIN"] = "新しいPIN",
+            ["Confirmar novo PIN"] = "新しいPINを確認",
+            ["SALVAR PIN"] = "PINを保存",
+            ["PIN incorreto."] = "PINが正しくありません。",
+            ["O PIN deve conter exatamente 4 números."] = "PINは4桁の数字で入力してください。",
+            ["Os PINs não são iguais."] = "PINが一致しません。",
+            ["PIN alterado com sucesso."] = "PINを変更しました。",
+            ["Não informado"] = "情報なし",
+            ["Classificação indicativa"] = "年齢レーティング",
+            ["Descrição"] = "説明",
+            ["Última execução"] = "最終プレイ",
+            ["JOGAR"] = "プレイ",
+            ["DETALHES / PERSONALIZAR"] = "詳細 / カスタマイズ",
+            ["FAVORITO"] = "お気に入り",
+            ["OCULTAR"] = "非表示",
+            ["DESOCULTAR"] = "再表示",
+            ["PESQUISAR"] = "検索",
+            ["TODOS"] = "すべて",
+            ["FAVORITOS"] = "お気に入り",
+            ["RECENTES"] = "最近",
+            ["OCULTOS"] = "非表示",
+            ["DUPLICADOS"] = "重複",
+            ["NOME"] = "名前",
+            ["MAIS RECENTES"] = "最近プレイ",
+            ["MAIS JOGADOS"] = "プレイ回数",
+            ["TEMPO JOGADO"] = "プレイ時間",
+            ["PLATAFORMA"] = "プラットフォーム",
+            ["DATA DE LANÇAMENTO"] = "発売日",
+            ["Ordem padrão"] = "標準順",
+            ["Ordem crescente"] = "昇順",
+            ["Ordem decrescente"] = "降順",
+            ["Adicionar jogo"] = "ゲームを追加",
+            ["Jogo Manual"] = "手動ゲーム",
+            ["Estatísticas"] = "統計",
+            ["Sobre / Créditos"] = "情報 / クレジット",
+            ["SOBRE / CRÉDITOS"] = "情報 / クレジット",
+            ["Buscar nas configurações"] = "設定を検索",
+            ["Abrir LUDARYX"] = "LUDARYXを開く",
+            ["Encerrar"] = "終了",
+            ["Ação"] = "アクション",
+            ["Aventura"] = "アドベンチャー",
+            ["Casual"] = "カジュアル",
+            ["Indie"] = "インディー",
+            ["RPG"] = "RPG",
+            ["Estratégia"] = "ストラテジー",
+            ["Simulação"] = "シミュレーション",
+            ["Esportes"] = "スポーツ",
+            ["Corrida"] = "レース",
+            ["Quebra-cabeça"] = "パズル",
+            ["Plataforma"] = "プラットフォーマー",
+            ["Tiro"] = "シューティング",
+            ["Luta"] = "格闘",
+            ["Terror"] = "ホラー",
+            ["Sobrevivência"] = "サバイバル",
+            ["Furtividade"] = "ステルス",
+            ["Mundo aberto"] = "オープンワールド"
+        };
 
     private static readonly Translation[] Translations =
     [
@@ -462,6 +553,9 @@ public static class LocalizationService
         EnglishUnitedKingdom => translation.EnGb,
         SpanishLatinAmerica => translation.Es419,
         SpanishEurope => translation.EsEs,
+        JapaneseJapan => JapaneseTranslations.TryGetValue(translation.PtBr, out var japanese)
+            ? japanese
+            : translation.EnUs,
         _ => translation.PtBr
     };
 }
