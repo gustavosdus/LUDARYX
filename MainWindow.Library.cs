@@ -82,6 +82,12 @@ public partial class MainWindow
             await SetLibraryLoadingAsync(true, "ATUALIZANDO BIBLIOTECA...");
             await EnrichLibraryBestEffortAsync(loadedGames, forceArtworkRefresh);
 
+            // Garante uma última sincronização local antes de qualquer filtro/duplicata.
+            // Isso também cobre caminhos de cache/idade localizada que não passam pela
+            // substituição principal de metadados.
+            foreach (var game in loadedGames)
+                _state.Apply(game, _settings);
+
             // Metadados podem alterar o nome canônico. Recalcula duplicatas depois do
             // enriquecimento para que o filtro reflita os nomes finais e versões copiadas.
             _duplicates.Detect(loadedGames);
@@ -282,6 +288,13 @@ public partial class MainWindow
                         _settings,
                         forceArtworkRefresh,
                         perGameCts.Token);
+
+                    // EnrichGameAsync pode substituir Game.Metadata pelo objeto recém-
+                    // obtido/cacheado. Reaplica imediatamente as preferências e os
+                    // metadados manuais (inclusive ESRB E10+, ClassInd e PEGI) para que
+                    // o filtro parental nunca avalie uma versão temporária sem os dados
+                    // persistidos pelo usuário.
+                    _state.Apply(game, _settings);
                 }
                 catch (OperationCanceledException)
                 {
