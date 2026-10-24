@@ -80,6 +80,8 @@ public sealed class JsonSettingsService
                 };
             }
             settings.Shortcuts ??= new ShortcutSettings();
+            settings.ParentalControlMode =
+                ParentalControlService.NormalizeMode(settings.ParentalControlMode);
 
             // 1.2.1 usa um controle de três estados para a direção:
             // padrão, crescente e decrescente. Configurações anteriores à opção
