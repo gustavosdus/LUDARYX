@@ -50,6 +50,14 @@ public static class AgeRatingService
     public static string GetPreferredSystemLabel(string language)
         => GetSystemLabel(GetPreferredSystemKey(language));
 
+    public static string? GetValue(GameMetadata metadata, string system)
+    {
+        metadata.AgeRatings ??= new(StringComparer.OrdinalIgnoreCase);
+        return TryGet(metadata.AgeRatings, system, out var value)
+            ? NormalizeValue(system, value)
+            : null;
+    }
+
     private static bool TryGet(Dictionary<string, string> ratings, string key, out string value)
     {
         foreach (var pair in ratings)
