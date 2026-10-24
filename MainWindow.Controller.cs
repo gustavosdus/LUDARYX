@@ -560,6 +560,7 @@ public partial class MainWindow
             PlatformFilterCombo,
             GenreFilter,
             SortCombo,
+            SortDirectionCombo,
             RefreshVisibleButton,
             ClearFiltersButton,
             AddGameButton,
