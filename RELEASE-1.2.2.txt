@@ -1,6 +1,6 @@
 # LUDARYX 1.2.2
 
-Versão em desenvolvimento.
+Versão estável.
 
 ## Classificações indicativas
 - Classificações adicionadas manualmente agora complementam as classificações automáticas por sistema, em vez de substituir todo o conjunto.
@@ -59,6 +59,3 @@ Versão em desenvolvimento.
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
 - Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
-
-## Em desenvolvimento
-Estas notas serão ampliadas conforme a 1.2.2 receber novas correções.
