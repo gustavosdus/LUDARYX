@@ -112,7 +112,7 @@ public static class AgeRatingService
         _ => system.ToUpperInvariant()
     };
 
-    private static string NormalizeValue(string system, string value)
+    public static string NormalizeValue(string system, string value)
     {
         var raw = value.Trim();
         var normalizedSystem = NormalizeSystem(system);
@@ -126,14 +126,25 @@ public static class AgeRatingService
         if (normalizedSystem != "esrb")
             return raw;
 
-        return raw.ToUpperInvariant() switch
+        var compact = System.Text.RegularExpressions.Regex.Replace(
+            raw.ToUpperInvariant(),
+            @"[^A-Z0-9+]",
+            "");
+
+        if (compact.Contains("E10+", StringComparison.Ordinal) ||
+            compact.Contains("EVERYONE10+", StringComparison.Ordinal) ||
+            compact.Contains("EVERYONE10PLUS", StringComparison.Ordinal))
+            return "E10+";
+
+        return compact switch
         {
+            "EC" or "EARLYCHILDHOOD" => "eC",
             "E" or "EVERYONE" => "E",
-            "E10" or "E10+" or "EVERYONE10+" => "E10+",
             "T" or "TEEN" => "T",
-            "M" or "MATURE" or "MATURE17+" => "M",
-            "AO" or "ADULTSONLY" or "ADULTSONLY18+" => "AO",
+            "M" or "MATURE" or "MATURE17+" or "MATURE17PLUS" => "M",
+            "AO" or "AO18+" or "ADULTSONLY" or "ADULTSONLY18+" or "ADULTSONLY18PLUS" => "AO",
             "RP" or "RATINGPENDING" => "RP",
+            "NR" or "NOTRATED" => "NR",
             _ => raw
         };
     }
