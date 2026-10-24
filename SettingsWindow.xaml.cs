@@ -36,8 +36,6 @@ public partial class SettingsWindow : Window
         StartWithWindowsCheck.IsChecked = StartupService.IsEnabled();
         _settings.StartWithWindows = StartWithWindowsCheck.IsChecked == true;
         StartFullscreenCheck.IsChecked = _settings.StartFullscreen;
-        NeonLineColorCombo.SelectedIndex = _settings.NeonLineColor == "LightBlue" ? 1 : 0;
-        SelectLanguage(_settings.Language);
         SteamGridDbApiKeyBox.Password = _settings.SteamGridDbApiKey ?? "";
         CheckForUpdatesOnStartupCheck.IsChecked = _settings.CheckForUpdatesOnStartup;
         AutoHideDuplicateSecondaryCheck.IsChecked = _settings.AutoHideDuplicateSecondary || _settings.ShowOnlyPrimaryDuplicates;
@@ -96,7 +94,6 @@ public partial class SettingsWindow : Window
         var query = SettingsSearchBox.Text.Trim();
         SetSectionVisibility(LibrarySection, query, "biblioteca ocultos painel lateral hero");
         SetSectionVisibility(ExecutionSection, query, "execução iniciar clientes windows tela cheia");
-        SetSectionVisibility(AppearanceSection, query, "aparência linha neon idioma");
         SetSectionVisibility(SteamGridDbSection, query, "steamgriddb api capas arte");
         SetSectionVisibility(UpdatesSection, query, "atualizações github verificar");
         SetSectionVisibility(DuplicatesSection, query, "duplicatas versão principal prioridade plataforma");
@@ -138,20 +135,6 @@ public partial class SettingsWindow : Window
         view.Refresh();
     }
 
-    private void SelectLanguage(string? languageCode)
-    {
-        foreach (var item in LanguageCombo.Items.OfType<System.Windows.Controls.ComboBoxItem>())
-        {
-            if (string.Equals(item.Tag?.ToString(), languageCode, StringComparison.OrdinalIgnoreCase))
-            {
-                LanguageCombo.SelectedItem = item;
-                return;
-            }
-        }
-
-        LanguageCombo.SelectedIndex = 0;
-    }
-
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         _settings.ShowHiddenApps = ShowHiddenCheck.IsChecked == true;
@@ -173,8 +156,6 @@ public partial class SettingsWindow : Window
                 MessageBoxImage.Error);
             return;
         }
-        _settings.NeonLineColor = (NeonLineColorCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() == "LightBlue" ? "LightBlue" : "Red";
-        _settings.Language = (LanguageCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? LocalizationService.PortugueseBrazil;
         _settings.SteamGridDbApiKey = string.IsNullOrWhiteSpace(SteamGridDbApiKeyBox.Password) ? null : SteamGridDbApiKeyBox.Password.Trim();
         _settings.CheckForUpdatesOnStartup = CheckForUpdatesOnStartupCheck.IsChecked == true;
         _settings.AutoHideDuplicateSecondary = AutoHideDuplicateSecondaryCheck.IsChecked == true;
