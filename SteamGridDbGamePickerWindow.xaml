@@ -62,7 +62,16 @@
         <TextBlock Text="ESCOLHER JOGO DO STEAMGRIDDB" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="24" FontWeight="Bold"/>
         <DockPanel Grid.Row="1" Margin="0,14,0,12">
             <Button DockPanel.Dock="Right" Content="PESQUISAR" Width="120" Click="Search_Click"/>
-            <TextBox x:Name="SearchBox" Height="36" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+            <TextBox x:Name="SearchBox"
+                      MinHeight="40"
+                      Margin="0,0,8,0"
+                      Padding="11,0"
+                      FontSize="14"
+                      Foreground="{DynamicResource LudaryxTextPrimary}"
+                      Background="{DynamicResource LudaryxInputBackground}"
+                      BorderBrush="{DynamicResource SelectionAccentBorder}"
+                      VerticalContentAlignment="Center"
+                      HorizontalContentAlignment="Left"/>
         </DockPanel>
         <ListBox x:Name="ResultsList" Grid.Row="2" Background="{DynamicResource LudaryxListBackground}" BorderThickness="0" Foreground="{DynamicResource LudaryxTextPrimary}" MouseDoubleClick="ResultsList_MouseDoubleClick">
             <ListBox.ItemTemplate>
