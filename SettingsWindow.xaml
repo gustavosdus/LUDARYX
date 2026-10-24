@@ -102,6 +102,7 @@
                                        Margin="0,14,0,5"/>
                             <ComboBox x:Name="ParentalControlCombo"
                                       PreviewMouseLeftButtonDown="ParentalControlCombo_PreviewMouseLeftButtonDown"
+                                      PreviewMouseWheel="ParentalControlCombo_PreviewMouseWheel"
                                       PreviewKeyDown="ParentalControlCombo_PreviewKeyDown"
                                       SelectionChanged="ParentalControlCombo_SelectionChanged"
                                       ToolTip="Faixa etária permitida na biblioteca">
