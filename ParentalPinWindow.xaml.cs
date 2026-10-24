@@ -20,15 +20,17 @@ public partial class ParentalPinWindow : Window
         _setupMode = !ParentalControlService.HasPin(settings);
 
         LudaryxThemeService.Apply(settings);
+        LocalizationService.SetLanguage(settings.Language);
+        LocalizationService.Apply(this);
 
         ConfirmPanel.Visibility = _setupMode ? Visibility.Visible : Visibility.Collapsed;
-        HeadingText.Text = _setupMode
+        HeadingText.Text = LocalizationService.Translate(_setupMode
             ? "Criar PIN do controle parental"
-            : "Desbloquear controle parental";
-        DescriptionText.Text = _setupMode
+            : "Desbloquear controle parental");
+        DescriptionText.Text = LocalizationService.Translate(_setupMode
             ? "Crie um PIN de exatamente 4 números. Ele será solicitado novamente após encerrar e abrir o LUDARYX."
-            : "Digite o PIN de 4 números para alterar a faixa etária durante esta sessão.";
-        ConfirmButton.Content = _setupMode ? "CRIAR PIN" : "DESBLOQUEAR";
+            : "Digite o PIN de 4 números para alterar a faixa etária durante esta sessão.");
+        ConfirmButton.Content = LocalizationService.Translate(_setupMode ? "CRIAR PIN" : "DESBLOQUEAR");
 
         Loaded += (_, _) =>
         {
@@ -49,7 +51,7 @@ public partial class ParentalPinWindow : Window
 
         if (!ParentalControlService.IsValidPin(pin))
         {
-            ErrorText.Text = "O PIN deve conter exatamente 4 números.";
+            ErrorText.Text = LocalizationService.Translate("O PIN deve conter exatamente 4 números.");
             return;
         }
 
@@ -57,7 +59,7 @@ public partial class ParentalPinWindow : Window
         {
             if (pin != ConfirmPinBox.Password)
             {
-                ErrorText.Text = "Os PINs não são iguais.";
+                ErrorText.Text = LocalizationService.Translate("Os PINs não são iguais.");
                 return;
             }
 
@@ -70,7 +72,7 @@ public partial class ParentalPinWindow : Window
 
         if (!ParentalControlService.VerifyPin(_settings, pin))
         {
-            ErrorText.Text = "PIN incorreto.";
+            ErrorText.Text = LocalizationService.Translate("PIN incorreto.");
             PinBox.Clear();
             PinBox.Focus();
             return;
