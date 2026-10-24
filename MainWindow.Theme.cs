@@ -37,6 +37,7 @@ public partial class MainWindow
         // Alguns textos são gerados em tempo de execução e precisam ser refeitos
         // após uma troca de idioma.
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
+        UpdateQuickToolbarSettingsPresentation();
         UpdateSortDirectionButtonPresentation();
         UpdateFilterChips();
         UpdateSelectedGamePresentation();
@@ -60,6 +61,73 @@ public partial class MainWindow
         };
     }
 
+    private static readonly (string Code, string Label)[] QuickLanguages =
+    [
+        (LocalizationService.PortugueseBrazil, "PT (BR)"),
+        (LocalizationService.PortuguesePortugal, "PT (PT)"),
+        (LocalizationService.EnglishUnitedStates, "EN (US)"),
+        (LocalizationService.EnglishUnitedKingdom, "EN (UK)"),
+        (LocalizationService.SpanishLatinAmerica, "ES (AL)"),
+        (LocalizationService.SpanishEurope, "ES (ES)")
+    ];
+
+    private void CycleLanguage_Click(object sender, RoutedEventArgs e)
+    {
+        var currentIndex = Array.FindIndex(
+            QuickLanguages,
+            item => item.Code.Equals(_settings.Language, StringComparison.OrdinalIgnoreCase));
+        var nextIndex = (currentIndex + 1 + QuickLanguages.Length) % QuickLanguages.Length;
+
+        _settings.Language = QuickLanguages[nextIndex].Code;
+        _settingsService.Save(_settings);
+        LocalizationService.SetLanguage(_settings.Language);
+
+        // Atualiza toda a apresentação imediatamente com os dados já disponíveis.
+        // A classificação localizada do jogo selecionado é complementada em segundo
+        // plano por UpdateSelectedGamePresentation, sem exigir abrir Personalizar.
+        ApplyLanguage();
+        UpdateQuickToolbarSettingsPresentation();
+    }
+
+    private void ToggleNeonColor_Click(object sender, RoutedEventArgs e)
+    {
+        _settings.NeonLineColor = _settings.NeonLineColor == "LightBlue"
+            ? "Red"
+            : "LightBlue";
+        _settingsService.Save(_settings);
+        ApplyVisualSettings();
+    }
+
+    private void UpdateQuickToolbarSettingsPresentation()
+    {
+        var language = QuickLanguages.FirstOrDefault(item =>
+            item.Code.Equals(_settings.Language, StringComparison.OrdinalIgnoreCase));
+        var label = string.IsNullOrWhiteSpace(language.Label) ? "PT (BR)" : language.Label;
+
+        if (GlobalLanguageText is not null)
+            GlobalLanguageText.Text = label;
+        if (FullscreenLanguageText is not null)
+            FullscreenLanguageText.Text = label;
+
+        var neonBrush = _settings.NeonLineColor == "LightBlue"
+            ? (Brush)FindResource("NeonBlue")
+            : (Brush)FindResource("NeonRed");
+
+        if (GlobalNeonColorDot is not null)
+            GlobalNeonColorDot.Fill = neonBrush;
+        if (FullscreenNeonColorDot is not null)
+            FullscreenNeonColorDot.Fill = neonBrush;
+
+        if (GlobalLanguageButton is not null)
+            GlobalLanguageButton.ToolTip = LocalizationService.Translate("Idioma");
+        if (FullscreenLanguageButton is not null)
+            FullscreenLanguageButton.ToolTip = LocalizationService.Translate("Idioma");
+        if (GlobalNeonColorButton is not null)
+            GlobalNeonColorButton.ToolTip = LocalizationService.Translate("Cor da linha neon");
+        if (FullscreenNeonColorButton is not null)
+            FullscreenNeonColorButton.ToolTip = LocalizationService.Translate("Cor da linha neon");
+    }
+
     private void ApplyVisualSettings()
     {
         LudaryxThemeService.Apply(_settings);
@@ -67,6 +135,7 @@ public partial class MainWindow
         NeonSeparator.Background = _settings.NeonLineColor == "LightBlue"
             ? (Brush)FindResource("NeonBlue")
             : (Brush)FindResource("NeonRed");
+        UpdateQuickToolbarSettingsPresentation();
 
         var lightTheme = string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase);
         var topBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#666B73" : "#050507"));
