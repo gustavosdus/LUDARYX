@@ -32,6 +32,20 @@ Versão em desenvolvimento.
 
 - Reorganizada a barra superior para Idioma → Cor neon → Atualizar biblioteca → Configurações, usando largura automática na área de ações para evitar recortes.
 
+## Controle parental
+- Adicionado em Configurações → Biblioteca um filtro parental protegido por PIN numérico de 4 dígitos.
+- O primeiro acesso à alteração da faixa etária cria e confirma o PIN; depois de desbloqueado, a opção permanece livre somente durante a sessão atual do LUDARYX.
+- Ao encerrar o LUDARYX pela System Tray e abrir novamente, o PIN volta a ser exigido para alterar a faixa.
+- Perfis disponíveis: Padrão, 3–5, 6–11, 12–15 e 16–18 anos, sempre cumulativos com as faixas inferiores.
+- ClassInd: L; 6/10; 12/14; 16/18.
+- ESRB: eC/E; E10+; T; M/AO.
+- PEGI: 3; 7; 12; 16/18.
+- ESRB NR/RP é ignorada para a decisão quando ClassInd ou PEGI fornece uma classificação utilizável.
+- Jogos sem classificação utilizável ficam ocultos em qualquer perfil diferente de Padrão.
+- Classificações desconhecidas em texto ficam ocultas; valores numéricos não padronizados são encaixados pela idade, com valores acima de 18 tratados na faixa 16–18.
+- Quando múltiplos sistemas válidos existem, o filtro usa a classificação mais restritiva para evitar liberar um jogo acima da faixa escolhida.
+- O PIN não é salvo em texto puro; a credencial derivada é protegida pela conta do Windows.
+
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
 - Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
