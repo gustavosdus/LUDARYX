@@ -26,6 +26,10 @@ Versão em desenvolvimento.
 - Os atalhos de idioma e cor neon também ficam disponíveis no modo tela cheia.
 - Todos os novos controles continuam navegáveis por mouse, teclado e controle.
 
+- Corrigido o recorte do identificador de idioma na barra superior do modo padrão.
+- Aumentado o círculo do seletor de cor neon e ampliada a área clicável do botão inteiro.
+- Os mesmos ajustes de tamanho foram aplicados ao modo tela cheia para manter consistência visual.
+
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
 - Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
