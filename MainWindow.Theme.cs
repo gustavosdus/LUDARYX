@@ -37,6 +37,7 @@ public partial class MainWindow
         // Alguns textos são gerados em tempo de execução e precisam ser refeitos
         // após uma troca de idioma.
         GameCountText.Text = LocalizedGameCount(_visibleGames.Count);
+        UpdateSortDirectionButtonPresentation();
         UpdateFilterChips();
         UpdateSelectedGamePresentation();
         UpdateFooterInputHints();
