@@ -484,6 +484,7 @@ public partial class SettingsWindow : Window
         PreferredDuplicateProviders = new Dictionary<string, string>(source.PreferredDuplicateProviders, StringComparer.OrdinalIgnoreCase),
         DuplicatePlatformPriority = source.DuplicatePlatformPriority.ToList(),
         LibrarySortMode = source.LibrarySortMode,
+        LibrarySortDirection = source.LibrarySortDirection,
         Shortcuts = new ShortcutSettings
         {
             FocusSearch = source.Shortcuts.FocusSearch,
