@@ -57,6 +57,7 @@ public partial class MainWindow
             LocalizationService.PortuguesePortugal => $"{count} jogos apresentados",
             LocalizationService.EnglishUnitedStates or LocalizationService.EnglishUnitedKingdom => $"{count} games shown",
             LocalizationService.SpanishLatinAmerica or LocalizationService.SpanishEurope => $"{count} juegos mostrados",
+            LocalizationService.JapaneseJapan => $"{count} 本のゲームを表示",
             _ => $"{count} jogos exibidos"
         };
     }
@@ -68,7 +69,8 @@ public partial class MainWindow
         (LocalizationService.EnglishUnitedStates, "EN (US)"),
         (LocalizationService.EnglishUnitedKingdom, "EN (UK)"),
         (LocalizationService.SpanishLatinAmerica, "ES (AL)"),
-        (LocalizationService.SpanishEurope, "ES (ES)")
+        (LocalizationService.SpanishEurope, "ES (ES)"),
+        (LocalizationService.JapaneseJapan, "JP")
     ];
 
     private void CycleLanguage_Click(object sender, RoutedEventArgs e)
