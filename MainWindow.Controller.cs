@@ -572,9 +572,9 @@ public partial class MainWindow
         if (_fullscreen)
         {
             controls.Add(FullscreenSearchBox);
-            controls.Add(FullscreenRefreshButton);
             controls.Add(FullscreenLanguageButton);
             controls.Add(FullscreenNeonColorButton);
+            controls.Add(FullscreenRefreshButton);
             controls.Add(FullscreenSettingsButton);
             controls.Add(FullscreenStatisticsButton);
             controls.Add(FullscreenToolbarButton);
@@ -582,9 +582,9 @@ public partial class MainWindow
         else
         {
             controls.Add(SearchBox);
-            controls.Add(GlobalRefreshButton);
             controls.Add(GlobalLanguageButton);
             controls.Add(GlobalNeonColorButton);
+            controls.Add(GlobalRefreshButton);
             controls.Add(GlobalSettingsButton);
             controls.Add(GlobalStatisticsButton);
             controls.Add(GlobalFullscreenButton);
