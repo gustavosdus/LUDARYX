@@ -8,10 +8,10 @@ namespace UnifiedGameLauncher.Services;
 public static class ParentalControlService
 {
     public const string Default = "Default";
-    public const string Age3To5 = "Age3To5";
-    public const string Age6To11 = "Age6To11";
-    public const string Age12To15 = "Age12To15";
-    public const string Age16To18 = "Age16To18";
+    public const string Age3To9 = "Age3To9";
+    public const string Age10To13 = "Age10To13";
+    public const string Age14To17 = "Age14To17";
+    public const string Over18 = "Over18";
 
     private static bool _sessionUnlocked;
 
@@ -21,10 +21,10 @@ public static class ParentalControlService
 
     public static string NormalizeMode(string? mode) => mode switch
     {
-        Age3To5 => Age3To5,
-        Age6To11 => Age6To11,
-        Age12To15 => Age12To15,
-        Age16To18 => Age16To18,
+        Age3To9 or "Age3To5" => Age3To9,
+        Age10To13 or "Age6To11" => Age10To13,
+        Age14To17 or "Age12To15" => Age14To17,
+        Over18 or "Age16To18" => Over18,
         _ => Default
     };
 
@@ -81,62 +81,65 @@ public static class ParentalControlService
         if (normalizedMode == Default)
             return true;
 
-        var maxAge = normalizedMode switch
+        var allowedLevel = normalizedMode switch
         {
-            Age3To5 => 5,
-            Age6To11 => 11,
-            Age12To15 => 15,
-            _ => int.MaxValue
+            Age3To9 => 1,
+            Age10To13 => 2,
+            Age14To17 => 3,
+            _ => 4
         };
 
         metadata.AgeRatings ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        var ages = new List<int>();
+        var levels = new List<int>();
         foreach (var pair in metadata.AgeRatings)
         {
             var system = AgeRatingService.NormalizeSystem(pair.Key);
             if (system is not ("dejus" or "esrb" or "pegi"))
                 continue;
 
-            var result = ParseRating(system, pair.Value);
+            var result = ParseRatingLevel(system, pair.Value);
             if (result.Kind == RatingParseKind.PendingOrUnrated)
                 continue;
 
             if (result.Kind == RatingParseKind.UnknownText)
                 return false;
 
-            if (result.Age.HasValue)
-                ages.Add(result.Age.Value);
+            if (result.Level.HasValue)
+                levels.Add(result.Level.Value);
         }
 
-        if (ages.Count == 0)
+        if (levels.Count == 0)
             return false;
 
-        return ages.Max() <= maxAge;
+        return levels.Max() <= allowedLevel;
     }
 
-    private static RatingParseResult ParseRating(string system, string? value)
+    private static RatingParseResult ParseRatingLevel(string system, string? value)
     {
         var raw = value?.Trim() ?? "";
         if (raw.Length == 0)
             return RatingParseResult.Unknown;
 
-        var upper = raw.ToUpperInvariant();
-
         if (system == "esrb")
         {
-            var compact = Regex.Replace(upper, @"[^A-Z0-9+]", "");
+            var normalized = AgeRatingService.NormalizeValue(system, raw);
+            var compact = Regex.Replace(
+                normalized.ToUpperInvariant(),
+                @"[^A-Z0-9+]",
+                "");
+
             if (compact is "NR" or "NOTRATED" or "RP" or "RATINGPENDING")
                 return RatingParseResult.Pending;
 
             return compact switch
             {
-                "EC" or "EARLYCHILDHOOD" => RatingParseResult.Known(3),
-                "E" or "EVERYONE" => RatingParseResult.Known(5),
-                "E10+" or "EVERYONE10+" or "EVERYONE10PLUS" => RatingParseResult.Known(10),
-                "T" or "TEEN" => RatingParseResult.Known(13),
-                "M" or "MATURE" or "MATURE17+" or "MATURE17PLUS" => RatingParseResult.Known(17),
-                "AO" or "AO18+" or "ADULTSONLY" or "ADULTSONLY18+" or "ADULTSONLY18PLUS" => RatingParseResult.Known(18),
+                "EC" or "EARLYCHILDHOOD" => RatingParseResult.Known(1),
+                "E" or "EVERYONE" => RatingParseResult.Known(1),
+                "E10+" or "EVERYONE10+" or "EVERYONE10PLUS" => RatingParseResult.Known(2),
+                "T" or "TEEN" => RatingParseResult.Known(3),
+                "M" or "MATURE" or "MATURE17+" or "MATURE17PLUS" => RatingParseResult.Known(4),
+                "AO" or "AO18+" or "ADULTSONLY" or "ADULTSONLY18+" or "ADULTSONLY18PLUS" => RatingParseResult.Known(4),
                 _ when compact.Any(char.IsLetter) => RatingParseResult.Unknown,
                 _ => ParseNumericFallback(raw)
             };
@@ -144,22 +147,66 @@ public static class ParentalControlService
 
         if (system == "dejus")
         {
-            if (upper is "L" or "LIVRE")
-                return RatingParseResult.Known(0);
+            var normalized = AgeRatingService.NormalizeValue(system, raw);
+            if (normalized.Equals("L", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("LIVRE", StringComparison.OrdinalIgnoreCase))
+            {
+                return RatingParseResult.Known(1);
+            }
 
-            return ParseNumericFallback(raw);
+            if (TryExtractNumber(normalized, out var classIndAge))
+            {
+                return classIndAge switch
+                {
+                    <= 9 => RatingParseResult.Known(1),
+                    <= 13 => RatingParseResult.Known(2),
+                    <= 17 => RatingParseResult.Known(3),
+                    _ => RatingParseResult.Known(4)
+                };
+            }
+
+            return RatingParseResult.Unknown;
         }
 
-        return ParseNumericFallback(raw);
+        if (TryExtractNumber(raw, out var pegiAge))
+        {
+            return pegiAge switch
+            {
+                <= 7 => RatingParseResult.Known(1),
+                <= 12 => RatingParseResult.Known(2),
+                <= 16 => RatingParseResult.Known(3),
+                _ => RatingParseResult.Known(4)
+            };
+        }
+
+        return RatingParseResult.Unknown;
     }
 
     private static RatingParseResult ParseNumericFallback(string raw)
     {
-        var match = Regex.Match(raw, @"\d+");
-        if (!match.Success || !int.TryParse(match.Value, out var age))
+        if (!TryExtractNumber(raw, out var age))
             return RatingParseResult.Unknown;
 
-        return RatingParseResult.Known(Math.Max(0, Math.Min(age, 18)));
+        return age switch
+        {
+            <= 9 => RatingParseResult.Known(1),
+            <= 13 => RatingParseResult.Known(2),
+            <= 17 => RatingParseResult.Known(3),
+            _ => RatingParseResult.Known(4)
+        };
+    }
+
+    private static bool TryExtractNumber(string raw, out int age)
+    {
+        var match = Regex.Match(raw, @"\d+");
+        if (!match.Success || !int.TryParse(match.Value, out age))
+        {
+            age = 0;
+            return false;
+        }
+
+        age = Math.Max(0, age);
+        return true;
     }
 
     private static string CreatePinRecord(string pin)
@@ -192,9 +239,9 @@ public static class ParentalControlService
         UnknownText
     }
 
-    private readonly record struct RatingParseResult(RatingParseKind Kind, int? Age)
+    private readonly record struct RatingParseResult(RatingParseKind Kind, int? Level)
     {
-        public static RatingParseResult Known(int age) => new(RatingParseKind.Known, age);
+        public static RatingParseResult Known(int level) => new(RatingParseKind.Known, level);
         public static RatingParseResult Pending => new(RatingParseKind.PendingOrUnrated, null);
         public static RatingParseResult Unknown => new(RatingParseKind.UnknownText, null);
     }
