@@ -54,6 +54,7 @@ public sealed class LauncherSettings
         "Steam", "Epic", "GOG", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
     };
     public string LibrarySortMode { get; set; } = "Name";
+    public string LibrarySortDirection { get; set; } = "Ascending";
     // Legado 1.1.x: consolidado em AutoHideDuplicateSecondary.
     public bool ShowOnlyPrimaryDuplicates { get; set; } = false;
     public ShortcutSettings Shortcuts { get; set; } = new();
