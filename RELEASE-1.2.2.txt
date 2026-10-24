@@ -46,6 +46,10 @@ Versão em desenvolvimento.
 - Quando múltiplos sistemas válidos existem, o filtro usa a classificação mais restritiva para evitar liberar um jogo acima da faixa escolhida.
 - O PIN não é salvo em texto puro; a credencial derivada é protegida pela conta do Windows.
 
+- Corrigida a janela de criação/desbloqueio do PIN para manter os botões Cancelar/Confirmar sempre visíveis.
+- Quando um PIN já existe, Configurações exibe o botão Alterar PIN ao lado da busca.
+- A troca de PIN exige confirmar o PIN atual duas vezes; após a validação, a mesma janela avança para a etapa de novo PIN e exige nova confirmação antes de salvar.
+
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
 - Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
