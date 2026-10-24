@@ -1,0 +1,12 @@
+# LUDARYX 1.2.1
+
+Versão em desenvolvimento.
+
+## Correções iniciais
+- Corrigido o campo de pesquisa da janela "Corrigir jogo do SteamGridDB", que podia ficar ilegível e com o texto verticalmente cortado.
+- A seleção de artes do SteamGridDB agora mostra a resolução completa de cada imagem no formato largura × altura.
+- Removida a exibição de pontuação das artes do SteamGridDB por não ser necessária para a escolha visual.
+- Classificações ClassInd livres passam a ser exibidas como `L` maiúsculo de forma consistente.
+
+## Em desenvolvimento
+Estas notas serão ampliadas conforme a 1.2.1 receber novas correções.
