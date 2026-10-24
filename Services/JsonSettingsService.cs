@@ -69,6 +69,21 @@ public sealed class JsonSettingsService
             settings.TotalPlayTimeSeconds ??= new();
             settings.MonthlyPlayTimeSeconds ??= new();
             settings.ManualMetadata ??= new();
+            foreach (var manual in settings.ManualMetadata.Values)
+            {
+                manual.AgeRatings ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                var normalizedRatings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var pair in manual.AgeRatings)
+                {
+                    var system = AgeRatingService.NormalizeSystem(pair.Key);
+                    var value = AgeRatingService.NormalizeValue(system, pair.Value);
+                    if (!string.IsNullOrWhiteSpace(value))
+                        normalizedRatings[system] = value;
+                }
+
+                manual.AgeRatings = normalizedRatings;
+            }
             settings.ManualGames ??= new();
             settings.SteamGridDbGameIds ??= new();
             settings.DuplicatePlatformPriority ??= new();
