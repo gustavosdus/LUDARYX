@@ -52,6 +52,7 @@ public partial class SettingsWindow : Window
         MaxCacheSizeBox.Text = _settings.MaxCacheSizeMb.ToString();
         RefreshCacheSize();
         IntegrationStatusList.ItemsSource = IntegrationStatusService.GetStatuses(_settings);
+        UpdateChangeParentalPinButtonVisibility();
 
         LocalizationService.SetLanguage(_settings.Language);
         LocalizationService.Apply(this);
@@ -149,9 +150,45 @@ public partial class SettingsWindow : Window
             // Persiste imediatamente sem salvar opções ainda não confirmadas.
             _sourceSettings.ProtectedParentalPin = _settings.ProtectedParentalPin;
             _settingsService.Save(_sourceSettings);
+            UpdateChangeParentalPinButtonVisibility();
         }
 
         return ParentalControlService.IsSessionUnlocked;
+    }
+
+    private void UpdateChangeParentalPinButtonVisibility()
+    {
+        if (ChangeParentalPinButton is null)
+            return;
+
+        ChangeParentalPinButton.Visibility = ParentalControlService.HasPin(_settings)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private void ChangeParentalPin_Click(object sender, RoutedEventArgs e)
+    {
+        if (!ParentalControlService.HasPin(_settings))
+            return;
+
+        var pinWindow = new ParentalPinWindow(_settings, changePinMode: true)
+        {
+            Owner = this
+        };
+
+        if (pinWindow.ShowDialog() != true || !pinWindow.PinChanged)
+            return;
+
+        _sourceSettings.ProtectedParentalPin = _settings.ProtectedParentalPin;
+        _settingsService.Save(_sourceSettings);
+        UpdateChangeParentalPinButtonVisibility();
+
+        MessageBox.Show(
+            this,
+            LocalizationService.Translate("PIN alterado com sucesso."),
+            "LUDARYX",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
     }
 
     private void ParentalControlCombo_PreviewMouseLeftButtonDown(
