@@ -30,6 +30,8 @@ Versão em desenvolvimento.
 - Aumentado o círculo do seletor de cor neon e ampliada a área clicável do botão inteiro.
 - Os mesmos ajustes de tamanho foram aplicados ao modo tela cheia para manter consistência visual.
 
+- Reorganizada a barra superior para Idioma → Cor neon → Atualizar biblioteca → Configurações, usando largura automática na área de ações para evitar recortes.
+
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
 - Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
