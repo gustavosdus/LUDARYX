@@ -8,5 +8,9 @@ Versão em desenvolvimento.
 - Removida a exibição de pontuação das artes do SteamGridDB por não ser necessária para a escolha visual.
 - Classificações ClassInd livres passam a ser exibidas como `L` maiúsculo de forma consistente.
 
+- Adicionada ordenação por DATA DE LANÇAMENTO usando o ano de lançamento disponível nos metadados.
+- Adicionado controle CRESCENTE / DECRESCENTE para inverter explicitamente a direção de qualquer critério de ordenação.
+- A direção escolhida é salva nas configurações e também pode ser alterada por teclado/controle na barra superior.
+
 ## Em desenvolvimento
 Estas notas serão ampliadas conforme a 1.2.1 receber novas correções.
