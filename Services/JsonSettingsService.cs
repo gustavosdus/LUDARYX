@@ -81,23 +81,21 @@ public sealed class JsonSettingsService
             }
             settings.Shortcuts ??= new ShortcutSettings();
 
-            // 1.2.1 torna a direção da ordenação explícita. Para configurações antigas,
-            // preserva o comportamento anterior: recentes/mais jogados/tempo jogado
-            // eram decrescentes, enquanto nome/plataforma eram crescentes.
+            // 1.2.1 usa um controle de três estados para a direção:
+            // padrão, crescente e decrescente. Configurações anteriores à opção
+            // começam no estado padrão, que preserva a ordem natural de cada critério.
             using (var settingsDocument = JsonDocument.Parse(json))
             {
                 if (!settingsDocument.RootElement.TryGetProperty("LibrarySortDirection", out _))
-                {
-                    settings.LibrarySortDirection = settings.LibrarySortMode is "Recent" or "MostPlayed" or "PlayTime"
-                        ? "Descending"
-                        : "Ascending";
-                }
+                    settings.LibrarySortDirection = "Default";
             }
 
-            if (!string.Equals(settings.LibrarySortDirection, "Descending", StringComparison.OrdinalIgnoreCase))
-                settings.LibrarySortDirection = "Ascending";
-            else
-                settings.LibrarySortDirection = "Descending";
+            settings.LibrarySortDirection = settings.LibrarySortDirection?.Trim() switch
+            {
+                "Ascending" => "Ascending",
+                "Descending" => "Descending",
+                _ => "Default"
+            };
 
             // 1.1.3 altera apenas a prioridade padrão histórica. Preferências
             // personalizadas continuam intactas; somente a sequência exata antiga
