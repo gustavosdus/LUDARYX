@@ -731,6 +731,11 @@
                             <ComboBoxItem Content="MAIS JOGADOS" Tag="MostPlayed"/>
                             <ComboBoxItem Content="TEMPO JOGADO" Tag="PlayTime"/>
                             <ComboBoxItem Content="PLATAFORMA" Tag="Platform"/>
+                            <ComboBoxItem Content="DATA DE LANÇAMENTO" Tag="ReleaseDate"/>
+                        </ComboBox>
+                        <ComboBox x:Name="SortDirectionCombo" Width="145" Style="{StaticResource FilterCombo}" ItemContainerStyle="{StaticResource FilterComboItem}" SelectionChanged="SortDirectionCombo_SelectionChanged" ToolTip="Ordem da classificação">
+                            <ComboBoxItem Content="CRESCENTE" Tag="Ascending"/>
+                            <ComboBoxItem Content="DECRESCENTE" Tag="Descending"/>
                         </ComboBox>
 
                         <Button x:Name="RefreshVisibleButton" Content="ATUALIZAR FILTRO" Style="{StaticResource NavButton}" Click="RefreshVisible_Click"/>
