@@ -1057,6 +1057,7 @@ public partial class MainWindow
              !g.IsDuplicate ||
              !IsAutoHiddenDuplicateSecondary(g) ||
              _specialFilter is "duplicates" or "hidden") &&
+            ParentalControlService.IsGameAllowed(g.Metadata, _settings.ParentalControlMode) &&
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
 
