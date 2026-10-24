@@ -34,7 +34,7 @@ public static class AgeRatingService
         foreach (var pair in metadata.AgeRatings)
         {
             if (!string.IsNullOrWhiteSpace(pair.Value))
-                return $"{GetSystemLabel(pair.Key)} {pair.Value.Trim()}";
+                return $"{GetSystemLabel(pair.Key)} {NormalizeValue(pair.Key, pair.Value)}";
         }
 
         return LocalizationService.Translate("Não informado");
@@ -107,7 +107,15 @@ public static class AgeRatingService
     private static string NormalizeValue(string system, string value)
     {
         var raw = value.Trim();
-        if (NormalizeSystem(system) != "esrb")
+        var normalizedSystem = NormalizeSystem(system);
+
+        if (normalizedSystem == "dejus")
+        {
+            var classIndValue = raw.ToUpperInvariant();
+            return classIndValue is "L" or "LIVRE" ? "L" : raw;
+        }
+
+        if (normalizedSystem != "esrb")
             return raw;
 
         return raw.ToUpperInvariant() switch
