@@ -12,6 +12,8 @@ public sealed class LauncherSettings
     public bool StartFullscreen { get; set; } = false;
     public bool ShowHiddenApps { get; set; } = false;
     public bool HideGameDetailsPanels { get; set; } = false;
+    public string ParentalControlMode { get; set; } = "Default";
+    public string? ProtectedParentalPin { get; set; }
     public int LibraryColumns { get; set; } = 6;
     public List<string> HiddenGameIds { get; set; } = new();
     public List<string> ExcludedGameIds { get; set; } = new();
