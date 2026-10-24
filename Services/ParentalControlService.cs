@@ -137,6 +137,7 @@ public static class ParentalControlService
                 "T" or "TEEN" => RatingParseResult.Known(13),
                 "M" or "MATURE" or "MATURE17+" or "MATURE17PLUS" => RatingParseResult.Known(17),
                 "AO" or "AO18+" or "ADULTSONLY" or "ADULTSONLY18+" or "ADULTSONLY18PLUS" => RatingParseResult.Known(18),
+                _ when compact.Any(char.IsLetter) => RatingParseResult.Unknown,
                 _ => ParseNumericFallback(raw)
             };
         }
