@@ -36,13 +36,14 @@ Versão em desenvolvimento.
 - Adicionado em Configurações → Biblioteca um filtro parental protegido por PIN numérico de 4 dígitos.
 - O primeiro acesso à alteração da faixa etária cria e confirma o PIN; depois de desbloqueado, a opção permanece livre somente durante a sessão atual do LUDARYX.
 - Ao encerrar o LUDARYX pela System Tray e abrir novamente, o PIN volta a ser exigido para alterar a faixa.
-- Perfis disponíveis: Padrão, 3–5, 6–11, 12–15 e 16–18 anos, sempre cumulativos com as faixas inferiores.
-- ClassInd: L; 6/10; 12/14; 16/18.
-- ESRB: eC/E; E10+; T; M/AO.
-- PEGI: 3; 7; 12; 16/18.
+- Perfis disponíveis: Padrão, 3–9, 10–13, 14–17 e Acima de 18 anos, sempre cumulativos com as faixas inferiores.
+- 3–9: ClassInd L/6; ESRB eC/E; PEGI 3/7.
+- 10–13: ClassInd 10/12; ESRB E10+; PEGI 12.
+- 14–17: ClassInd 14/16; ESRB T; PEGI 16.
+- Acima de 18: ClassInd 18; ESRB M/AO; PEGI 18.
 - ESRB NR/RP é ignorada para a decisão quando ClassInd ou PEGI fornece uma classificação utilizável.
 - Jogos sem classificação utilizável ficam ocultos em qualquer perfil diferente de Padrão.
-- Classificações desconhecidas em texto ficam ocultas; valores numéricos não padronizados são encaixados pela idade, com valores acima de 18 tratados na faixa 16–18.
+- Classificações desconhecidas em texto ficam ocultas; valores numéricos não padronizados são encaixados pela idade, com valores acima de 18 tratados na faixa Acima de 18.
 - Quando múltiplos sistemas válidos existem, o filtro usa a classificação mais restritiva para evitar liberar um jogo acima da faixa escolhida.
 - O PIN não é salvo em texto puro; a credencial derivada é protegida pela conta do Windows.
 
@@ -51,6 +52,9 @@ Versão em desenvolvimento.
 - A troca de PIN exige confirmar o PIN atual duas vezes; após a validação, a mesma janela avança para a etapa de novo PIN e exige nova confirmação antes de salvar.
 
 - Corrigido o desaparecimento de jogos com classificações manuais como ESRB E10+ durante o filtro parental: metadados manuais agora são reaplicados imediatamente após cada enriquecimento automático, sem depender de abrir/fechar Personalizar.
+
+- Corrigida a persistência de classificações ESRB manuais como E10+: valores antigos como "Everyone 10+" e aliases de sistema são normalizados ao carregar e salvos canonicamente como E10+.
+- O filtro parental agora trabalha com níveis explícitos por sistema, evitando que E10+, T, M/AO e equivalentes sejam interpretados apenas por um número genérico.
 
 ## Configurações
 - Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
