@@ -56,6 +56,7 @@ public partial class SettingsWindow : Window
 
         LocalizationService.SetLanguage(_settings.Language);
         LocalizationService.Apply(this);
+        ChangeParentalPinButton.Content = LocalizationService.Translate("Alterar PIN").ToUpperInvariant();
 
         foreach (var game in _games.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase))
             _items.Add(new GameVisibilityItem(game, !_settings.HiddenGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase) && !_settings.ExcludedGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase)));
