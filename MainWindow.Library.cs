@@ -133,12 +133,7 @@ public partial class MainWindow
                 .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortMode, StringComparison.OrdinalIgnoreCase));
             SortCombo.SelectedItem = sortItem ?? SortCombo.Items[0];
         }
-        if (SortDirectionCombo.SelectedItem is null)
-        {
-            var directionItem = SortDirectionCombo.Items.OfType<ComboBoxItem>()
-                .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortDirection, StringComparison.OrdinalIgnoreCase));
-            SortDirectionCombo.SelectedItem = directionItem ?? SortDirectionCombo.Items[0];
-        }
+        UpdateSortDirectionButtonPresentation();
         _ = _sessions.RefreshRunningStateAsync(_games);
         ApplyFilter();
     }
@@ -519,14 +514,55 @@ public partial class MainWindow
         ApplyFilter();
     }
 
-    private void SortDirectionCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void SortDirectionButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!IsLoaded || SortDirectionCombo.SelectedItem is not ComboBoxItem item) return;
-        _settings.LibrarySortDirection = item.Tag?.ToString() == "Descending"
-            ? "Descending"
-            : "Ascending";
+        _settings.LibrarySortDirection = NormalizeSortDirection(_settings.LibrarySortDirection) switch
+        {
+            "Default" => "Ascending",
+            "Ascending" => "Descending",
+            _ => "Default"
+        };
+
         _settingsService.Save(_settings);
+        UpdateSortDirectionButtonPresentation();
         ApplyFilter();
+    }
+
+    private static string NormalizeSortDirection(string? value) => value switch
+    {
+        "Ascending" => "Ascending",
+        "Descending" => "Descending",
+        _ => "Default"
+    };
+
+    private void UpdateSortDirectionButtonPresentation()
+    {
+        if (SortDirectionButton is null)
+            return;
+
+        var direction = NormalizeSortDirection(_settings.LibrarySortDirection);
+        SortDirectionButton.Content = direction switch
+        {
+            "Ascending" => "↑",
+            "Descending" => "↓",
+            _ => "↕"
+        };
+
+        SortDirectionButton.ToolTip = direction switch
+        {
+            "Ascending" => LocalizationService.Translate("Ordem crescente"),
+            "Descending" => LocalizationService.Translate("Ordem decrescente"),
+            _ => LocalizationService.Translate("Ordem padrão")
+        };
+    }
+
+    private static bool IsDefaultSortDescending(string sortMode, string specialFilter)
+    {
+        if (sortMode is "Recent" or "MostPlayed" or "PlayTime")
+            return true;
+
+        return sortMode == "Name" &&
+               specialFilter.Equals("recent", StringComparison.OrdinalIgnoreCase);
     }
 
     private async void AddGame_Click(object sender, RoutedEventArgs e)
@@ -878,13 +914,17 @@ public partial class MainWindow
 
         var sortItem = SortCombo.SelectedItem as ComboBoxItem;
         var sortTag = sortItem?.Tag?.ToString() ?? "Name";
-        var directionItem = SortDirectionCombo.SelectedItem as ComboBoxItem;
-        var directionTag = directionItem?.Tag?.ToString() ?? "Ascending";
+        var direction = NormalizeSortDirection(_settings.LibrarySortDirection);
         var hasCustomSort = !sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase) ||
-                            directionTag.Equals("Descending", StringComparison.OrdinalIgnoreCase);
+                            direction != "Default";
         SortFilterChip.Visibility = hasCustomSort ? Visibility.Visible : Visibility.Collapsed;
         SortFilterChip.Content = hasCustomSort
-            ? $"{sortItem?.Content} • {directionItem?.Content}  ×"
+            ? direction switch
+            {
+                "Ascending" => $"{sortItem?.Content} • ↑  ×",
+                "Descending" => $"{sortItem?.Content} • ↓  ×",
+                _ => $"{sortItem?.Content}  ×"
+            }
             : null;
     }
 
@@ -899,7 +939,9 @@ public partial class MainWindow
         PlatformFilterCombo.SelectedIndex = 0;
         GenreFilter.SelectedIndex = 0;
         SortCombo.SelectedIndex = 0;
-        SortDirectionCombo.SelectedIndex = 0;
+        _settings.LibrarySortDirection = "Default";
+        UpdateSortDirectionButtonPresentation();
+        _settingsService.Save(_settings);
         _specialFilter = string.Empty;
         _platformFilter = null;
         ApplyFilter();
@@ -924,7 +966,10 @@ public partial class MainWindow
     private void ResetSortFilter_Click(object sender, RoutedEventArgs e)
     {
         SortCombo.SelectedIndex = 0;
-        SortDirectionCombo.SelectedIndex = 0;
+        _settings.LibrarySortDirection = "Default";
+        UpdateSortDirectionButtonPresentation();
+        _settingsService.Save(_settings);
+        ApplyFilter();
     }
 
     private async void SelectedPlay_Click(object sender, RoutedEventArgs e)
@@ -969,12 +1014,16 @@ public partial class MainWindow
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
 
-        var descending = string.Equals(
-            _settings.LibrarySortDirection,
-            "Descending",
-            StringComparison.OrdinalIgnoreCase);
+        var sortMode = _settings.LibrarySortMode ?? "Name";
+        var direction = NormalizeSortDirection(_settings.LibrarySortDirection);
+        var descending = direction switch
+        {
+            "Ascending" => false,
+            "Descending" => true,
+            _ => IsDefaultSortDescending(sortMode, _specialFilter)
+        };
 
-        filtered = (_settings.LibrarySortMode ?? "Name") switch
+        filtered = sortMode switch
         {
             "Recent" => descending
                 ? filtered.OrderBy(g => !g.LastPlayedUtc.HasValue)
