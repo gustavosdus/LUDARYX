@@ -705,7 +705,7 @@ public partial class DetailsWindow : Window
         if (string.IsNullOrWhiteSpace(ratingValue))
             ageRatings.Remove(ratingSystem);
         else
-            ageRatings[ratingSystem] = ratingValue;
+            ageRatings[ratingSystem] = AgeRatingService.NormalizeValue(ratingSystem, ratingValue);
 
         var manual = new ManualGameMetadata
         {
