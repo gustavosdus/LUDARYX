@@ -623,7 +623,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="205"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="430"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" VerticalAlignment="Center" Margin="18,0,0,0">
@@ -662,16 +662,6 @@
 
             <StackPanel Grid.Column="2" Orientation="Horizontal"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
-                <Button x:Name="GlobalRefreshButton" Style="{StaticResource IntegratedIconButton}"
-                        Click="Refresh_Click" ToolTip="Atualizar biblioteca" Margin="0,0,5,0">
-                    <Viewbox Width="17" Height="17">
-                        <Canvas Width="24" Height="24">
-                            <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2" StrokeStartLineCap="Round"
-                                  StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                  Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
-                        </Canvas>
-                    </Viewbox>
-                </Button>
                 <Button x:Name="GlobalLanguageButton"
                         Style="{StaticResource IntegratedIconButton}"
                         Click="CycleLanguage_Click"
@@ -701,6 +691,22 @@
                              Height="18"
                              IsHitTestVisible="False"
                              Fill="{StaticResource NeonRed}"/>
+                </Button>
+                <Button x:Name="GlobalRefreshButton"
+                        Style="{StaticResource IntegratedIconButton}"
+                        Click="Refresh_Click"
+                        ToolTip="Atualizar biblioteca"
+                        Width="42"
+                        MinWidth="42"
+                        Margin="0,0,5,0"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Viewbox Width="17" Height="17" IsHitTestVisible="False">
+                        <Canvas Width="24" Height="24">
+                            <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
+                        </Canvas>
+                    </Viewbox>
                 </Button>
                 <Button x:Name="GlobalSettingsButton" Style="{StaticResource IntegratedIconButton}" Click="Settings_Click" ToolTip="Configurações" Margin="0,0,5,0">
                     <TextBlock Text="⚙" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="17"/>
@@ -826,18 +832,6 @@
                                      FontSize="12" TextChanged="FullscreenSearchBox_TextChanged" ToolTip="Pesquisar jogos"/>
                         </Grid>
                     </Border>
-                    <Button x:Name="FullscreenRefreshButton" Visibility="Collapsed"
-                            Style="{StaticResource FullscreenIconButton}" Click="Refresh_Click"
-                            ToolTip="Atualizar biblioteca">
-                        <Viewbox Width="17" Height="17">
-                            <Canvas Width="24" Height="24">
-                                <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2"
-                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                      StrokeLineJoin="Round"
-                                      Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
                     <Button x:Name="FullscreenLanguageButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="CycleLanguage_Click"
                             ToolTip="Idioma" Width="68" MinWidth="68">
@@ -857,6 +851,19 @@
                                  Height="18"
                                  IsHitTestVisible="False"
                                  Fill="{StaticResource NeonRed}"/>
+                    </Button>
+                    <Button x:Name="FullscreenRefreshButton" Visibility="Collapsed"
+                            Style="{StaticResource FullscreenIconButton}" Click="Refresh_Click"
+                            ToolTip="Atualizar biblioteca"
+                            Width="42" MinWidth="42">
+                        <Viewbox Width="17" Height="17" IsHitTestVisible="False">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="{DynamicResource LudaryxTextPrimary}" StrokeThickness="2"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      StrokeLineJoin="Round"
+                                      Data="M20,11 A8,8 0 1 0 18.2,16.1 M20,5 L20,11 L14,11"/>
+                            </Canvas>
+                        </Viewbox>
                     </Button>
                     <Button x:Name="FullscreenSettingsButton" Visibility="Collapsed"
                             Style="{StaticResource FullscreenIconButton}" Click="Settings_Click"
