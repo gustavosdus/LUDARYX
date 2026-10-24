@@ -1,6 +1,6 @@
-# Privacy Notice — LUDARYX 1.2.0
+# Privacy Notice — LUDARYX 1.2.1
 
-This notice describes the current LUDARYX 1.2.0 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
+This notice describes the current LUDARYX 1.2.1 source build. It should be reviewed whenever networking, diagnostics, update, or telemetry behavior changes.
 
 ## Local data
 
