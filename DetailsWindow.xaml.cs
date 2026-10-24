@@ -125,9 +125,7 @@ public partial class DetailsWindow : Window
         ManualPublisherBox.Text = _game.Metadata.Publisher ?? "";
         ManualReleaseYearBox.Text = _game.Metadata.ReleaseYear?.ToString() ?? "";
         var preferredRatingSystem = AgeRatingService.GetPreferredSystemKey(_settings.Language);
-        ManualAgeRatingBox.Text = _game.Metadata.AgeRatings.TryGetValue(preferredRatingSystem, out var manualRating)
-            ? manualRating
-            : "";
+        ManualAgeRatingBox.Text = AgeRatingService.GetValue(_game.Metadata, preferredRatingSystem) ?? "";
         ManualAgeRatingBox.ToolTip = $"{LocalizationService.Translate("Classificação indicativa")} ({AgeRatingService.GetPreferredSystemLabel(_settings.Language)})";
         ManualDescriptionBox.Text = displayDescription ?? "";
         EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
