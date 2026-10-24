@@ -15,6 +15,8 @@ public static class LocalizationService
     public const string PortuguesePortugal = "pt-PT";
     public const string EnglishUnitedStates = "en-US";
     public const string EnglishUnitedKingdom = "en-GB";
+    // es-419 remains the persisted compatibility code; its translation column uses
+    // Mexican Spanish as the baseline for Latin-American wording.
     public const string SpanishLatinAmerica = "es-419";
     public const string SpanishEurope = "es-ES";
 
@@ -26,7 +28,7 @@ public static class LocalizationService
         (PortuguesePortugal, "Português (Portugal)"),
         (EnglishUnitedStates, "English (US)"),
         (EnglishUnitedKingdom, "English (UK)"),
-        (SpanishLatinAmerica, "Español (Latinoamérica)"),
+        (SpanishLatinAmerica, "Español (Latinoamérica — México)"),
         (SpanishEurope, "Español (España)")
     ];
 
@@ -50,6 +52,8 @@ public static class LocalizationService
         new("Jogos por linha", "Jogos por linha", "Games per row", "Games per row", "Juegos por fila", "Juegos por fila"),
         new("Formato da capa: Vertical / Horizontal", "Formato da capa: Vertical / Horizontal", "Cover format: Vertical / Horizontal", "Cover format: Vertical / Horizontal", "Formato de portada: Vertical / Horizontal", "Formato de portada: Vertical / Horizontal"),
         new("Tema: Claro / Escuro", "Tema: Claro / Escuro", "Theme: Light / Dark", "Theme: Light / Dark", "Tema: Claro / Oscuro", "Tema: Claro / Oscuro"),
+        new("Cor da linha neon", "Cor da linha néon", "Neon line color", "Neon line colour", "Color de la línea neón", "Color de la línea neón"),
+        new("Controle a biblioteca, integrações, backup e itens locais.", "Controle a biblioteca, integrações, cópias de segurança e itens locais.", "Manage the library, integrations, backups, and local items.", "Manage the library, integrations, backups, and local items.", "Administra la biblioteca, integraciones, respaldos y elementos locales.", "Administra la biblioteca, integraciones, copias de seguridad y elementos locales."),
         new("Execução", "Execução", "Launch", "Launch", "Ejecución", "Ejecución"),
         new("Iniciar clientes automaticamente", "Iniciar clientes automaticamente", "Start clients automatically", "Start clients automatically", "Iniciar clientes automáticamente", "Iniciar clientes automáticamente"),
         new("Manter launcher aberto", "Manter launcher aberto", "Keep launcher open", "Keep launcher open", "Mantener launcher abierto", "Mantener launcher abierto"),
