@@ -1,0 +1,69 @@
+<Window x:Class="UnifiedGameLauncher.ParentalPinWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LUDARYX"
+        Width="420" Height="310"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        Background="{DynamicResource LudaryxWindowBackground}">
+    <Border BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1" CornerRadius="10"
+            Background="{DynamicResource LudaryxPanelBackground}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{DynamicResource LudaryxTitleBarBackground}"
+                    BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,0,0,1"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Margin="14,0,8,0">
+                    <TextBlock Text="LUDARYX  /  CONTROLE PARENTAL"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource LudaryxTextPrimary}"
+                               FontWeight="Bold" FontSize="11"/>
+                    <Button HorizontalAlignment="Right" Width="34"
+                            Style="{StaticResource LudaryxWindowButton}" Content="×"
+                            Click="Cancel_Click"/>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="1" Margin="24,22,24,20">
+                <TextBlock x:Name="HeadingText" Text="PIN do controle parental"
+                           Foreground="{DynamicResource LudaryxTextPrimary}"
+                           FontSize="21" FontWeight="Bold"/>
+                <TextBlock x:Name="DescriptionText"
+                           Text="Digite o PIN de 4 números para alterar a faixa etária."
+                           Foreground="{DynamicResource LudaryxTextSecondary}"
+                           TextWrapping="Wrap" Margin="0,6,0,16"/>
+
+                <PasswordBox x:Name="PinBox"
+                             MaxLength="4"
+                             PreviewTextInput="PinBox_PreviewTextInput"
+                             ToolTip="PIN de 4 números"/>
+
+                <StackPanel x:Name="ConfirmPanel" Margin="0,10,0,0">
+                    <TextBlock Text="Confirmar PIN"
+                               Foreground="{DynamicResource LudaryxTextSecondary}"
+                               Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="ConfirmPinBox"
+                                 MaxLength="4"
+                                 PreviewTextInput="PinBox_PreviewTextInput"/>
+                </StackPanel>
+
+                <TextBlock x:Name="ErrorText"
+                           Foreground="{DynamicResource LudaryxDangerForeground}"
+                           Margin="0,10,0,0"
+                           TextWrapping="Wrap"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                    <Button Content="CANCELAR" Width="100" Margin="0,0,8,0"
+                            Click="Cancel_Click"/>
+                    <Button x:Name="ConfirmButton" Content="CONFIRMAR" Width="110"
+                            Click="Confirm_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
