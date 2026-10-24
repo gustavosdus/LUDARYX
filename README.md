@@ -63,7 +63,7 @@ Ele reúne **Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Conne
 
 ## Versão
 
-**LUDARYX 1.2.0** — versão estável com revisão visual completa, tema claro/escuro consistente, janelas integradas, melhorias de navegação por controle/teclado, nova experiência de abertura de jogos e refinamentos de metadados/classificações indicativas.
+**LUDARYX 1.2.1 (em desenvolvimento)** — linha corretiva atual. A versão estável publicada permanece a 1.2.0 enquanto as correções da 1.2.1 são desenvolvidas e testadas.
 
 ## Requisitos para desenvolvimento
 
@@ -93,7 +93,7 @@ Para gerar uma release local completa em um único comando, incluindo validaçã
 powershell -ExecutionPolicy Bypass -File Scripts\Build-Release.ps1
 ```
 
-O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.2.0.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
+O script verifica se o LUDARYX está fechado, valida se projeto, updater, instalador e notas usam a mesma versão, publica `LUDARYX.exe` e `LUDARYX.Updater.exe`, compila `LUDARYX-Installer-1.2.1.iss` com Inno Setup 7 ou 6 e gera `Installer\SHA256SUMS.txt`.
 
 Para publicar apenas os executáveis, continue usando `Scripts\Publish-Release.ps1`.
 
