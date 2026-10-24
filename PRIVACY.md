@@ -47,3 +47,10 @@ Diagnostic logs are stored locally. The application provides a sanitized diagnos
 Users can export selected categories of local data through the backup feature. Automatic artwork cache files are excluded from backups because they can be regenerated.
 
 Users can remove the application's local settings and cache from their Windows profile after closing LUDARYX.
+
+
+## Controle parental e PIN
+
+Quando o controle parental é configurado, o LUDARYX armazena localmente apenas uma credencial derivada do PIN e protegida pela conta do Windows. O PIN de 4 dígitos não é salvo em texto puro.
+
+O desbloqueio da configuração de faixa etária existe somente durante o processo atual do LUDARYX. Ao encerrar o aplicativo e abri-lo novamente, a configuração volta a exigir o PIN.
