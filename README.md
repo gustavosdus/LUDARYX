@@ -63,7 +63,7 @@ Ele reúne **Steam, Epic Games, GOG, Xbox/Microsoft Store, EA app, Ubisoft Conne
 
 ## Versão
 
-**LUDARYX 1.2.2 (em desenvolvimento)** — linha corretiva atual. A versão estável publicada permanece a 1.2.1 enquanto as alterações da 1.2.2 são desenvolvidas e testadas.
+**LUDARYX 1.2.2** — versão estável com melhorias de classificações indicativas, barra superior, controle parental por PIN e correções de persistência/filtragem.
 
 ## Requisitos para desenvolvimento
 
