@@ -130,10 +130,10 @@
                                       SelectionChanged="ParentalControlCombo_SelectionChanged"
                                       ToolTip="Faixa etária permitida na biblioteca">
                                 <ComboBoxItem Content="PADRÃO — MOSTRAR TODOS" Tag="Default"/>
-                                <ComboBoxItem Content="IDADE DE 3 A 5 ANOS" Tag="Age3To5"/>
-                                <ComboBoxItem Content="IDADE DE 6 A 11 ANOS" Tag="Age6To11"/>
-                                <ComboBoxItem Content="IDADE DE 12 A 15 ANOS" Tag="Age12To15"/>
-                                <ComboBoxItem Content="IDADE DE 16 A 18 ANOS" Tag="Age16To18"/>
+                                <ComboBoxItem Content="IDADE DE 3 A 9 ANOS" Tag="Age3To9"/>
+                                <ComboBoxItem Content="IDADE DE 10 A 13 ANOS" Tag="Age10To13"/>
+                                <ComboBoxItem Content="IDADE DE 14 A 17 ANOS" Tag="Age14To17"/>
+                                <ComboBoxItem Content="ACIMA DE 18 ANOS" Tag="Over18"/>
                             </ComboBox>
                             <TextBlock Text="Jogos sem classificação utilizável ficam ocultos quando um limite de idade está ativo."
                                        Foreground="{DynamicResource LudaryxTextSecondary}"
