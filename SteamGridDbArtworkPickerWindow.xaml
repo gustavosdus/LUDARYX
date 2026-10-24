@@ -77,9 +77,10 @@
                             </Grid.RowDefinitions>
                             <Image Source="{Binding Thumb}" Stretch="Uniform" MouseLeftButtonUp="ArtworkImage_Click" Cursor="Hand"/>
                             <StackPanel Grid.Row="1" Margin="3,5,3,0">
-                                <TextBlock Text="{Binding Width, StringFormat={}{0}}" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11"/>
-                                <TextBlock Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="11" TextWrapping="Wrap">
-                                    <Run Text="Pontuação: "/><Run Text="{Binding Score}"/>
+                                <TextBlock Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="11">
+                                    <Run Text="{Binding Width}"/>
+                                    <Run Text=" × "/>
+                                    <Run Text="{Binding Height}"/>
                                 </TextBlock>
                                 <Button Content="USAR ESTA ARTE" Tag="{Binding}" Click="Use_Click" Margin="0,6,0,0"/>
                             </StackPanel>
