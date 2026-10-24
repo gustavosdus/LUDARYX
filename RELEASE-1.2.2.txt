@@ -1,0 +1,34 @@
+# LUDARYX 1.2.2
+
+Versão em desenvolvimento.
+
+## Classificações indicativas
+- Classificações adicionadas manualmente agora complementam as classificações automáticas por sistema, em vez de substituir todo o conjunto.
+- Ao trocar o idioma do LUDARYX, a classificação exibida passa imediatamente a respeitar a prioridade regional daquele idioma.
+- A classificação do jogo selecionado também é revalidada em segundo plano sem exigir abrir e fechar a tela de Personalização.
+- O campo de classificação manual usa correspondência normalizada entre aliases como ClassInd/dejus e os demais sistemas suportados.
+
+## Barra superior
+- O seletor de direção da ordenação passou a usar visual totalmente integrado e sem fundo.
+- Adicionado botão de cor da linha neon ao lado esquerdo de Configurações:
+  - vermelho por padrão;
+  - alterna para azul-claro ao clicar;
+  - volta para vermelho no clique seguinte.
+- Adicionado botão compacto de idioma, com ciclo:
+  - PT (BR)
+  - PT (PT)
+  - EN (US)
+  - EN (UK)
+  - ES (AL)
+  - ES (ES)
+  - retorno para PT (BR)
+- ES (AL) continua usando o código compatível es-419, com espanhol do México como base de linguagem para a variante latino-americana.
+- Os atalhos de idioma e cor neon também ficam disponíveis no modo tela cheia.
+- Todos os novos controles continuam navegáveis por mouse, teclado e controle.
+
+## Configurações
+- Removida a seção Aparência. Idioma e cor da linha neon agora são controlados diretamente pela barra superior.
+- Tema claro/escuro e demais controles visuais existentes continuam funcionando normalmente pela interface principal.
+
+## Em desenvolvimento
+Estas notas serão ampliadas conforme a 1.2.2 receber novas correções.
