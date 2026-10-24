@@ -704,6 +704,52 @@ public partial class MainWindow
         UpdateSelectedArtworkFrames(selectedSource);
 
         RefreshSelectedLocalizedDescriptionAsync(game);
+        RefreshSelectedLocalizedAgeRatingAsync(game);
+    }
+
+    private async void RefreshSelectedLocalizedAgeRatingAsync(Game game)
+    {
+        _selectedAgeRatingCts?.Cancel();
+        _selectedAgeRatingCts?.Dispose();
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        _selectedAgeRatingCts = cts;
+
+        try
+        {
+            await _metadata.EnsureLocalizedAgeRatingAsync(game, _settings, cts.Token);
+            if (cts.IsCancellationRequested)
+                return;
+
+            // Reaplica somente o overlay de preferências/valores manuais depois de
+            // qualquer enriquecimento remoto, preservando ratings manuais por sistema.
+            _state.Apply(game, _settings);
+
+            var selected = _visibleGames.ElementAtOrDefault(_selectedIndex);
+            if (selected is null ||
+                !selected.ProviderId.Equals(game.ProviderId, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var rating = AgeRatingService.GetDisplay(game.Metadata, _settings.Language);
+            var localizedGenres = GenreService.DisplayMany(game.Metadata.Genres);
+            var genres = string.IsNullOrWhiteSpace(localizedGenres)
+                ? LocalizationService.Translate("Não informado")
+                : localizedGenres;
+
+            SelectedGameMetaText.Text = $"{game.PlatformDisplay}  •  {genres}";
+            SelectedGameUsageText.Text =
+                $"{game.PlayCountDisplay}  •  {game.TotalPlayTimeDisplay}\n" +
+                $"{LocalizationService.Translate("Última execução")}: {game.LastPlayedDisplay}\n" +
+                $"{LocalizationService.Translate("Classificação indicativa")}: {rating}";
+
+            TvHeroMeta.Text = $"{game.PlatformDisplay}  •  {genres}  •  {rating}";
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            // Mantém a classificação já exibida se a fonte externa estiver indisponível.
+        }
     }
 
     private async void RefreshSelectedLocalizedDescriptionAsync(Game game)
