@@ -133,6 +133,12 @@ public partial class MainWindow
                 .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortMode, StringComparison.OrdinalIgnoreCase));
             SortCombo.SelectedItem = sortItem ?? SortCombo.Items[0];
         }
+        if (SortDirectionCombo.SelectedItem is null)
+        {
+            var directionItem = SortDirectionCombo.Items.OfType<ComboBoxItem>()
+                .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), _settings.LibrarySortDirection, StringComparison.OrdinalIgnoreCase));
+            SortDirectionCombo.SelectedItem = directionItem ?? SortDirectionCombo.Items[0];
+        }
         _ = _sessions.RefreshRunningStateAsync(_games);
         ApplyFilter();
     }
@@ -513,6 +519,16 @@ public partial class MainWindow
         ApplyFilter();
     }
 
+    private void SortDirectionCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || SortDirectionCombo.SelectedItem is not ComboBoxItem item) return;
+        _settings.LibrarySortDirection = item.Tag?.ToString() == "Descending"
+            ? "Descending"
+            : "Ascending";
+        _settingsService.Save(_settings);
+        ApplyFilter();
+    }
+
     private async void AddGame_Click(object sender, RoutedEventArgs e)
     {
         var window = new AddGameWindow { Owner = this };
@@ -862,12 +878,14 @@ public partial class MainWindow
 
         var sortItem = SortCombo.SelectedItem as ComboBoxItem;
         var sortTag = sortItem?.Tag?.ToString() ?? "Name";
-        SortFilterChip.Visibility = sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase)
-            ? Visibility.Collapsed
-            : Visibility.Visible;
-        SortFilterChip.Content = sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase)
-            ? null
-            : $"{sortItem?.Content}  ×";
+        var directionItem = SortDirectionCombo.SelectedItem as ComboBoxItem;
+        var directionTag = directionItem?.Tag?.ToString() ?? "Ascending";
+        var hasCustomSort = !sortTag.Equals("Name", StringComparison.OrdinalIgnoreCase) ||
+                            directionTag.Equals("Descending", StringComparison.OrdinalIgnoreCase);
+        SortFilterChip.Visibility = hasCustomSort ? Visibility.Visible : Visibility.Collapsed;
+        SortFilterChip.Content = hasCustomSort
+            ? $"{sortItem?.Content} • {directionItem?.Content}  ×"
+            : null;
     }
 
     private void ClearFilters_Click(object sender, RoutedEventArgs e)
@@ -881,6 +899,7 @@ public partial class MainWindow
         PlatformFilterCombo.SelectedIndex = 0;
         GenreFilter.SelectedIndex = 0;
         SortCombo.SelectedIndex = 0;
+        SortDirectionCombo.SelectedIndex = 0;
         _specialFilter = string.Empty;
         _platformFilter = null;
         ApplyFilter();
@@ -905,6 +924,7 @@ public partial class MainWindow
     private void ResetSortFilter_Click(object sender, RoutedEventArgs e)
     {
         SortCombo.SelectedIndex = 0;
+        SortDirectionCombo.SelectedIndex = 0;
     }
 
     private async void SelectedPlay_Click(object sender, RoutedEventArgs e)
@@ -949,19 +969,56 @@ public partial class MainWindow
             (genre == null || g.Metadata.Genres.Any(x => x.Equals(genre, StringComparison.OrdinalIgnoreCase))) &&
             SearchNormalizationService.Matches(g, query));
 
+        var descending = string.Equals(
+            _settings.LibrarySortDirection,
+            "Descending",
+            StringComparison.OrdinalIgnoreCase);
+
         filtered = (_settings.LibrarySortMode ?? "Name") switch
         {
-            "Recent" => filtered.OrderByDescending(g => g.LastPlayedUtc ?? DateTime.MinValue)
-                                .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
-            "MostPlayed" => filtered.OrderByDescending(g => g.PlayCount)
-                                    .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
-            "PlayTime" => filtered.OrderByDescending(g => g.TotalPlayTimeSeconds)
-                                  .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
-            "Platform" => filtered.OrderBy(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
-                                  .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
-            _ when _specialFilter == "recent" => filtered.OrderByDescending(g => g.LastPlayedUtc ?? DateTime.MinValue)
-                                                         .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
-            _ => filtered.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+            "Recent" => descending
+                ? filtered.OrderBy(g => !g.LastPlayedUtc.HasValue)
+                          .ThenByDescending(g => g.LastPlayedUtc)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => !g.LastPlayedUtc.HasValue)
+                          .ThenBy(g => g.LastPlayedUtc)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            "MostPlayed" => descending
+                ? filtered.OrderByDescending(g => g.PlayCount)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.PlayCount)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            "PlayTime" => descending
+                ? filtered.OrderByDescending(g => g.TotalPlayTimeSeconds)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.TotalPlayTimeSeconds)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            "Platform" => descending
+                ? filtered.OrderByDescending(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            "ReleaseDate" => descending
+                ? filtered.OrderBy(g => !g.Metadata.ReleaseYear.HasValue)
+                          .ThenByDescending(g => g.Metadata.ReleaseYear)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => !g.Metadata.ReleaseYear.HasValue)
+                          .ThenBy(g => g.Metadata.ReleaseYear)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            _ when _specialFilter == "recent" => descending
+                ? filtered.OrderByDescending(g => g.LastPlayedUtc)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.LastPlayedUtc)
+                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+
+            _ => descending
+                ? filtered.OrderByDescending(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
         };
 
         _visibleGames = filtered.ToList();
