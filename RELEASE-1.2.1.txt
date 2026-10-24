@@ -1,16 +1,26 @@
 # LUDARYX 1.2.1
 
-Versão em desenvolvimento.
+A versão 1.2.1 é uma atualização corretiva da linha 1.2, com ajustes no SteamGridDB, classificações indicativas e organização da biblioteca.
 
-## Correções iniciais
+## SteamGridDB
 - Corrigido o campo de pesquisa da janela "Corrigir jogo do SteamGridDB", que podia ficar ilegível e com o texto verticalmente cortado.
-- A seleção de artes do SteamGridDB agora mostra a resolução completa de cada imagem no formato largura × altura.
-- Removida a exibição de pontuação das artes do SteamGridDB por não ser necessária para a escolha visual.
+- A seleção de artes agora mostra a resolução completa de cada imagem no formato largura × altura.
+- Removida a exibição de pontuação das artes do SteamGridDB, incluindo os cards e a confirmação de download.
+
+## Classificações indicativas
 - Classificações ClassInd livres passam a ser exibidas como `L` maiúsculo de forma consistente.
 
-- Adicionada ordenação por DATA DE LANÇAMENTO usando o ano de lançamento disponível nos metadados.
-- A direção da ordenação agora usa um botão compacto de três estados: ↕ para a ordem padrão do critério, ↑ para crescente e ↓ para decrescente.
-- Cada clique percorre ↕ → ↑ → ↓ → ↕; a preferência é salva e o botão também é acessível por teclado/controle na barra superior.
+## Biblioteca e ordenação
+- Adicionada ordenação por **DATA DE LANÇAMENTO**, usando o ano de lançamento disponível nos metadados.
+- A direção da ordenação usa um botão compacto de três estados:
+  - ↕ ordem padrão do critério;
+  - ↑ crescente;
+  - ↓ decrescente.
+- Cada clique percorre ↕ → ↑ → ↓ → ↕.
+- A ordem padrão respeita o comportamento natural de cada critério: Nome/Plataforma/Data de lançamento em crescente; Recentes/Mais jogados/Tempo jogado em decrescente.
+- A preferência de ordenação é salva e o controle permanece acessível por mouse, teclado e controle.
 
-## Em desenvolvimento
-Estas notas serão ampliadas conforme a 1.2.1 receber novas correções.
+## Atualização
+A versão 1.2.1 usa o mesmo AppId das versões anteriores e pode ser instalada sobre a 1.2.0, preservando configurações e dados locais compatíveis.
+
+O atualizador valida o instalador por SHA-256 antes de permitir a instalação automática.
