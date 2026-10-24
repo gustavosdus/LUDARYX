@@ -9,8 +9,8 @@ Versão em desenvolvimento.
 - Classificações ClassInd livres passam a ser exibidas como `L` maiúsculo de forma consistente.
 
 - Adicionada ordenação por DATA DE LANÇAMENTO usando o ano de lançamento disponível nos metadados.
-- Adicionado controle CRESCENTE / DECRESCENTE para inverter explicitamente a direção de qualquer critério de ordenação.
-- A direção escolhida é salva nas configurações e também pode ser alterada por teclado/controle na barra superior.
+- A direção da ordenação agora usa um botão compacto de três estados: ↕ para a ordem padrão do critério, ↑ para crescente e ↓ para decrescente.
+- Cada clique percorre ↕ → ↑ → ↓ → ↕; a preferência é salva e o botão também é acessível por teclado/controle na barra superior.
 
 ## Em desenvolvimento
 Estas notas serão ampliadas conforme a 1.2.1 receber novas correções.
