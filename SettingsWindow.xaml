@@ -53,25 +53,48 @@
         <Grid Grid.Row="1" Margin="28,20,28,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="Configurações" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="30" FontWeight="Bold"/>
                 <TextBlock Text="Controle a biblioteca, integrações, backup e itens locais."
                            Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,4,0,0"/>
             </StackPanel>
-            <Border Grid.Column="1" Background="{DynamicResource LudaryxInputBackground}" BorderBrush="{DynamicResource LudaryxBorder}"
-                    BorderThickness="1" CornerRadius="7" Height="36" VerticalAlignment="Center">
-                <Grid>
-                    <TextBlock Text="⌕" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="18" VerticalAlignment="Center" Margin="11,0,0,0"/>
-                    <TextBox x:Name="SettingsSearchBox"
-                             Margin="32,0,8,0"
-                             Background="Transparent" BorderThickness="0"
-                             Padding="4,0" MinHeight="0"
-                             TextChanged="SettingsSearchBox_TextChanged"
-                             ToolTip="Buscar nas configurações"/>
-                </Grid>
-            </Border>
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <Button x:Name="ChangeParentalPinButton"
+                        Content="ALTERAR PIN"
+                        Width="110"
+                        Height="36"
+                        Margin="0,0,8,0"
+                        Visibility="Collapsed"
+                        Click="ChangeParentalPin_Click"
+                        ToolTip="Alterar PIN do controle parental"/>
+                <Border Width="340"
+                        Background="{DynamicResource LudaryxInputBackground}"
+                        BorderBrush="{DynamicResource LudaryxBorder}"
+                        BorderThickness="1"
+                        CornerRadius="7"
+                        Height="36"
+                        VerticalAlignment="Center">
+                    <Grid>
+                        <TextBlock Text="⌕"
+                                   Foreground="{DynamicResource LudaryxTextSecondary}"
+                                   FontSize="18"
+                                   VerticalAlignment="Center"
+                                   Margin="11,0,0,0"/>
+                        <TextBox x:Name="SettingsSearchBox"
+                                 Margin="32,0,8,0"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="4,0"
+                                 MinHeight="0"
+                                 TextChanged="SettingsSearchBox_TextChanged"
+                                 ToolTip="Buscar nas configurações"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
         </Grid>
 
         <!-- Settings content -->
