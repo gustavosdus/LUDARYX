@@ -71,6 +71,7 @@ public partial class MainWindow : Window
     private int _sidePanelActionIndex;
     private bool _syncingSearchBoxes;
     private CancellationTokenSource? _selectedDescriptionCts;
+    private CancellationTokenSource? _selectedAgeRatingCts;
     private FooterInputMode _footerInputMode = FooterInputMode.Keyboard;
     private readonly Dictionary<string, double> _artworkAspectRatioCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _syncingLibraryColumnsSlider;
@@ -148,6 +149,8 @@ public partial class MainWindow : Window
             _trayIcon?.Dispose();
             _selectedDescriptionCts?.Cancel();
             _selectedDescriptionCts?.Dispose();
+            _selectedAgeRatingCts?.Cancel();
+            _selectedAgeRatingCts?.Dispose();
             _gamepad.Dispose();
             _sessions.Dispose();
         };
