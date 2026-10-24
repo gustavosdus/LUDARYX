@@ -263,6 +263,8 @@ public partial class MainWindow
             : Visibility.Collapsed;
         FullscreenSearchContainer.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenRefreshButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        FullscreenLanguageButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
+        FullscreenNeonColorButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenSettingsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenStatisticsButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
         FullscreenToolbarButton.Visibility = _fullscreen ? Visibility.Visible : Visibility.Collapsed;
