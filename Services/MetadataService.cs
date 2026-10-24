@@ -1109,6 +1109,7 @@ public sealed class MetadataService
         {
             "pt" => new[] { title, $"{title} (jogo eletrônico)", $"{title} (videojogo)" },
             "es" => new[] { title, $"{title} (videojuego)" },
+            "ja" => new[] { title, $"{title} (ゲーム)", $"{title} (コンピュータゲーム)" },
             _ => new[] { title, $"{title} (video game)" }
         };
 
@@ -1125,6 +1126,7 @@ public sealed class MetadataService
             {
                 "pt" => "jogo eletrônico",
                 "es" => "videojuego",
+                "ja" => "ゲーム",
                 _ => "video game"
             };
             var query = Uri.EscapeDataString($"\"{title}\" {gameTerm}");
@@ -1184,6 +1186,7 @@ public sealed class MetadataService
                     text.Contains("videogame", StringComparison.Ordinal),
             "es" => text.Contains("videojuego", StringComparison.Ordinal) ||
                     text.Contains("juego", StringComparison.Ordinal),
+            "ja" => text.Contains("ゲーム", StringComparison.Ordinal),
             _ => text.Contains("game", StringComparison.Ordinal)
         };
     }
@@ -1195,6 +1198,7 @@ public sealed class MetadataService
         "en-GB" => "en-GB",
         "es-419" => "es-419",
         "es-ES" => "es-ES",
+        "ja-JP" => "ja-JP",
         _ => "pt-BR"
     };
 
@@ -1206,6 +1210,7 @@ public sealed class MetadataService
         "en-GB" => new[] { "en-US" },
         "es-419" => new[] { "es-ES" },
         "es-ES" => new[] { "es-419" },
+        "ja-JP" => Array.Empty<string>(),
         _ => Array.Empty<string>()
     };
 
@@ -1232,6 +1237,7 @@ public sealed class MetadataService
         "pt-PT" => ("portuguese", "PT"),
         "es-419" => ("latam", "MX"),
         "es-ES" => ("spanish", "ES"),
+        "ja-JP" => ("japanese", "JP"),
         "en-GB" => ("english", "GB"),
         _ => ("english", "US")
     };
@@ -1240,6 +1246,7 @@ public sealed class MetadataService
     {
         "pt-BR" or "pt-PT" => "pt",
         "es-419" or "es-ES" => "es",
+        "ja-JP" => "ja",
         _ => "en"
     };
 
