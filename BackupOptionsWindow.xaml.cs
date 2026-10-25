@@ -13,7 +13,9 @@ public partial class BackupOptionsWindow : Window
     public BackupOptionsWindow(bool importMode = false, string? sourceZip = null)
     {
         InitializeComponent();
-        LudaryxThemeService.Apply(new JsonSettingsService().Load());
+        var settings = new JsonSettingsService().Load();
+        LocalizationService.SetLanguage(settings.Language);
+        LudaryxThemeService.Apply(settings);
         _importMode = importMode;
         _sourceZip = sourceZip;
 
