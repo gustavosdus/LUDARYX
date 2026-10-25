@@ -28,6 +28,7 @@ public static class LocalizationService
     public static string OpenClientLabel => Translate("ABRIR CLIENTE");
     public static string VerifiedLabel => Translate("VERIFICADO");
     public static string UseArtworkLabel => Translate("USAR ESTA ARTE");
+    public static string DuplicateLabel => Translate("DUPLICATA");
 
     public static string DisplayProfileName(string? name) =>
         string.Equals(name, "Padrão", StringComparison.OrdinalIgnoreCase)
