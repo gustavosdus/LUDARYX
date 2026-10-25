@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
@@ -152,7 +152,10 @@ public sealed class GameSessionService : IDisposable
             return Process.GetProcessesByName(processName)
                 .FirstOrDefault(process =>
                 {
-                    try { return !process.HasExited; }
+                    try
+                    {
+                        return !process.HasExited;
+                    }
                     catch { return false; }
                 });
         }

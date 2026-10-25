@@ -124,21 +124,6 @@ public sealed class MetadataService
         }
     }
 
-    public async Task EnrichAsync(
-        IEnumerable<Game> games,
-        LauncherSettings settings,
-        bool forceArtworkRefresh = false,
-        CancellationToken token = default)
-    {
-        foreach (var game in games)
-        {
-            token.ThrowIfCancellationRequested();
-            await EnrichGameAsync(game, settings, forceArtworkRefresh, token);
-        }
-
-        SaveCache();
-    }
-
     /// <summary>
     /// Enriquece um único jogo. Esta entrada separada permite ao chamador priorizar
     /// jogos de outros launchers e usar concorrência limitada sem bloquear a biblioteca.
@@ -1090,7 +1075,8 @@ public sealed class MetadataService
                 })
                 {
                     var match = Regex.Match(html, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-                    if (!match.Success) continue;
+                    if (!match.Success)
+                        continue;
                     var text = SanitizeDescription(WebUtility.HtmlDecode(match.Groups["value"].Value));
                     if (!IsLowQualityDescription(text))
                         return text;
@@ -1615,7 +1601,8 @@ public sealed class MetadataService
                 var match = Regex.Match(
                     htmlText, pattern,
                     RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-                if (!match.Success) return null;
+                if (!match.Success)
+                    return null;
                 var raw = match.Groups["value"].Value;
                 raw = Regex.Replace(raw, @"<br\s*/?>", " ", RegexOptions.IgnoreCase);
                 raw = Regex.Replace(raw, @"<[^>]+>", " ");
@@ -2902,8 +2889,10 @@ public sealed class MetadataService
 
     private static GameMetadata? MergeMetadata(GameMetadata? primary, GameMetadata? secondary)
     {
-        if (primary is null) return secondary;
-        if (secondary is null) return primary;
+        if (primary is null)
+            return secondary;
+        if (secondary is null)
+            return primary;
 
         primary.CanonicalName = string.IsNullOrWhiteSpace(primary.CanonicalName) ? secondary.CanonicalName : primary.CanonicalName;
         if (IsLowQualityDescription(primary.Description) && !IsLowQualityDescription(secondary.Description))
@@ -3032,11 +3021,14 @@ public sealed class MetadataService
     {
         if (primary is null)
         {
-            if (secondary is null) return null;
-            if (!allowDescription) secondary.Description = null;
+            if (secondary is null)
+                return null;
+            if (!allowDescription)
+                secondary.Description = null;
             return secondary;
         }
-        if (secondary is null) return primary;
+        if (secondary is null)
+            return primary;
 
         // Fontes suplementares nunca alteram identidade nem artes do provedor principal.
         if (allowDescription && IsLowQualityDescription(primary.Description) &&
@@ -3683,20 +3675,24 @@ public sealed class MetadataService
     {
         var clientId = settings.IgdbClientId ?? Environment.GetEnvironmentVariable("IGDB_CLIENT_ID");
         var clientSecret = settings.IgdbClientSecret ?? Environment.GetEnvironmentVariable("IGDB_CLIENT_SECRET");
-        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret)) return null;
+        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+            return null;
         try
         {
             await EnsureIgdbTokenAsync(clientId, clientSecret, token);
-            if (string.IsNullOrWhiteSpace(_igdbToken)) return null;
+            if (string.IsNullOrWhiteSpace(_igdbToken))
+                return null;
             var query = $"search \"{EscapeApicalypse(game.Name)}\"; fields name,summary,cover.image_id,genres.name,platforms.name,involved_companies.company.name,first_release_date; limit 1;";
             using var req = new HttpRequestMessage(HttpMethod.Post, "https://api.igdb.com/v4/games");
             req.Headers.Add("Client-ID", clientId);
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _igdbToken);
             req.Content = new StringContent(query, Encoding.UTF8, "text/plain");
             using var res = await _http.SendAsync(req, token);
-            if (!res.IsSuccessStatusCode) return null;
+            if (!res.IsSuccessStatusCode)
+                return null;
             using var doc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(res, cancellationToken: token));
-            if (doc.RootElement.GetArrayLength() == 0) return null;
+            if (doc.RootElement.GetArrayLength() == 0)
+                return null;
             var g = doc.RootElement[0];
             var m = new GameMetadata
             {
@@ -3705,8 +3701,14 @@ public sealed class MetadataService
                 Source = "IGDB",
                 ExternalId = g.TryGetProperty("id", out var id) ? id.GetInt32().ToString() : null
             };
-            if (g.TryGetProperty("genres", out var genres)) foreach (var x in genres.EnumerateArray()) if (x.TryGetProperty("name", out var n2)) m.Genres.Add(n2.GetString() ?? "");
-            if (g.TryGetProperty("platforms", out var platforms)) foreach (var x in platforms.EnumerateArray()) if (x.TryGetProperty("name", out var n2)) m.Platforms.Add(n2.GetString() ?? "");
+            if (g.TryGetProperty("genres", out var genres))
+                foreach (var x in genres.EnumerateArray())
+                    if (x.TryGetProperty("name", out var n2))
+                        m.Genres.Add(n2.GetString() ?? "");
+            if (g.TryGetProperty("platforms", out var platforms))
+                foreach (var x in platforms.EnumerateArray())
+                    if (x.TryGetProperty("name", out var n2))
+                        m.Platforms.Add(n2.GetString() ?? "");
             if (g.TryGetProperty("cover", out var cover) && cover.TryGetProperty("image_id", out var imageId))
             {
                 m.CoverUrl = $"https://images.igdb.com/igdb/image/upload/t_cover_big/{imageId.GetString()}.jpg";
@@ -3726,7 +3728,8 @@ public sealed class MetadataService
 
     private async Task EnsureIgdbTokenAsync(string clientId, string clientSecret, CancellationToken token)
     {
-        if (!string.IsNullOrWhiteSpace(_igdbToken) && DateTime.UtcNow < _igdbTokenExpires) return;
+        if (!string.IsNullOrWhiteSpace(_igdbToken) && DateTime.UtcNow < _igdbTokenExpires)
+            return;
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["client_id"] = clientId,
@@ -3734,7 +3737,8 @@ public sealed class MetadataService
             ["grant_type"] = "client_credentials"
         });
         using var res = await _http.PostAsync("https://id.twitch.tv/oauth2/token", form, token);
-        if (!res.IsSuccessStatusCode) return;
+        if (!res.IsSuccessStatusCode)
+            return;
         using var doc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(res, cancellationToken: token));
         _igdbToken = doc.RootElement.GetProperty("access_token").GetString();
         var seconds = doc.RootElement.GetProperty("expires_in").GetInt32();
@@ -3743,7 +3747,8 @@ public sealed class MetadataService
 
     private async Task EnsureSteamVerticalCoverAsync(GameMetadata metadata, Game game, CancellationToken token)
     {
-        if (game.Platform != GamePlatform.Steam || !int.TryParse(game.Id, out _)) return;
+        if (game.Platform != GamePlatform.Steam || !int.TryParse(game.Id, out _))
+            return;
         var url = BuildSteamLibraryCapsuleUrl(game);
         metadata.VerticalCoverUrl = url;
 
@@ -3774,7 +3779,8 @@ public sealed class MetadataService
 
     private static bool IsExpectedImageSize(string? path, int width, int height)
     {
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return false;
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return false;
         try
         {
             using var stream = File.OpenRead(path);
@@ -4084,7 +4090,7 @@ public sealed class MetadataService
             var file = Path.Combine(_coverDir, safe + ext);
             if (force || !File.Exists(file))
             {
-                var bytes = await SafeImageDownloadService.DownloadAsync(_http, url, token);
+                var bytes = await SafeImageDownloadService.DownloadAsync(url, token);
                 await File.WriteAllBytesAsync(file, bytes, token);
             }
             return file;
@@ -4097,9 +4103,12 @@ public sealed class MetadataService
         var name = game.Name.Trim();
         var genres = new List<string>();
         var n = name.ToLowerInvariant();
-        if (n.Contains("racing") || n.Contains("forza") || n.Contains("need for speed")) genres.Add("Corrida");
-        if (n.Contains("football") || n.Contains("fifa") || n.Contains("soccer")) genres.Add("Esportes");
-        if (n.Contains("strategy") || n.Contains("civilization") || n.Contains("age of")) genres.Add("Estratégia");
+        if (n.Contains("racing") || n.Contains("forza") || n.Contains("need for speed"))
+            genres.Add("Corrida");
+        if (n.Contains("football") || n.Contains("fifa") || n.Contains("soccer"))
+            genres.Add("Esportes");
+        if (n.Contains("strategy") || n.Contains("civilization") || n.Contains("age of"))
+            genres.Add("Estratégia");
         return new GameMetadata { CanonicalName = name, Genres = genres, Source = "Local" };
     }
 
@@ -4107,14 +4116,18 @@ public sealed class MetadataService
     {
         try
         {
-            if (File.Exists(_cacheFile)) _cache = JsonSerializer.Deserialize<Dictionary<string, GameMetadata>>(SafeFileReadService.ReadAllText(_cacheFile, SafeFileReadService.MetadataCacheMaxBytes, "cache de metadados")) ?? new(StringComparer.OrdinalIgnoreCase);
+            if (File.Exists(_cacheFile))
+                _cache = JsonSerializer.Deserialize<Dictionary<string, GameMetadata>>(SafeFileReadService.ReadAllText(_cacheFile, SafeFileReadService.MetadataCacheMaxBytes, "cache de metadados")) ?? new(StringComparer.OrdinalIgnoreCase);
         }
         catch { _cache = new(StringComparer.OrdinalIgnoreCase); }
     }
 
     private void SaveCache()
     {
-        try { File.WriteAllText(_cacheFile, JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true })); }
+        try
+        {
+            File.WriteAllText(_cacheFile, JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true }));
+        }
         catch { }
     }
 

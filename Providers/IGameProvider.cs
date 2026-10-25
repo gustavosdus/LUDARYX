@@ -4,8 +4,14 @@ namespace UnifiedGameLauncher.Providers;
 
 public interface IGameProvider
 {
-    string Name { get; }
-    GamePlatform Platform { get; }
+    string Name
+    {
+        get;
+    }
+    GamePlatform Platform
+    {
+        get;
+    }
     bool IsInstalled();
     bool IsRunning();
     Task StartClientAsync(CancellationToken cancellationToken = default);

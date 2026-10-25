@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using UnifiedGameLauncher.Models;
@@ -10,7 +10,10 @@ public partial class ConcurrentLaunchWindow : Window
 {
     private readonly WindowGamepadNavigationService _controllerNavigation;
 
-    public bool AllowConcurrentLaunch { get; private set; }
+    public bool AllowConcurrentLaunch
+    {
+        get; private set;
+    }
 
     public ConcurrentLaunchWindow(Game activeGame, Game requestedGame, LauncherSettings settings)
     {

@@ -1,4 +1,4 @@
-namespace UnifiedGameLauncher.Services;
+﻿namespace UnifiedGameLauncher.Services;
 
 public static class CacheMaintenanceService
 {
@@ -51,7 +51,11 @@ public static class CacheMaintenanceService
 
         foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
         {
-            try { File.Delete(file); } catch { }
+            try
+            {
+                File.Delete(file);
+            }
+            catch { }
         }
     }
 
@@ -68,7 +72,10 @@ public static class CacheMaintenanceService
 
     private static long SafeLength(FileInfo file)
     {
-        try { return file.Length; }
+        try
+        {
+            return file.Length;
+        }
         catch { return 0; }
     }
 }

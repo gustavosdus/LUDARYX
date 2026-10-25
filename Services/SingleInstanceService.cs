@@ -15,7 +15,10 @@ public sealed class SingleInstanceService : IDisposable
     private readonly EventWaitHandle? _activationEvent;
     private readonly CancellationTokenSource? _cancellation;
 
-    public bool IsPrimaryInstance { get; }
+    public bool IsPrimaryInstance
+    {
+        get;
+    }
 
     public SingleInstanceService(Action activateExistingWindow)
     {
@@ -82,15 +85,35 @@ public sealed class SingleInstanceService : IDisposable
 
     public void Dispose()
     {
-        try { _cancellation?.Cancel(); } catch { }
-        try { _activationEvent?.Dispose(); } catch { }
+        try
+        {
+            _cancellation?.Cancel();
+        }
+        catch { }
+        try
+        {
+            _activationEvent?.Dispose();
+        }
+        catch { }
 
         if (IsPrimaryInstance)
         {
-            try { _mutex?.ReleaseMutex(); } catch { }
+            try
+            {
+                _mutex?.ReleaseMutex();
+            }
+            catch { }
         }
 
-        try { _mutex?.Dispose(); } catch { }
-        try { _cancellation?.Dispose(); } catch { }
+        try
+        {
+            _mutex?.Dispose();
+        }
+        catch { }
+        try
+        {
+            _cancellation?.Dispose();
+        }
+        catch { }
     }
 }

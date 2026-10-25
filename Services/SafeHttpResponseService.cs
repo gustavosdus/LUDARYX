@@ -19,7 +19,8 @@ public static class SafeHttpResponseService
         while (true)
         {
             var read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-            if (read == 0) break;
+            if (read == 0)
+                break;
             total += read;
             if (total > maxBytes)
                 throw new InvalidOperationException($"A resposta remota excede o limite de {maxBytes / (1024 * 1024)} MB.");

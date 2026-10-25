@@ -28,12 +28,13 @@ public sealed class CoverService
                 try
                 {
                     var requestUrl = url + "?pcg_refresh=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                    var bytes = await SafeImageDownloadService.DownloadAsync(_http, requestUrl, token);
+                    var bytes = await SafeImageDownloadService.DownloadAsync(requestUrl, token);
                     await File.WriteAllBytesAsync(file, bytes, token);
                 }
                 catch
                 {
-                    if (!File.Exists(file)) return null;
+                    if (!File.Exists(file))
+                        return null;
                 }
             }
             return file;

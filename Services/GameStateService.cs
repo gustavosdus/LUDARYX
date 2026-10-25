@@ -11,10 +11,14 @@ public sealed class GameStateService
         game.IsFavorite = settings.FavoriteGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase);
         game.IsHidden = settings.HiddenGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase);
         game.IsExcluded = settings.ExcludedGameIds.Contains(game.ProviderId, StringComparer.OrdinalIgnoreCase);
-        if (settings.LastPlayedUtc.TryGetValue(game.ProviderId, out var last)) game.LastPlayedUtc = last;
-        if (settings.PlayCounts.TryGetValue(game.ProviderId, out var count)) game.PlayCount = count;
-        if (settings.TotalPlayTimeSeconds.TryGetValue(game.ProviderId, out var seconds)) game.TotalPlayTimeSeconds = seconds;
-        if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual)) ApplyManualMetadata(game, manual);
+        if (settings.LastPlayedUtc.TryGetValue(game.ProviderId, out var last))
+            game.LastPlayedUtc = last;
+        if (settings.PlayCounts.TryGetValue(game.ProviderId, out var count))
+            game.PlayCount = count;
+        if (settings.TotalPlayTimeSeconds.TryGetValue(game.ProviderId, out var seconds))
+            game.TotalPlayTimeSeconds = seconds;
+        if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual))
+            ApplyManualMetadata(game, manual);
     }
 
     public void MarkPlayed(Game game, LauncherSettings settings)
@@ -52,8 +56,10 @@ public sealed class GameStateService
     public void ToggleFavorite(Game game, LauncherSettings settings)
     {
         var existing = settings.FavoriteGameIds.FirstOrDefault(x => x.Equals(game.ProviderId, StringComparison.OrdinalIgnoreCase));
-        if (existing == null) settings.FavoriteGameIds.Add(game.ProviderId);
-        else settings.FavoriteGameIds.Remove(existing);
+        if (existing == null)
+            settings.FavoriteGameIds.Add(game.ProviderId);
+        else
+            settings.FavoriteGameIds.Remove(existing);
         game.IsFavorite = existing == null;
         _settingsService.Save(settings);
     }
@@ -81,12 +87,18 @@ public sealed class GameStateService
 
     private static void ApplyManualMetadata(Game game, ManualGameMetadata manual)
     {
-        if (!string.IsNullOrWhiteSpace(manual.Name)) game.Name = manual.Name.Trim();
-        if (!string.IsNullOrWhiteSpace(manual.Description)) game.Metadata.Description = manual.Description;
-        if (manual.Genres.Count > 0) game.Metadata.Genres = GenreService.NormalizeMany(manual.Genres).ToList();
-        if (!string.IsNullOrWhiteSpace(manual.Developer)) game.Metadata.Developer = manual.Developer;
-        if (!string.IsNullOrWhiteSpace(manual.Publisher)) game.Metadata.Publisher = manual.Publisher;
-        if (manual.ReleaseYear.HasValue) game.Metadata.ReleaseYear = manual.ReleaseYear;
+        if (!string.IsNullOrWhiteSpace(manual.Name))
+            game.Name = manual.Name.Trim();
+        if (!string.IsNullOrWhiteSpace(manual.Description))
+            game.Metadata.Description = manual.Description;
+        if (manual.Genres.Count > 0)
+            game.Metadata.Genres = GenreService.NormalizeMany(manual.Genres).ToList();
+        if (!string.IsNullOrWhiteSpace(manual.Developer))
+            game.Metadata.Developer = manual.Developer;
+        if (!string.IsNullOrWhiteSpace(manual.Publisher))
+            game.Metadata.Publisher = manual.Publisher;
+        if (manual.ReleaseYear.HasValue)
+            game.Metadata.ReleaseYear = manual.ReleaseYear;
         if (manual.AgeRatings is { Count: > 0 })
         {
             game.Metadata.AgeRatings ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -112,8 +124,10 @@ public sealed class GameStateService
                 game.Metadata.AgeRatings[normalizedManualSystem] = manualRating.Value;
             }
         }
-        if (!string.IsNullOrWhiteSpace(manual.HorizontalCoverUrl)) game.Metadata.CustomHorizontalCoverLocalPath = manual.HorizontalCoverUrl;
-        if (!string.IsNullOrWhiteSpace(manual.VerticalCoverUrl)) game.Metadata.CustomVerticalCoverLocalPath = manual.VerticalCoverUrl;
+        if (!string.IsNullOrWhiteSpace(manual.HorizontalCoverUrl))
+            game.Metadata.CustomHorizontalCoverLocalPath = manual.HorizontalCoverUrl;
+        if (!string.IsNullOrWhiteSpace(manual.VerticalCoverUrl))
+            game.Metadata.CustomVerticalCoverLocalPath = manual.VerticalCoverUrl;
 
         // Flags de bloqueio gravadas pelas revisões v117-v119 não removem mais
         // capas automáticas. Restaurar agora significa voltar à cadeia padrão de
@@ -130,7 +144,8 @@ public sealed class GameStateService
                     metadata.CoverLocalPath = null;
                 metadata.VerticalCoverLocalPath = null;
             }
-            if (IsSteamGridDbUrl(metadata.VerticalCoverUrl)) metadata.VerticalCoverUrl = null;
+            if (IsSteamGridDbUrl(metadata.VerticalCoverUrl))
+                metadata.VerticalCoverUrl = null;
         }
         else
         {
@@ -140,7 +155,8 @@ public sealed class GameStateService
                     metadata.CoverLocalPath = null;
                 metadata.HorizontalCoverLocalPath = null;
             }
-            if (IsSteamGridDbUrl(metadata.HorizontalCoverUrl)) metadata.HorizontalCoverUrl = null;
+            if (IsSteamGridDbUrl(metadata.HorizontalCoverUrl))
+                metadata.HorizontalCoverUrl = null;
         }
     }
 

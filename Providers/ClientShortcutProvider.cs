@@ -7,12 +7,30 @@ namespace UnifiedGameLauncher.Providers;
 
 public abstract class ClientShortcutProvider : IGameProvider
 {
-    public abstract string Name { get; }
-    public abstract GamePlatform Platform { get; }
-    protected abstract string ProcessName { get; }
-    protected abstract string[] LauncherExecutables { get; }
-    protected abstract string[] ShortcutDirectoryNames { get; }
-    protected abstract string[] RegistrySubKeys { get; }
+    public abstract string Name
+    {
+        get;
+    }
+    public abstract GamePlatform Platform
+    {
+        get;
+    }
+    protected abstract string ProcessName
+    {
+        get;
+    }
+    protected abstract string[] LauncherExecutables
+    {
+        get;
+    }
+    protected abstract string[] ShortcutDirectoryNames
+    {
+        get;
+    }
+    protected abstract string[] RegistrySubKeys
+    {
+        get;
+    }
     protected virtual string[] ExcludedShortcutNames => Array.Empty<string>();
 
     public virtual bool IsInstalled() => FindLauncherExecutable() is not null || ShortcutRoots().Any(Directory.Exists);
@@ -21,7 +39,8 @@ public abstract class ClientShortcutProvider : IGameProvider
     public virtual Task StartClientAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (IsRunning()) return Task.CompletedTask;
+        if (IsRunning())
+            return Task.CompletedTask;
 
         var exe = FindLauncherExecutable();
         if (string.IsNullOrWhiteSpace(exe))
@@ -44,13 +63,16 @@ public abstract class ClientShortcutProvider : IGameProvider
                 foreach (var shortcut in Directory.EnumerateFiles(root, "*.lnk", SearchOption.AllDirectories))
                 {
                     var name = Path.GetFileNameWithoutExtension(shortcut);
-                    if (string.IsNullOrWhiteSpace(name) || ExcludedShortcutNames.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase))) continue;
-                    if (name.Contains("uninstall", StringComparison.OrdinalIgnoreCase) || name.Contains("update", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (string.IsNullOrWhiteSpace(name) || ExcludedShortcutNames.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                        continue;
+                    if (name.Contains("uninstall", StringComparison.OrdinalIgnoreCase) || name.Contains("update", StringComparison.OrdinalIgnoreCase))
+                        continue;
 
                     // Atalhos antigos podem permanecer no Menu Iniciar depois que um jogo
                     // é desinstalado. Não os trate como jogos instalados se o destino real
                     // do .lnk já não existir ou não for um arquivo local seguro.
-                    if (!WindowsShortcutService.PointsToExistingLocalTarget(shortcut)) continue;
+                    if (!WindowsShortcutService.PointsToExistingLocalTarget(shortcut))
+                        continue;
 
                     result.Add(new Game
                     {
@@ -115,26 +137,28 @@ public abstract class ClientShortcutProvider : IGameProvider
     protected string? FindLauncherExecutable()
     {
         foreach (var exe in LauncherExecutables)
-            if (File.Exists(exe)) return exe;
+            if (File.Exists(exe))
+                return exe;
 
         foreach (var hive in new[] { Registry.CurrentUser, Registry.LocalMachine })
-        foreach (var sub in RegistrySubKeys)
-        {
-            try
+            foreach (var sub in RegistrySubKeys)
             {
-                using var key = hive.OpenSubKey(sub);
-                var install = key?.GetValue("InstallLocation")?.ToString() ?? key?.GetValue("path")?.ToString() ?? key?.GetValue("Path")?.ToString();
-                if (!string.IsNullOrWhiteSpace(install))
+                try
                 {
-                    foreach (var exeName in LauncherExecutables.Select(Path.GetFileName).Where(x => x is not null))
+                    using var key = hive.OpenSubKey(sub);
+                    var install = key?.GetValue("InstallLocation")?.ToString() ?? key?.GetValue("path")?.ToString() ?? key?.GetValue("Path")?.ToString();
+                    if (!string.IsNullOrWhiteSpace(install))
                     {
-                        var candidate = Path.Combine(install, exeName!);
-                        if (File.Exists(candidate)) return candidate;
+                        foreach (var exeName in LauncherExecutables.Select(Path.GetFileName).Where(x => x is not null))
+                        {
+                            var candidate = Path.Combine(install, exeName!);
+                            if (File.Exists(candidate))
+                                return candidate;
+                        }
                     }
                 }
+                catch { }
             }
-            catch { }
-        }
         return null;
     }
 
@@ -146,7 +170,8 @@ public abstract class ClientShortcutProvider : IGameProvider
         foreach (var baseRoot in new[] { common, user })
             foreach (var folder in ShortcutDirectoryNames)
             {
-                if (!string.IsNullOrWhiteSpace(baseRoot)) roots.Add(Path.Combine(baseRoot, folder));
+                if (!string.IsNullOrWhiteSpace(baseRoot))
+                    roots.Add(Path.Combine(baseRoot, folder));
             }
         return roots;
     }

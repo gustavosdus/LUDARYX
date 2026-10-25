@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using UnifiedGameLauncher.Models;
@@ -94,7 +94,8 @@ public partial class DetailsWindow : Window
         var localizedGenres = GenreService.DisplayMany(_game.Metadata.Genres);
         GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? LocalizationService.Translate("Não classificado") : localizedGenres;
         CompanyText.Text = string.Join(" / ", new[] { _game.Metadata.Developer, _game.Metadata.Publisher }.Where(x => !string.IsNullOrWhiteSpace(x)));
-        if (string.IsNullOrWhiteSpace(CompanyText.Text)) CompanyText.Text = LocalizationService.Translate("Não informado");
+        if (string.IsNullOrWhiteSpace(CompanyText.Text))
+            CompanyText.Text = LocalizationService.Translate("Não informado");
         ReleaseText.Text = _game.ReleaseYearDisplay.Length > 0 ? _game.ReleaseYearDisplay : LocalizationService.Translate("Não informado");
         AgeRatingText.Text = AgeRatingService.GetDisplay(_game.Metadata, _settings.Language);
         UsageText.Text = $"{_game.PlayCountDisplay} • {_game.TotalPlayTimeDisplay} • {LocalizationService.Translate("Última execução")}: {_game.LastPlayedDisplay}";
@@ -169,7 +170,11 @@ public partial class DetailsWindow : Window
         }
     }
 
-    private void Favorite_Click(object sender, RoutedEventArgs e) { _state.ToggleFavorite(_game, _settings); LoadData(); }
+    private void Favorite_Click(object sender, RoutedEventArgs e)
+    {
+        _state.ToggleFavorite(_game, _settings);
+        LoadData();
+    }
 
     private void Hide_Click(object sender, RoutedEventArgs e)
     {
@@ -194,8 +199,19 @@ public partial class DetailsWindow : Window
         Close();
     }
 
-    private void Exclude_Click(object sender, RoutedEventArgs e) { AddId(_settings.ExcludedGameIds); _settings.HiddenGameIds.RemoveAll(x => x.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase)); _settingsServiceSave(); DialogResult = true; Close(); }
-    private void AddId(List<string> list) { if (!list.Contains(_game.ProviderId, StringComparer.OrdinalIgnoreCase)) list.Add(_game.ProviderId); }
+    private void Exclude_Click(object sender, RoutedEventArgs e)
+    {
+        AddId(_settings.ExcludedGameIds);
+        _settings.HiddenGameIds.RemoveAll(x => x.Equals(_game.ProviderId, StringComparison.OrdinalIgnoreCase));
+        _settingsServiceSave();
+        DialogResult = true;
+        Close();
+    }
+    private void AddId(List<string> list)
+    {
+        if (!list.Contains(_game.ProviderId, StringComparer.OrdinalIgnoreCase))
+            list.Add(_game.ProviderId);
+    }
     private void _settingsServiceSave() => new JsonSettingsService().Save(_settings);
 
     private async void Play_Click(object sender, RoutedEventArgs e)
@@ -460,7 +476,11 @@ public partial class DetailsWindow : Window
     {
         try
         {
-            if (_artwork.ChooseAndSave(_game, true)) { PersistArtwork(); LoadData(); }
+            if (_artwork.ChooseAndSave(_game, true))
+            {
+                PersistArtwork();
+                LoadData();
+            }
         }
         catch (Exception ex)
         {
@@ -472,7 +492,11 @@ public partial class DetailsWindow : Window
     {
         try
         {
-            if (_artwork.ChooseAndSave(_game, false)) { PersistArtwork(); LoadData(); }
+            if (_artwork.ChooseAndSave(_game, false))
+            {
+                PersistArtwork();
+                LoadData();
+            }
         }
         catch (Exception ex)
         {
@@ -531,7 +555,8 @@ public partial class DetailsWindow : Window
             }
 
             var picker = new SteamGridDbGamePickerWindow(_game.Name, apiKey, _steamGridDb) { Owner = this };
-            if (picker.ShowDialog() != true || picker.SelectedGame is null) return;
+            if (picker.ShowDialog() != true || picker.SelectedGame is null)
+                return;
 
             _settings.SteamGridDbGameIds[_game.ProviderId] = picker.SelectedGame.Id;
             new JsonSettingsService().Save(_settings);
@@ -648,8 +673,10 @@ public partial class DetailsWindow : Window
         if (!_settings.ManualMetadata.TryGetValue(_game.ProviderId, out var manual))
             manual = new ManualGameMetadata();
 
-        if (vertical) manual.DisableAutomaticSteamGridDbVertical = disabled;
-        else manual.DisableAutomaticSteamGridDbHorizontal = disabled;
+        if (vertical)
+            manual.DisableAutomaticSteamGridDbVertical = disabled;
+        else
+            manual.DisableAutomaticSteamGridDbHorizontal = disabled;
         _settings.ManualMetadata[_game.ProviderId] = manual;
     }
 
@@ -663,7 +690,8 @@ public partial class DetailsWindow : Window
                     _game.Metadata.CoverLocalPath = null;
                 _game.Metadata.VerticalCoverLocalPath = null;
             }
-            if (IsSteamGridDbUrl(_game.Metadata.VerticalCoverUrl)) _game.Metadata.VerticalCoverUrl = null;
+            if (IsSteamGridDbUrl(_game.Metadata.VerticalCoverUrl))
+                _game.Metadata.VerticalCoverUrl = null;
         }
         else
         {
@@ -673,7 +701,8 @@ public partial class DetailsWindow : Window
                     _game.Metadata.CoverLocalPath = null;
                 _game.Metadata.HorizontalCoverLocalPath = null;
             }
-            if (IsSteamGridDbUrl(_game.Metadata.HorizontalCoverUrl)) _game.Metadata.HorizontalCoverUrl = null;
+            if (IsSteamGridDbUrl(_game.Metadata.HorizontalCoverUrl))
+                _game.Metadata.HorizontalCoverUrl = null;
         }
     }
 
@@ -721,5 +750,9 @@ public partial class DetailsWindow : Window
         LoadData();
     }
 
-    private void Close_Click(object sender, RoutedEventArgs e) { DialogResult = true; Close(); }
+    private void Close_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = true;
+        Close();
+    }
 }

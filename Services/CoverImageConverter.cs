@@ -13,7 +13,8 @@ public sealed class CoverImageConverter : IValueConverter
 
     public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is not string path || string.IsNullOrWhiteSpace(path)) return null;
+        if (value is not string path || string.IsNullOrWhiteSpace(path))
+            return null;
 
         try
         {
@@ -23,7 +24,8 @@ public sealed class CoverImageConverter : IValueConverter
                 return null;
 
             var fullPath = Path.GetFullPath(path);
-            if (!LaunchTargetValidator.IsLocalFilePath(fullPath) || !File.Exists(fullPath)) return null;
+            if (!LaunchTargetValidator.IsLocalFilePath(fullPath) || !File.Exists(fullPath))
+                return null;
 
             // O caminho sozinho não identifica a versão da arte. Capas oficiais da
             // Steam podem ser substituídas no mesmo URL/arquivo; inclui timestamp e
@@ -32,7 +34,8 @@ public sealed class CoverImageConverter : IValueConverter
             var key = $"{fullPath}|{info.LastWriteTimeUtc.Ticks}|{info.Length}";
             lock (Sync)
             {
-                if (Cache.TryGetValue(key, out var cached)) return cached;
+                if (Cache.TryGetValue(key, out var cached))
+                    return cached;
             }
 
             var bytes = SafeImageDownloadService.ReadAndValidateLocalImage(fullPath);
@@ -43,14 +46,16 @@ public sealed class CoverImageConverter : IValueConverter
             bitmap.DecodePixelWidth = 320;
             bitmap.StreamSource = stream;
             bitmap.EndInit();
-            if (bitmap.CanFreeze) bitmap.Freeze();
+            if (bitmap.CanFreeze)
+                bitmap.Freeze();
 
             lock (Sync)
             {
                 if (Cache.Count >= MaxCachedImages)
                 {
                     var first = Cache.Keys.FirstOrDefault();
-                    if (first is not null) Cache.Remove(first);
+                    if (first is not null)
+                        Cache.Remove(first);
                 }
                 Cache[key] = bitmap;
             }

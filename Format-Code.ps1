@@ -1,22 +1,35 @@
-param(
+﻿param(
     [switch]$Verify
 )
 
 $ErrorActionPreference = 'Stop'
+$projects = @(
+    (Join-Path $PSScriptRoot 'UnifiedGameLauncher.csproj'),
+    (Join-Path $PSScriptRoot 'Updater/LUDARYX.Updater.csproj'),
+    (Join-Path $PSScriptRoot 'Tests/LUDARYX.RegressionTests.csproj')
+)
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     throw 'O .NET SDK não foi encontrado no PATH.'
 }
 
-if ($Verify) {
-    dotnet format --verify-no-changes
-    exit $LASTEXITCODE
+foreach ($project in $projects) {
+    if ($Verify) {
+        dotnet format $project --verify-no-changes
+    }
+    else {
+        dotnet format $project
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao formatar/verificar $project."
+    }
 }
 
-dotnet format
-if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+if (-not $Verify) {
+    foreach ($project in $projects) {
+        dotnet build $project -c Release
+        if ($LASTEXITCODE -ne 0) {
+            throw "Falha ao compilar $project."
+        }
+    }
 }
-
-dotnet build -c Release
-exit $LASTEXITCODE

@@ -1,0 +1,56 @@
+name: Publish LUDARYX
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (must match app, updater and installer)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ludaryx-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - name: Validate requested version
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_VERSION -notmatch '^\d+\.\d+\.\d+$') {
+            throw 'Expected a version in major.minor.patch format.'
+          }
+          ./Scripts/Validate-Release.ps1 -ExpectedVersion $env:RELEASE_VERSION
+      - name: Run regression checks
+        run: dotnet run --project Tests/LUDARYX.RegressionTests.csproj -c Release
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+      - name: Build installer and hashes
+        shell: pwsh
+        run: ./Scripts/Build-Release.ps1 -Version $env:RELEASE_VERSION
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$env:RELEASE_VERSION" `
+            "./Installer/LUDARYX-$env:RELEASE_VERSION-Setup.exe" `
+            './Installer/SHA256SUMS.txt' `
+            --repo $env:GITHUB_REPOSITORY `
+            --target $env:GITHUB_SHA `
+            --title "LUDARYX $env:RELEASE_VERSION" `
+            --notes-file "./RELEASE-$env:RELEASE_VERSION.txt" `
+            --latest
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub release creation failed.' }

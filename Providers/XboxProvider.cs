@@ -215,7 +215,11 @@ public sealed class XboxProvider : IGameProvider
 
     public Task StartClientAsync(CancellationToken cancellationToken = default)
     {
-        try { ProcessService.StartUri("xbox:"); } catch { }
+        try
+        {
+            ProcessService.StartUri("xbox:");
+        }
+        catch { }
         return Task.CompletedTask;
     }
 
@@ -249,7 +253,8 @@ Get-StartApps | Where-Object { $_.AppID -like '*!*' } | ForEach-Object {
             var powerShellPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsPowerShell", "v1.0", "powershell.exe");
-            if (!File.Exists(powerShellPath)) return result;
+            if (!File.Exists(powerShellPath))
+                return result;
 
             var psi = new ProcessStartInfo
             {
@@ -267,15 +272,19 @@ Get-StartApps | Where-Object { $_.AppID -like '*!*' } | ForEach-Object {
             psi.ArgumentList.Add(script);
 
             using var process = Process.Start(psi);
-            if (process is null) return result;
+            if (process is null)
+                return result;
             var output = await ReadBoundedOutputAsync(process.StandardOutput, 4 * 1024 * 1024, cancellationToken);
             await process.WaitForExitAsync(cancellationToken);
-            if (string.IsNullOrWhiteSpace(output)) return result;
+            if (string.IsNullOrWhiteSpace(output))
+                return result;
 
             using var doc = JsonDocument.Parse(output);
-            if (doc.RootElement.ValueKind == JsonValueKind.Object) Add(doc.RootElement, result);
+            if (doc.RootElement.ValueKind == JsonValueKind.Object)
+                Add(doc.RootElement, result);
             else if (doc.RootElement.ValueKind == JsonValueKind.Array)
-                foreach (var item in doc.RootElement.EnumerateArray()) Add(item, result);
+                foreach (var item in doc.RootElement.EnumerateArray())
+                    Add(item, result);
         }
         catch { }
         return result;
@@ -288,7 +297,8 @@ Get-StartApps | Where-Object { $_.AppID -like '*!*' } | ForEach-Object {
         while (true)
         {
             var read = await reader.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-            if (read == 0) break;
+            if (read == 0)
+                break;
             if (builder.Length + read > maxChars)
                 throw new InvalidOperationException("A saída do PowerShell excedeu o limite permitido.");
             builder.Append(buffer, 0, read);
@@ -307,8 +317,10 @@ Get-StartApps | Where-Object { $_.AppID -like '*!*' } | ForEach-Object {
                            (nr.ValueKind == JsonValueKind.True ||
                             (nr.ValueKind == JsonValueKind.String && bool.TryParse(nr.GetString(), out var parsed) && parsed));
 
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(appId)) return;
-        if (IsClearlyNonGame(name, packageName, packageFamilyName, appId, publisher, nonRemovable)) return;
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(appId))
+            return;
+        if (IsClearlyNonGame(name, packageName, packageFamilyName, appId, publisher, nonRemovable))
+            return;
 
         result.Add(new Game
         {

@@ -310,15 +310,22 @@ public partial class MainWindow
 
             if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
             {
-                if (left) MoveTvHeroSelection(-1);
-                else if (right) MoveTvHeroSelection(1);
-                if (left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+                if (left)
+                    MoveTvHeroSelection(-1);
+                else if (right)
+                    MoveTvHeroSelection(1);
+                if (left || right)
+                    _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
             }
 
-            if (_gamepad.WasPressed(GamepadButtons.A, state)) ActivateTvHeroControl();
-            else if (_gamepad.WasPressed(GamepadButtons.X, state)) OpenSelectedDetails();
-            else if (_gamepad.WasPressed(GamepadButtons.Y, state)) ToggleSelectedFavorite();
-            else if (_gamepad.WasPressed(GamepadButtons.Start, state)) Settings_Click(this, new RoutedEventArgs());
+            if (_gamepad.WasPressed(GamepadButtons.A, state))
+                ActivateTvHeroControl();
+            else if (_gamepad.WasPressed(GamepadButtons.X, state))
+                OpenSelectedDetails();
+            else if (_gamepad.WasPressed(GamepadButtons.Y, state))
+                ToggleSelectedFavorite();
+            else if (_gamepad.WasPressed(GamepadButtons.Start, state))
+                Settings_Click(this, new RoutedEventArgs());
             return;
         }
 
@@ -337,20 +344,27 @@ public partial class MainWindow
 
             if (DateTime.UtcNow >= _nextNavigationAllowedUtc)
             {
-                if (left) MoveToolbarSelection(-1);
-                else if (right) MoveToolbarSelection(1);
-                else if (up) AdjustToolbarValue(-1);
-                else if (down) AdjustToolbarValue(1);
-                if (up || down || left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+                if (left)
+                    MoveToolbarSelection(-1);
+                else if (right)
+                    MoveToolbarSelection(1);
+                else if (up)
+                    AdjustToolbarValue(-1);
+                else if (down)
+                    AdjustToolbarValue(1);
+                if (up || down || left || right)
+                    _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
             }
 
-            if (_gamepad.WasPressed(GamepadButtons.A, state)) ActivateToolbarControl();
+            if (_gamepad.WasPressed(GamepadButtons.A, state))
+                ActivateToolbarControl();
             return;
         }
 
         if (_visibleGames.Count == 0)
         {
-            if (up || _gamepad.WasPressed(GamepadButtons.RightShoulder, state)) EnterToolbarMode();
+            if (up || _gamepad.WasPressed(GamepadButtons.RightShoulder, state))
+                EnterToolbarMode();
             return;
         }
 
@@ -360,11 +374,16 @@ public partial class MainWindow
             {
                 EnterToolbarMode();
             }
-            else if (up) MoveSelection(-GetColumns());
-            else if (down) MoveSelection(GetColumns());
-            else if (left) MoveSelection(-1);
-            else if (right) MoveSelection(1);
-            if (up || down || left || right) _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
+            else if (up)
+                MoveSelection(-GetColumns());
+            else if (down)
+                MoveSelection(GetColumns());
+            else if (left)
+                MoveSelection(-1);
+            else if (right)
+                MoveSelection(1);
+            if (up || down || left || right)
+                _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);
         }
 
         if (_gamepad.WasPressed(GamepadButtons.Back, state))
@@ -383,22 +402,30 @@ public partial class MainWindow
             }
         }
 
-        if (_gamepad.WasPressed(GamepadButtons.A, state)) await LaunchSelectedAsync();
+        if (_gamepad.WasPressed(GamepadButtons.A, state))
+            await LaunchSelectedAsync();
         else if (_gamepad.WasPressed(GamepadButtons.B, state))
         {
-            if (_fullscreen) ToggleFullscreen();
-            else OpenSelectedDetails();
+            if (_fullscreen)
+                ToggleFullscreen();
+            else
+                OpenSelectedDetails();
         }
         else if (_gamepad.WasPressed(GamepadButtons.X, state))
         {
-            if (_fullscreen) OpenSelectedDetails();
-            else ToggleFullscreen();
+            if (_fullscreen)
+                OpenSelectedDetails();
+            else
+                ToggleFullscreen();
         }
-        else if (_gamepad.WasPressed(GamepadButtons.Y, state)) ToggleSelectedFavorite();
+        else if (_gamepad.WasPressed(GamepadButtons.Y, state))
+            ToggleSelectedFavorite();
         else if (_gamepad.WasPressed(GamepadButtons.Start, state))
         {
-            if (_fullscreen) Settings_Click(this, new RoutedEventArgs());
-            else ToggleFullscreen();
+            if (_fullscreen)
+                Settings_Click(this, new RoutedEventArgs());
+            else
+                ToggleFullscreen();
         }
     }
 
@@ -418,7 +445,8 @@ public partial class MainWindow
 
     private void SetFooterInputMode(FooterInputMode mode)
     {
-        if (_footerInputMode == mode) return;
+        if (_footerInputMode == mode)
+            return;
 
         _footerInputMode = mode;
         UpdateFooterInputHints();
@@ -536,7 +564,8 @@ public partial class MainWindow
             _pendingAnalogVerticalDirection = 0;
             _pendingAnalogVerticalSamples = 0;
         }
-        else if (analogVertical == _pendingAnalogVerticalDirection) _pendingAnalogVerticalSamples++;
+        else if (analogVertical == _pendingAnalogVerticalDirection)
+            _pendingAnalogVerticalSamples++;
         else
         {
             _pendingAnalogVerticalDirection = analogVertical;
@@ -548,7 +577,8 @@ public partial class MainWindow
             _pendingAnalogHorizontalDirection = 0;
             _pendingAnalogHorizontalSamples = 0;
         }
-        else if (analogHorizontal == _pendingAnalogHorizontalDirection) _pendingAnalogHorizontalSamples++;
+        else if (analogHorizontal == _pendingAnalogHorizontalDirection)
+            _pendingAnalogHorizontalSamples++;
         else
         {
             _pendingAnalogHorizontalDirection = analogHorizontal;
@@ -734,9 +764,11 @@ public partial class MainWindow
     private void MoveTvHeroSelection(int delta)
     {
         var controls = GetTvHeroControls();
-        if (controls.Count == 0) return;
+        if (controls.Count == 0)
+            return;
         var next = Math.Clamp(_tvHeroActionIndex + delta, 0, controls.Count - 1);
-        if (next == _tvHeroActionIndex) return;
+        if (next == _tvHeroActionIndex)
+            return;
         _tvHeroActionIndex = next;
         FocusTvHeroControl();
         PlayNavigationSound();
@@ -745,7 +777,8 @@ public partial class MainWindow
     private void FocusTvHeroControl()
     {
         var controls = GetTvHeroControls();
-        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count) return;
+        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count)
+            return;
         controls[_tvHeroActionIndex].Focus();
         Keyboard.Focus(controls[_tvHeroActionIndex]);
     }
@@ -753,14 +786,16 @@ public partial class MainWindow
     private void ActivateTvHeroControl()
     {
         var controls = GetTvHeroControls();
-        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count) return;
+        if (_tvHeroActionIndex < 0 || _tvHeroActionIndex >= controls.Count)
+            return;
         controls[_tvHeroActionIndex].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     }
 
     private void EnterToolbarMode()
     {
         var controls = GetToolbarControls();
-        if (controls.Count == 0) return;
+        if (controls.Count == 0)
+            return;
 
         _controllerToolbarMode = true;
         _toolbarIndex = Math.Clamp(_toolbarIndex, 0, controls.Count - 1);
@@ -790,10 +825,13 @@ public partial class MainWindow
     private void MoveToolbarSelection(int delta)
     {
         var controls = GetToolbarControls();
-        if (controls.Count == 0) return;
+        if (controls.Count == 0)
+            return;
         var next = Math.Clamp(_toolbarIndex + delta, 0, controls.Count - 1);
-        if (next == _toolbarIndex) return;
-        if (controls[_toolbarIndex] is ComboBox currentCombo) currentCombo.IsDropDownOpen = false;
+        if (next == _toolbarIndex)
+            return;
+        if (controls[_toolbarIndex] is ComboBox currentCombo)
+            currentCombo.IsDropDownOpen = false;
         _toolbarIndex = next;
         FocusToolbarControl();
         PlayNavigationSound();
@@ -802,7 +840,8 @@ public partial class MainWindow
     private void FocusToolbarControl()
     {
         var controls = GetToolbarControls();
-        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count) return;
+        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count)
+            return;
         controls[_toolbarIndex].Focus();
         Keyboard.Focus(controls[_toolbarIndex]);
     }
@@ -810,7 +849,8 @@ public partial class MainWindow
     private void AdjustToolbarValue(int delta)
     {
         var controls = GetToolbarControls();
-        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count) return;
+        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count)
+            return;
         if (controls[_toolbarIndex] is ComboBox combo && combo.Items.Count > 0)
         {
             var old = Math.Max(0, combo.SelectedIndex);
@@ -840,13 +880,15 @@ public partial class MainWindow
         }
 
         // Para botões/campo de pesquisa, para baixo retorna naturalmente à biblioteca.
-        if (delta > 0) ExitToolbarMode();
+        if (delta > 0)
+            ExitToolbarMode();
     }
 
     private void ActivateToolbarControl()
     {
         var controls = GetToolbarControls();
-        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count) return;
+        if (_toolbarIndex < 0 || _toolbarIndex >= controls.Count)
+            return;
         switch (controls[_toolbarIndex])
         {
             case ComboBox combo:
@@ -872,8 +914,10 @@ public partial class MainWindow
 
     private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
-        if (e.Key == Key.F11) ToggleFullscreen();
-        else if (e.Key == Key.Escape && _fullscreen) ToggleFullscreen();
+        if (e.Key == Key.F11)
+            ToggleFullscreen();
+        else if (e.Key == Key.Escape && _fullscreen)
+            ToggleFullscreen();
     }
 
     private static bool MatchesShortcut(System.Windows.Input.KeyEventArgs e, string? shortcut) =>

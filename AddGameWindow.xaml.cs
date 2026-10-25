@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using UnifiedGameLauncher.Models;
@@ -16,7 +16,10 @@ public partial class AddGameWindow : Window
     private bool _loadingProfile;
     private string? _pendingIconSource;
 
-    public ManualGameDefinition? Result { get; private set; }
+    public ManualGameDefinition? Result
+    {
+        get; private set;
+    }
 
     public AddGameWindow(ManualGameDefinition? existing = null)
     {

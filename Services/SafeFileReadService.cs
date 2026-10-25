@@ -10,7 +10,8 @@ public static class SafeFileReadService
 
     public static string ReadAllText(string path, int maxBytes, string description)
     {
-        if (maxBytes <= 0) throw new ArgumentOutOfRangeException(nameof(maxBytes));
+        if (maxBytes <= 0)
+            throw new ArgumentOutOfRangeException(nameof(maxBytes));
 
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, FileOptions.SequentialScan);
         if (stream.Length > maxBytes)
@@ -22,7 +23,8 @@ public static class SafeFileReadService
         while (true)
         {
             var read = stream.Read(buffer, 0, buffer.Length);
-            if (read == 0) break;
+            if (read == 0)
+                break;
             total += read;
             if (total > maxBytes)
                 throw new InvalidOperationException($"O arquivo de {description} excede o limite permitido.");

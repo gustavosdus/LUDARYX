@@ -45,14 +45,16 @@ public static class SecretProtectionService
 
     public static string? Protect(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value)) return null;
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
         var bytes = Encoding.UTF8.GetBytes(value);
         return Convert.ToBase64String(ProtectBytes(bytes));
     }
 
     public static string? Unprotect(string? protectedValue)
     {
-        if (string.IsNullOrWhiteSpace(protectedValue)) return null;
+        if (string.IsNullOrWhiteSpace(protectedValue))
+            return null;
         try
         {
             var bytes = Convert.FromBase64String(protectedValue);
@@ -72,7 +74,10 @@ public static class SecretProtectionService
             if (!CryptProtectData(ref input, "LUDARYX", IntPtr.Zero, IntPtr.Zero, IntPtr.Zero,
                     CryptProtectUiForbidden, out var output))
                 throw new InvalidOperationException($"DPAPI falhou ao proteger um segredo (Win32 {Marshal.GetLastWin32Error()}).");
-            try { return FromBlob(output); }
+            try
+            {
+                return FromBlob(output);
+            }
             finally { if (output.pbData != IntPtr.Zero) LocalFree(output.pbData); }
         }
         finally { FreeBlob(input); }
@@ -86,7 +91,10 @@ public static class SecretProtectionService
             if (!CryptUnprotectData(ref input, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero,
                     CryptProtectUiForbidden, out var output))
                 throw new InvalidOperationException($"DPAPI falhou ao descriptografar um segredo (Win32 {Marshal.GetLastWin32Error()}).");
-            try { return FromBlob(output); }
+            try
+            {
+                return FromBlob(output);
+            }
             finally { if (output.pbData != IntPtr.Zero) LocalFree(output.pbData); }
         }
         finally { FreeBlob(input); }
@@ -102,12 +110,14 @@ public static class SecretProtectionService
     private static byte[] FromBlob(DataBlob blob)
     {
         var bytes = new byte[blob.cbData];
-        if (blob.cbData > 0) Marshal.Copy(blob.pbData, bytes, 0, blob.cbData);
+        if (blob.cbData > 0)
+            Marshal.Copy(blob.pbData, bytes, 0, blob.cbData);
         return bytes;
     }
 
     private static void FreeBlob(DataBlob blob)
     {
-        if (blob.pbData != IntPtr.Zero) Marshal.FreeHGlobal(blob.pbData);
+        if (blob.pbData != IntPtr.Zero)
+            Marshal.FreeHGlobal(blob.pbData);
     }
 }

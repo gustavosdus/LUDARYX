@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text.Json;
 using UnifiedGameLauncher.Models;
 
@@ -194,7 +194,10 @@ public static class BackupService
 
                 // Evita que settings.backup.json antigo desfaça a restauração caso o
                 // arquivo principal seja lido durante uma recuperação posterior.
-                try { File.Copy(settingsTarget, Path.Combine(root, "settings.backup.json"), true); }
+                try
+                {
+                    File.Copy(settingsTarget, Path.Combine(root, "settings.backup.json"), true);
+                }
                 catch { }
             }
         }
@@ -470,7 +473,10 @@ public static class BackupService
 
     private static long SafeLength(string path)
     {
-        try { return File.Exists(path) ? new FileInfo(path).Length : 0; }
+        try
+        {
+            return File.Exists(path) ? new FileInfo(path).Length : 0;
+        }
         catch { return 0; }
     }
 
@@ -517,11 +523,26 @@ public static class BackupService
 
     private sealed class BackupManifest
     {
-        public int FormatVersion { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
-        public bool SettingsAndLibrary { get; set; }
-        public bool CustomArtwork { get; set; }
-        public bool MetadataCache { get; set; }
+        public int FormatVersion
+        {
+            get; set;
+        }
+        public DateTime CreatedAtUtc
+        {
+            get; set;
+        }
+        public bool SettingsAndLibrary
+        {
+            get; set;
+        }
+        public bool CustomArtwork
+        {
+            get; set;
+        }
+        public bool MetadataCache
+        {
+            get; set;
+        }
     }
 
     private sealed class ArtworkBackupState
@@ -532,19 +553,37 @@ public static class BackupService
 
     private sealed class ArtworkOverride
     {
-        public string? Horizontal { get; set; }
-        public string? Vertical { get; set; }
+        public string? Horizontal
+        {
+            get; set;
+        }
+        public string? Vertical
+        {
+            get; set;
+        }
     }
 
     private sealed class ManualGameArtwork
     {
-        public string? CoverPath { get; set; }
-        public string? IconPath { get; set; }
+        public string? CoverPath
+        {
+            get; set;
+        }
+        public string? IconPath
+        {
+            get; set;
+        }
     }
 
     private sealed class MetadataArtworkState
     {
-        public string? CustomHorizontal { get; set; }
-        public string? CustomVertical { get; set; }
+        public string? CustomHorizontal
+        {
+            get; set;
+        }
+        public string? CustomVertical
+        {
+            get; set;
+        }
     }
 }

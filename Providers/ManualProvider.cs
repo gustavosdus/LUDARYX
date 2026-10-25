@@ -1,4 +1,4 @@
-using UnifiedGameLauncher.Models;
+﻿using UnifiedGameLauncher.Models;
 using UnifiedGameLauncher.Services;
 
 namespace UnifiedGameLauncher.Providers;

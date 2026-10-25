@@ -16,12 +16,8 @@ public static class SafeImageDownloadService
 
     private const int MaxRedirects = 5;
 
-    public static async Task<byte[]> DownloadAsync(HttpClient http, string url, CancellationToken cancellationToken = default)
+    public static async Task<byte[]> DownloadAsync(string url, CancellationToken cancellationToken = default)
     {
-        // O HttpClient recebido é mantido na assinatura por compatibilidade com os serviços
-        // existentes, mas downloads de imagens usam um cliente próprio sem redirects automáticos.
-        _ = http;
-
         if (!Uri.TryCreate(url, UriKind.Absolute, out var currentUri))
             throw new InvalidOperationException("A URL da imagem é inválida.");
 
@@ -69,7 +65,8 @@ public static class SafeImageDownloadService
             while (true)
             {
                 var read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-                if (read == 0) break;
+                if (read == 0)
+                    break;
                 total += read;
                 if (total > MaxImageBytes)
                     throw new InvalidOperationException("A imagem excede o limite de 15 MB.");
@@ -147,7 +144,8 @@ public static class SafeImageDownloadService
     private static bool IsPrivateOrLocalAddress(IPAddress address)
     {
         if (IPAddress.IsLoopback(address) || address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any) ||
-            address.Equals(IPAddress.None) || address.Equals(IPAddress.IPv6None)) return true;
+            address.Equals(IPAddress.None) || address.Equals(IPAddress.IPv6None))
+            return true;
 
         var bytes = address.GetAddressBytes();
         if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
@@ -199,11 +197,16 @@ public static class SafeImageDownloadService
 
     private static bool LooksLikeImage(byte[] b)
     {
-        if (b.Length >= 8 && b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47 && b[4] == 0x0D && b[5] == 0x0A && b[6] == 0x1A && b[7] == 0x0A) return true;
-        if (b.Length >= 3 && b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF) return true;
-        if (b.Length >= 10 && b[0] == (byte)'G' && b[1] == (byte)'I' && b[2] == (byte)'F' && b[3] == (byte)'8' && (b[4] == (byte)'7' || b[4] == (byte)'9') && b[5] == (byte)'a') return true;
-        if (b.Length >= 26 && b[0] == (byte)'B' && b[1] == (byte)'M') return true;
-        if (b.Length >= 30 && b[0] == (byte)'R' && b[1] == (byte)'I' && b[2] == (byte)'F' && b[3] == (byte)'F' && b[8] == (byte)'W' && b[9] == (byte)'E' && b[10] == (byte)'B' && b[11] == (byte)'P') return true;
+        if (b.Length >= 8 && b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47 && b[4] == 0x0D && b[5] == 0x0A && b[6] == 0x1A && b[7] == 0x0A)
+            return true;
+        if (b.Length >= 3 && b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF)
+            return true;
+        if (b.Length >= 10 && b[0] == (byte)'G' && b[1] == (byte)'I' && b[2] == (byte)'F' && b[3] == (byte)'8' && (b[4] == (byte)'7' || b[4] == (byte)'9') && b[5] == (byte)'a')
+            return true;
+        if (b.Length >= 26 && b[0] == (byte)'B' && b[1] == (byte)'M')
+            return true;
+        if (b.Length >= 30 && b[0] == (byte)'R' && b[1] == (byte)'I' && b[2] == (byte)'F' && b[3] == (byte)'F' && b[8] == (byte)'W' && b[9] == (byte)'E' && b[10] == (byte)'B' && b[11] == (byte)'P')
+            return true;
         return false;
     }
 
@@ -241,16 +244,22 @@ public static class SafeImageDownloadService
             var i = 2;
             while (i + 8 < b.Length)
             {
-                while (i < b.Length && b[i] != 0xFF) i++;
-                while (i < b.Length && b[i] == 0xFF) i++;
-                if (i >= b.Length) break;
+                while (i < b.Length && b[i] != 0xFF)
+                    i++;
+                while (i < b.Length && b[i] == 0xFF)
+                    i++;
+                if (i >= b.Length)
+                    break;
 
                 var marker = b[i++];
-                if (marker is 0xD8 or 0xD9) continue;
-                if (marker == 0xDA || i + 1 >= b.Length) break;
+                if (marker is 0xD8 or 0xD9)
+                    continue;
+                if (marker == 0xDA || i + 1 >= b.Length)
+                    break;
 
                 var segmentLength = (b[i] << 8) | b[i + 1];
-                if (segmentLength < 2 || i + segmentLength > b.Length) break;
+                if (segmentLength < 2 || i + segmentLength > b.Length)
+                    break;
 
                 var isSof = marker is 0xC0 or 0xC1 or 0xC2 or 0xC3 or 0xC5 or 0xC6 or 0xC7
                                       or 0xC9 or 0xCA or 0xCB or 0xCD or 0xCE or 0xCF;

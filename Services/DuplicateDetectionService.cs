@@ -20,7 +20,8 @@ public sealed class DuplicateDetectionService
         foreach (var group in list.Where(g => !string.IsNullOrWhiteSpace(g.CanonicalGameId)).GroupBy(g => g.CanonicalGameId, StringComparer.OrdinalIgnoreCase))
         {
             var entries = group.ToList();
-            if (entries.Count < 2) continue;
+            if (entries.Count < 2)
+                continue;
 
             var platforms = entries.Select(g => g.Platform).Distinct().ToList();
             var display = platforms.Count > 1
@@ -40,7 +41,8 @@ public sealed class DuplicateDetectionService
         var text = value.ToLowerInvariant().Normalize(NormalizationForm.FormD);
         var sb = new StringBuilder();
         foreach (var c in text)
-            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                sb.Append(c);
         text = sb.ToString().Normalize(NormalizationForm.FormC);
         text = Regex.Replace(text, @"\b(goty|game of the year|deluxe|ultimate|definitive|complete|edition|remastered|remake|hd|collection|bundle)\b", " ");
         text = Regex.Replace(text, @"\b(copy|copia|cópia|duplicate|duplicado|duplicada)\b", " ");

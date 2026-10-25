@@ -1,4 +1,4 @@
-using UnifiedGameLauncher.Models;
+﻿using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
 
@@ -77,7 +77,8 @@ public static class AgeRatingService
 
     public static string NormalizeSystem(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value)) return string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
         var normalized = new string(value.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
 
         if (normalized is "dejus" or "djctq" or "classind" or "brazil" ||

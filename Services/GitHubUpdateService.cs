@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -226,12 +226,20 @@ public static class GitHubUpdateService
             if (await VerifySha256Async(finalPath, expectedHash, cancellationToken))
                 return finalPath;
 
-            try { File.Delete(finalPath); } catch { }
+            try
+            {
+                File.Delete(finalPath);
+            }
+            catch { }
         }
 
         if (File.Exists(tempPath))
         {
-            try { File.Delete(tempPath); } catch { }
+            try
+            {
+                File.Delete(tempPath);
+            }
+            catch { }
         }
 
         using var client = CreateHttpClient(TimeSpan.FromMinutes(15));
@@ -274,7 +282,11 @@ public static class GitHubUpdateService
 
         if (!await VerifySha256Async(tempPath, expectedHash, cancellationToken))
         {
-            try { File.Delete(tempPath); } catch { }
+            try
+            {
+                File.Delete(tempPath);
+            }
+            catch { }
             throw new InvalidDataException("O SHA-256 do instalador baixado não corresponde ao valor publicado em SHA256SUMS.txt.");
         }
 

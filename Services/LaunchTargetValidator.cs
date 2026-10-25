@@ -1,6 +1,4 @@
-﻿using UnifiedGameLauncher.Models;
-
-namespace UnifiedGameLauncher.Services;
+﻿namespace UnifiedGameLauncher.Services;
 
 public static class LaunchTargetValidator
 {
@@ -19,7 +17,8 @@ public static class LaunchTargetValidator
     {
         normalized = null;
         error = null;
-        if (string.IsNullOrWhiteSpace(executable)) return true;
+        if (string.IsNullOrWhiteSpace(executable))
+            return true;
 
         try
         {
@@ -187,7 +186,8 @@ public static class LaunchTargetValidator
 
     public static bool IsLocalFilePath(string? path)
     {
-        if (string.IsNullOrWhiteSpace(path)) return false;
+        if (string.IsNullOrWhiteSpace(path))
+            return false;
         try
         {
             var fullPath = Path.GetFullPath(path.Trim().Trim('"'));
@@ -198,7 +198,8 @@ public static class LaunchTargetValidator
 
     public static bool IsSafeLocalFilePath(string? path)
     {
-        if (!IsLocalFilePath(path) || string.IsNullOrWhiteSpace(path)) return false;
+        if (!IsLocalFilePath(path) || string.IsNullOrWhiteSpace(path))
+            return false;
         try
         {
             var fullPath = Path.GetFullPath(path.Trim().Trim('"'));
@@ -234,12 +235,14 @@ public static class LaunchTargetValidator
 
     private static bool IsNetworkPath(string fullPath)
     {
-        if (fullPath.StartsWith(@"\\", StringComparison.Ordinal)) return true;
+        if (fullPath.StartsWith(@"\\", StringComparison.Ordinal))
+            return true;
 
         try
         {
             var root = Path.GetPathRoot(fullPath);
-            if (string.IsNullOrWhiteSpace(root)) return true;
+            if (string.IsNullOrWhiteSpace(root))
+                return true;
             return new DriveInfo(root).DriveType == DriveType.Network;
         }
         catch
@@ -252,7 +255,8 @@ public static class LaunchTargetValidator
     {
         normalized = null;
         error = null;
-        if (string.IsNullOrWhiteSpace(value)) return true;
+        if (string.IsNullOrWhiteSpace(value))
+            return true;
 
         var raw = value.Trim();
         const string shellPrefix = "shell:AppsFolder\\";
@@ -294,21 +298,4 @@ public static class LaunchTargetValidator
         return true;
     }
 
-    public static void ValidateForLaunch(Game game)
-    {
-        if (!string.IsNullOrWhiteSpace(game.LaunchUri))
-        {
-            if (!TryValidateUri(game.LaunchUri, out var uri, out var error))
-                throw new InvalidOperationException(error);
-            game.LaunchUri = uri;
-            return;
-        }
-
-        if (!TryValidateExecutable(game.Executable, out var exe, out var exeError) || string.IsNullOrWhiteSpace(exe))
-            throw new InvalidOperationException(exeError ?? "O jogo manual não possui um executável válido.");
-        game.Executable = exe;
-
-        if (!string.IsNullOrEmpty(game.LaunchArguments) && game.LaunchArguments.Length > 4096)
-            throw new InvalidOperationException("Os argumentos de inicialização são maiores que o limite permitido.");
-    }
 }

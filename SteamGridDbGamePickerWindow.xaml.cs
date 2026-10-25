@@ -8,7 +8,10 @@ public partial class SteamGridDbGamePickerWindow : Window
 {
     private readonly SteamGridDbService _service;
     private readonly string _apiKey;
-    public SteamGridDbGameResult? SelectedGame { get; private set; }
+    public SteamGridDbGameResult? SelectedGame
+    {
+        get; private set;
+    }
 
     public SteamGridDbGamePickerWindow(string initialQuery, string apiKey, SteamGridDbService service)
     {
@@ -30,7 +33,8 @@ public partial class SteamGridDbGamePickerWindow : Window
 
     private async Task SearchAsync()
     {
-        if (string.IsNullOrWhiteSpace(SearchBox.Text)) return;
+        if (string.IsNullOrWhiteSpace(SearchBox.Text))
+            return;
         try
         {
             Mouse.OverrideCursor = Cursors.Wait;
@@ -59,7 +63,11 @@ public partial class SteamGridDbGamePickerWindow : Window
     }
 
     private void ResultsList_MouseDoubleClick(object sender, MouseButtonEventArgs e) => Use_Click(sender, e);
-    private void Cancel_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)

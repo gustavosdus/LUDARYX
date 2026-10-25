@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using UnifiedGameLauncher.Models;
@@ -19,7 +19,10 @@ public partial class ParentalPinWindow : Window
     private readonly LauncherSettings _settings;
     private PinFlow _flow;
 
-    public bool PinChanged { get; private set; }
+    public bool PinChanged
+    {
+        get; private set;
+    }
 
     public ParentalPinWindow(LauncherSettings settings, bool changePinMode = false)
     {
@@ -152,7 +155,7 @@ public partial class ParentalPinWindow : Window
                 ParentalControlService.UnlockSession();
                 _flow = PinFlow.ChangeNew;
                 TitleText.Text = $"LUDARYX  /  {LocalizationService.Translate("CONTROLE PARENTAL")}";
-        ConfigureFlow();
+                ConfigureFlow();
                 return;
 
             case PinFlow.ChangeNew:

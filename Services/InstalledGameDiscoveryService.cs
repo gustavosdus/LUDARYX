@@ -12,35 +12,41 @@ public static class InstalledGameDiscoveryService
     {
         var results = new List<Game>();
         foreach (var hive in new[] { RegistryHive.CurrentUser, RegistryHive.LocalMachine })
-        foreach (var view in Views)
-        {
-            try
+            foreach (var view in Views)
             {
-                using var baseKey = RegistryKey.OpenBaseKey(hive, view);
-                using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
-                if (uninstall is null) continue;
-                foreach (var subName in uninstall.GetSubKeyNames())
+                try
                 {
-                    try
+                    using var baseKey = RegistryKey.OpenBaseKey(hive, view);
+                    using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                    if (uninstall is null)
+                        continue;
+                    foreach (var subName in uninstall.GetSubKeyNames())
                     {
-                        using var key = uninstall.OpenSubKey(subName);
-                        var name = key?.GetValue("DisplayName")?.ToString();
-                        var install = key?.GetValue("InstallLocation")?.ToString();
-                        var publisher = key?.GetValue("Publisher")?.ToString() ?? "";
-                        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(install)) continue;
-                        install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
-                        if (!Directory.Exists(install)) continue;
-                        if (publisherHints.Length > 0 && !publisherHints.Any(h => publisher.Contains(h, StringComparison.OrdinalIgnoreCase) || name.Contains(h, StringComparison.OrdinalIgnoreCase))) continue;
-                        if (productNameExclusions.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase))) continue;
-                        var exe = FindLikelyGameExe(install, name);
-                        if (exe is null || !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _)) continue;
-                        results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, Installed = true });
+                        try
+                        {
+                            using var key = uninstall.OpenSubKey(subName);
+                            var name = key?.GetValue("DisplayName")?.ToString();
+                            var install = key?.GetValue("InstallLocation")?.ToString();
+                            var publisher = key?.GetValue("Publisher")?.ToString() ?? "";
+                            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(install))
+                                continue;
+                            install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
+                            if (!Directory.Exists(install))
+                                continue;
+                            if (publisherHints.Length > 0 && !publisherHints.Any(h => publisher.Contains(h, StringComparison.OrdinalIgnoreCase) || name.Contains(h, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            if (productNameExclusions.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            var exe = FindLikelyGameExe(install, name);
+                            if (exe is null || !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _))
+                                continue;
+                            results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, Installed = true });
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
+                catch { }
             }
-            catch { }
-        }
         return Deduplicate(results);
     }
 
@@ -48,36 +54,43 @@ public static class InstalledGameDiscoveryService
     {
         var results = new List<Game>();
         foreach (var hive in new[] { RegistryHive.CurrentUser, RegistryHive.LocalMachine })
-        foreach (var view in Views)
-        {
-            try
+            foreach (var view in Views)
             {
-                using var baseKey = RegistryKey.OpenBaseKey(hive, view);
-                using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
-                if (uninstall is null) continue;
-                foreach (var subName in uninstall.GetSubKeyNames())
+                try
                 {
-                    try
+                    using var baseKey = RegistryKey.OpenBaseKey(hive, view);
+                    using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                    if (uninstall is null)
+                        continue;
+                    foreach (var subName in uninstall.GetSubKeyNames())
                     {
-                        using var key = uninstall.OpenSubKey(subName);
-                        var name = key?.GetValue("DisplayName")?.ToString();
-                        var install = key?.GetValue("InstallLocation")?.ToString();
-                        var publisher = key?.GetValue("Publisher")?.ToString() ?? "";
-                        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(install)) continue;
-                        install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
-                        if (!Directory.Exists(install)) continue;
-                        if (publisherHints.Length > 0 && !publisherHints.Any(h => publisher.Contains(h, StringComparison.OrdinalIgnoreCase) || name.Contains(h, StringComparison.OrdinalIgnoreCase))) continue;
-                        if (productNameExclusions.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase))) continue;
-                        if (pathHints is { Length: > 0 } && !pathHints.Any(h => install.Contains(h, StringComparison.OrdinalIgnoreCase))) continue;
-                        var exe = FindLikelyGameExe(install, name);
-                        if (exe is null || !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _)) continue;
-                        results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, Installed = true });
+                        try
+                        {
+                            using var key = uninstall.OpenSubKey(subName);
+                            var name = key?.GetValue("DisplayName")?.ToString();
+                            var install = key?.GetValue("InstallLocation")?.ToString();
+                            var publisher = key?.GetValue("Publisher")?.ToString() ?? "";
+                            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(install))
+                                continue;
+                            install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
+                            if (!Directory.Exists(install))
+                                continue;
+                            if (publisherHints.Length > 0 && !publisherHints.Any(h => publisher.Contains(h, StringComparison.OrdinalIgnoreCase) || name.Contains(h, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            if (productNameExclusions.Any(x => name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            if (pathHints is { Length: > 0 } && !pathHints.Any(h => install.Contains(h, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            var exe = FindLikelyGameExe(install, name);
+                            if (exe is null || !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _))
+                                continue;
+                            results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, Installed = true });
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
+                catch { }
             }
-            catch { }
-        }
         return Deduplicate(results);
     }
 
@@ -85,36 +98,42 @@ public static class InstalledGameDiscoveryService
     {
         var results = new List<Game>();
         foreach (var hive in new[] { RegistryHive.CurrentUser, RegistryHive.LocalMachine })
-        foreach (var view in Views)
-        foreach (var path in registryPaths)
-        {
-            try
-            {
-                using var baseKey = RegistryKey.OpenBaseKey(hive, view);
-                using var root = baseKey.OpenSubKey(path);
-                if (root is null) continue;
-                foreach (var subName in root.GetSubKeyNames())
+            foreach (var view in Views)
+                foreach (var path in registryPaths)
                 {
                     try
                     {
-                        using var key = root.OpenSubKey(subName);
-                        var install = key?.GetValue(installValueName)?.ToString();
-                        if (string.IsNullOrWhiteSpace(install)) continue;
-                        install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
-                        if (!Directory.Exists(install)) continue;
-                        var name = nameResolver?.Invoke(subName, install) ?? subName;
-                        if (string.IsNullOrWhiteSpace(name)) continue;
-                        var exe = FindLikelyGameExe(install, name);
-                        var launchUri = launchResolver?.Invoke(subName, install);
-                        if (exe is not null && !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _)) exe = null;
-                        if (exe is null && launchUri is null) continue;
-                        results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, LaunchUri = launchUri, Installed = true });
+                        using var baseKey = RegistryKey.OpenBaseKey(hive, view);
+                        using var root = baseKey.OpenSubKey(path);
+                        if (root is null)
+                            continue;
+                        foreach (var subName in root.GetSubKeyNames())
+                        {
+                            try
+                            {
+                                using var key = root.OpenSubKey(subName);
+                                var install = key?.GetValue(installValueName)?.ToString();
+                                if (string.IsNullOrWhiteSpace(install))
+                                    continue;
+                                install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
+                                if (!Directory.Exists(install))
+                                    continue;
+                                var name = nameResolver?.Invoke(subName, install) ?? subName;
+                                if (string.IsNullOrWhiteSpace(name))
+                                    continue;
+                                var exe = FindLikelyGameExe(install, name);
+                                var launchUri = launchResolver?.Invoke(subName, install);
+                                if (exe is not null && !LaunchTargetValidator.TryValidateDetectedExecutable(exe, out exe, out _))
+                                    exe = null;
+                                if (exe is null && launchUri is null)
+                                    continue;
+                                results.Add(new Game { Id = subName, Name = name.Trim(), Platform = platform, InstallPath = install, Executable = exe, LaunchUri = launchUri, Installed = true });
+                            }
+                            catch { }
+                        }
                     }
                     catch { }
                 }
-            }
-            catch { }
-        }
         return Deduplicate(results);
     }
 

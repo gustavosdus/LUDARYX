@@ -13,7 +13,10 @@ public partial class SteamGridDbArtworkPickerWindow : Window
     private readonly bool _vertical;
     private readonly int _gameId;
 
-    public bool ArtworkChanged { get; private set; }
+    public bool ArtworkChanged
+    {
+        get; private set;
+    }
 
     public SteamGridDbArtworkPickerWindow(
         Game game,
@@ -112,7 +115,11 @@ public partial class SteamGridDbArtworkPickerWindow : Window
         }
     }
 
-    private void Close_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
+    private void Close_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)

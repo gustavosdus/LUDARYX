@@ -74,7 +74,8 @@ public sealed class EAAppProvider : ClientShortcutProvider
 
     private void StartEaClientAllowingTrustedLocalReparse()
     {
-        if (IsRunning()) return;
+        if (IsRunning())
+            return;
 
         var executable = FindLauncherExecutable();
         if (string.IsNullOrWhiteSpace(executable))
@@ -172,23 +173,27 @@ public sealed class EAAppProvider : ClientShortcutProvider
     private static IEnumerable<Game> ScanEaInstallRoot(string root)
     {
         var results = new List<Game>();
-        if (!Directory.Exists(root)) return results;
+        if (!Directory.Exists(root))
+            return results;
 
         try
         {
             foreach (var directory in Directory.EnumerateDirectories(root, "*", SearchOption.TopDirectoryOnly))
             {
                 var name = Path.GetFileName(directory);
-                if (string.IsNullOrWhiteSpace(name) || IsNonGameName(name)) continue;
+                if (string.IsNullOrWhiteSpace(name) || IsNonGameName(name))
+                    continue;
 
                 // Em D:\Games não podemos considerar qualquer pasta com .exe como EA,
                 // pois o usuário também pode ter jogos Steam ali. Exigimos marcadores
                 // característicos do EA quando a raiz é genérica.
                 var rootIsGeneric = IsGenericCustomRoot(root);
-                if (rootIsGeneric && !IsLikelyEaDirectory(directory)) continue;
+                if (rootIsGeneric && !IsLikelyEaDirectory(directory))
+                    continue;
 
                 var exe = InstalledGameDiscoveryService.FindLikelyGameExe(directory, name);
-                if (exe is null) continue;
+                if (exe is null)
+                    continue;
 
                 results.Add(new Game
                 {
@@ -237,16 +242,22 @@ public sealed class EAAppProvider : ClientShortcutProvider
             foreach (var file in Directory.EnumerateFiles(configRoot, "*.ini", SearchOption.TopDirectoryOnly))
             {
                 string[] lines;
-                try { lines = File.ReadAllLines(file); } catch { continue; }
+                try
+                {
+                    lines = File.ReadAllLines(file);
+                }
+                catch { continue; }
 
                 foreach (var line in lines)
                 {
                     const string key = "user.downloadinplacedir=";
                     var index = line.IndexOf(key, StringComparison.OrdinalIgnoreCase);
-                    if (index < 0) continue;
+                    if (index < 0)
+                        continue;
 
                     var value = line[(index + key.Length)..].Trim().Trim('"');
-                    if (string.IsNullOrWhiteSpace(value)) continue;
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
 
                     value = Environment.ExpandEnvironmentVariables(value).TrimEnd('\\');
                     if (Directory.Exists(value))

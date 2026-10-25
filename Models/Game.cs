@@ -8,38 +8,87 @@ public sealed class Game : INotifyPropertyChanged
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
-    public GamePlatform Platform { get; set; }
+    public GamePlatform Platform
+    {
+        get; set;
+    }
     public bool Installed { get; set; } = true;
-    public string? InstallPath { get; set; }
-    public string? Executable { get; set; }
-    public string? LaunchArguments { get; set; }
-    public string? CoverImage { get; set; }
-    public string? LaunchUri { get; set; }
-    public string? AppUserModelId { get; set; }
-    public string? PackageFamilyName { get; set; }
-    public string? StoreId { get; set; }
+    public string? InstallPath
+    {
+        get; set;
+    }
+    public string? Executable
+    {
+        get; set;
+    }
+    public string? LaunchArguments
+    {
+        get; set;
+    }
+    public string? CoverImage
+    {
+        get; set;
+    }
+    public string? LaunchUri
+    {
+        get; set;
+    }
+    public string? AppUserModelId
+    {
+        get; set;
+    }
+    public string? PackageFamilyName
+    {
+        get; set;
+    }
+    public string? StoreId
+    {
+        get; set;
+    }
     public GameMetadata Metadata { get; set; } = new();
 
-    public bool IsFavorite { get; set; }
-    public DateTime? LastPlayedUtc { get; set; }
-    public int PlayCount { get; set; }
-    public long TotalPlayTimeSeconds { get; set; }
+    public bool IsFavorite
+    {
+        get; set;
+    }
+    public DateTime? LastPlayedUtc
+    {
+        get; set;
+    }
+    public int PlayCount
+    {
+        get; set;
+    }
+    public long TotalPlayTimeSeconds
+    {
+        get; set;
+    }
     private bool _isRunning;
     public bool IsRunning
     {
         get => _isRunning;
         set
         {
-            if (_isRunning == value) return;
+            if (_isRunning == value)
+                return;
             _isRunning = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(RunningDisplay));
         }
     }
-    public bool IsHidden { get; set; }
-    public bool IsExcluded { get; set; }
+    public bool IsHidden
+    {
+        get; set;
+    }
+    public bool IsExcluded
+    {
+        get; set;
+    }
     public string CanonicalGameId { get; set; } = "";
-    public bool IsDuplicate { get; set; }
+    public bool IsDuplicate
+    {
+        get; set;
+    }
     public string DuplicatePlatformsDisplay { get; set; } = "";
 
     public string GenresDisplay => string.Join(" • ", Metadata.Genres);
@@ -78,7 +127,8 @@ public sealed class Game : INotifyPropertyChanged
         get => _isControllerSelected;
         set
         {
-            if (_isControllerSelected == value) return;
+            if (_isControllerSelected == value)
+                return;
             _isControllerSelected = value;
             OnPropertyChanged();
         }

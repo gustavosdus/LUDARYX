@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -132,9 +132,12 @@ public sealed class WindowGamepadNavigationService : IDisposable
         {
             if (combo.IsDropDownOpen)
             {
-                if (up) ChangeComboSelection(combo, -1);
-                else if (down) ChangeComboSelection(combo, 1);
-                else if (left || right) combo.IsDropDownOpen = false;
+                if (up)
+                    ChangeComboSelection(combo, -1);
+                else if (down)
+                    ChangeComboSelection(combo, 1);
+                else if (left || right)
+                    combo.IsDropDownOpen = false;
 
                 if (up || down || left || right)
                     _nextNavigationAllowedUtc = DateTime.UtcNow.AddMilliseconds(170);

@@ -1,4 +1,4 @@
-namespace UnifiedGameLauncher.Models;
+﻿namespace UnifiedGameLauncher.Models;
 
 public enum GamePlatform
 {

@@ -16,7 +16,8 @@ public sealed class EpicProvider : IGameProvider
     public Task StartClientAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (IsRunning()) return Task.CompletedTask;
+        if (IsRunning())
+            return Task.CompletedTask;
 
         var launcherExe = IntegrationDiagnosticService.FindExecutable(Platform);
         if (string.IsNullOrWhiteSpace(launcherExe))
@@ -30,7 +31,8 @@ public sealed class EpicProvider : IGameProvider
     public Task<List<Game>> GetGamesAsync(CancellationToken cancellationToken = default)
     {
         var result = new List<Game>();
-        if (!Directory.Exists(ManifestDirectory)) return Task.FromResult(result);
+        if (!Directory.Exists(ManifestDirectory))
+            return Task.FromResult(result);
         foreach (var file in Directory.EnumerateFiles(ManifestDirectory, "*.item"))
         {
             try
@@ -40,7 +42,8 @@ public sealed class EpicProvider : IGameProvider
                 var name = StringProp(root, "DisplayName");
                 var appName = StringProp(root, "AppName");
                 var install = StringProp(root, "InstallLocation");
-                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(appName)) continue;
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(appName))
+                    continue;
                 result.Add(new Game
                 {
                     Id = appName,

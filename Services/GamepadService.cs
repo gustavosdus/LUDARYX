@@ -55,7 +55,6 @@ public sealed class GamepadService : IDisposable
     private IntPtr _sdlController = IntPtr.Zero;
     private IntPtr _sdlJoystick = IntPtr.Zero;
     private bool _sdlInitialized;
-    private int _repeatCooldown;
     private readonly Window? _window;
     private HwndSource? _hwndSource;
     private GamepadState _rawDualSenseState = new(false, GamepadButtons.None, 0, 0, 0, 0);
@@ -84,7 +83,8 @@ public sealed class GamepadService : IDisposable
         if (_window is not null)
         {
             _window.SourceInitialized += Window_SourceInitialized;
-            if (_window.IsInitialized) RegisterRawInput();
+            if (_window.IsInitialized)
+                RegisterRawInput();
         }
         TryActivateDualSenseBluetooth();
         StartDirectHidReader();
@@ -102,11 +102,13 @@ public sealed class GamepadService : IDisposable
 
     private void RegisterRawInput()
     {
-        if (_rawInputRegistered || _window is null) return;
+        if (_rawInputRegistered || _window is null)
+            return;
         try
         {
             var handle = new WindowInteropHelper(_window).Handle;
-            if (handle == IntPtr.Zero) return;
+            if (handle == IntPtr.Zero)
+                return;
             _hwndSource = HwndSource.FromHwnd(handle);
             _hwndSource?.AddHook(WndProc);
 
@@ -171,17 +173,22 @@ public sealed class GamepadService : IDisposable
                 return false;
 
             var header = Marshal.PtrToStructure<RAWINPUTHEADER>(buffer);
-            if (header.dwType != RIM_TYPEHID) return false;
-            if (!IsDualSenseRawDevice(header.hDevice)) return false;
+            if (header.dwType != RIM_TYPEHID)
+                return false;
+            if (!IsDualSenseRawDevice(header.hDevice))
+                return false;
 
             var hidOffset = Marshal.SizeOf<RAWINPUTHEADER>();
-            if (size < hidOffset + 8) return false;
+            if (size < hidOffset + 8)
+                return false;
             var sizeHid = Marshal.ReadInt32(IntPtr.Add(buffer, hidOffset));
             var count = Marshal.ReadInt32(IntPtr.Add(buffer, hidOffset + 4));
-            if (sizeHid <= 0 || sizeHid > MaxHidReportBytes || count <= 0 || count > 128) return false;
+            if (sizeHid <= 0 || sizeHid > MaxHidReportBytes || count <= 0 || count > 128)
+                return false;
             var dataOffset = hidOffset + 8;
             var available = (int)size - dataOffset;
-            if (available < sizeHid) return false;
+            if (available < sizeHid)
+                return false;
 
             var report = new byte[sizeHid];
             Marshal.Copy(IntPtr.Add(buffer, dataOffset), report, 0, sizeHid);
@@ -195,15 +202,18 @@ public sealed class GamepadService : IDisposable
 
     private bool IsDualSenseRawDevice(IntPtr device)
     {
-        if (device == IntPtr.Zero) return false;
+        if (device == IntPtr.Zero)
+            return false;
         uint chars = 0;
         var result = GetRawInputDeviceInfo(device, RIDI_DEVICENAME, IntPtr.Zero, ref chars);
-        if (result == uint.MaxValue || chars == 0) return false;
+        if (result == uint.MaxValue || chars == 0)
+            return false;
         var nameBuffer = Marshal.AllocHGlobal((int)((chars + 1) * 2));
         try
         {
             result = GetRawInputDeviceInfo(device, RIDI_DEVICENAME, nameBuffer, ref chars);
-            if (result == uint.MaxValue) return false;
+            if (result == uint.MaxValue)
+                return false;
             var name = Marshal.PtrToStringUni(nameBuffer) ?? string.Empty;
             return name.Contains("VID_054C", StringComparison.OrdinalIgnoreCase)
                 && (name.Contains("PID_0CE6", StringComparison.OrdinalIgnoreCase)
@@ -222,7 +232,8 @@ public sealed class GamepadService : IDisposable
     private static bool TryParseDualSenseReport(byte[] report, out GamepadState state)
     {
         state = new GamepadState(false, GamepadButtons.None, 0, 0, 0, 0);
-        if (report.Length == 0) return false;
+        if (report.Length == 0)
+            return false;
 
         // DualSense Bluetooth extended report 0x31.
         // Layout (including report ID):
@@ -256,7 +267,8 @@ public sealed class GamepadService : IDisposable
         else
             return false;
 
-        if (baseIndex + 8 >= report.Length) return false;
+        if (baseIndex + 8 >= report.Length)
+            return false;
 
         var compactLx = report[baseIndex + 0];
         var compactLy = report[baseIndex + 1];
@@ -282,31 +294,59 @@ public sealed class GamepadService : IDisposable
         GamepadButtons buttons = GamepadButtons.None;
         switch (hat & 0x0F)
         {
-            case 0: buttons |= GamepadButtons.DPadUp; break;
-            case 1: buttons |= GamepadButtons.DPadUp | GamepadButtons.DPadRight; break;
-            case 2: buttons |= GamepadButtons.DPadRight; break;
-            case 3: buttons |= GamepadButtons.DPadDown | GamepadButtons.DPadRight; break;
-            case 4: buttons |= GamepadButtons.DPadDown; break;
-            case 5: buttons |= GamepadButtons.DPadDown | GamepadButtons.DPadLeft; break;
-            case 6: buttons |= GamepadButtons.DPadLeft; break;
-            case 7: buttons |= GamepadButtons.DPadUp | GamepadButtons.DPadLeft; break;
+            case 0:
+                buttons |= GamepadButtons.DPadUp;
+                break;
+            case 1:
+                buttons |= GamepadButtons.DPadUp | GamepadButtons.DPadRight;
+                break;
+            case 2:
+                buttons |= GamepadButtons.DPadRight;
+                break;
+            case 3:
+                buttons |= GamepadButtons.DPadDown | GamepadButtons.DPadRight;
+                break;
+            case 4:
+                buttons |= GamepadButtons.DPadDown;
+                break;
+            case 5:
+                buttons |= GamepadButtons.DPadDown | GamepadButtons.DPadLeft;
+                break;
+            case 6:
+                buttons |= GamepadButtons.DPadLeft;
+                break;
+            case 7:
+                buttons |= GamepadButtons.DPadUp | GamepadButtons.DPadLeft;
+                break;
         }
         // DualSense buttons0: low nibble is the D-pad hat;
         // high nibble is Square/Cross/Circle/Triangle.
-        if ((b0 & 0x10) != 0) buttons |= GamepadButtons.X; // Square
-        if ((b0 & 0x20) != 0) buttons |= GamepadButtons.A; // Cross
-        if ((b0 & 0x40) != 0) buttons |= GamepadButtons.B; // Circle
-        if ((b0 & 0x80) != 0) buttons |= GamepadButtons.Y; // Triangle
+        if ((b0 & 0x10) != 0)
+            buttons |= GamepadButtons.X; // Square
+        if ((b0 & 0x20) != 0)
+            buttons |= GamepadButtons.A; // Cross
+        if ((b0 & 0x40) != 0)
+            buttons |= GamepadButtons.B; // Circle
+        if ((b0 & 0x80) != 0)
+            buttons |= GamepadButtons.Y; // Triangle
 
         // DualSense buttons1: L1/R1/L2/R2/Create/Options/L3/R3.
-        if ((b1 & 0x01) != 0) buttons |= GamepadButtons.LeftShoulder;
-        if ((b1 & 0x02) != 0) buttons |= GamepadButtons.RightShoulder;
-        if ((b1 & 0x04) != 0) buttons |= GamepadButtons.LeftTriggerDigital;
-        if ((b1 & 0x08) != 0) buttons |= GamepadButtons.RightTriggerDigital;
-        if ((b1 & 0x10) != 0) buttons |= GamepadButtons.Back;  // Create
-        if ((b1 & 0x20) != 0) buttons |= GamepadButtons.Start; // Options
-        if ((b1 & 0x40) != 0) buttons |= GamepadButtons.LeftThumb;
-        if ((b1 & 0x80) != 0) buttons |= GamepadButtons.RightThumb;
+        if ((b1 & 0x01) != 0)
+            buttons |= GamepadButtons.LeftShoulder;
+        if ((b1 & 0x02) != 0)
+            buttons |= GamepadButtons.RightShoulder;
+        if ((b1 & 0x04) != 0)
+            buttons |= GamepadButtons.LeftTriggerDigital;
+        if ((b1 & 0x08) != 0)
+            buttons |= GamepadButtons.RightTriggerDigital;
+        if ((b1 & 0x10) != 0)
+            buttons |= GamepadButtons.Back;  // Create
+        if ((b1 & 0x20) != 0)
+            buttons |= GamepadButtons.Start; // Options
+        if ((b1 & 0x40) != 0)
+            buttons |= GamepadButtons.LeftThumb;
+        if ((b1 & 0x80) != 0)
+            buttons |= GamepadButtons.RightThumb;
         // DualSense buttons2 contains PS/Home, touchpad click and mute.
         // No launcher action is assigned to those controls yet.
         return buttons;
@@ -388,8 +428,10 @@ public sealed class GamepadService : IDisposable
                         throw new InvalidOperationException("Tamanho de relatório HID inválido.");
                     var report = new byte[Math.Max(declaredInputLength, 128)];
                     var count = stream.Read(report, 0, report.Length);
-                    if (count <= 0) continue;
-                    if (count != report.Length) Array.Resize(ref report, count);
+                    if (count <= 0)
+                        continue;
+                    if (count != report.Length)
+                        Array.Resize(ref report, count);
 
                     if (TryParseDualSenseReport(report, out var state))
                     {
@@ -406,7 +448,11 @@ public sealed class GamepadService : IDisposable
                 }
                 catch
                 {
-                    try { stream.Dispose(); } catch { }
+                    try
+                    {
+                        stream.Dispose();
+                    }
+                    catch { }
                     stream = null;
                     device = null;
                     lock (_hidSync)
@@ -428,7 +474,11 @@ public sealed class GamepadService : IDisposable
         }
         finally
         {
-            try { stream?.Dispose(); } catch { }
+            try
+            {
+                stream?.Dispose();
+            }
+            catch { }
         }
     }
 
@@ -442,7 +492,8 @@ public sealed class GamepadService : IDisposable
 #pragma warning disable CS0612 // HidSharp 2.6 mantém esta propriedade para compatibilidade.
             var declaredFeatureLength = device.MaxFeatureReportLength;
 #pragma warning restore CS0612
-            if (declaredFeatureLength <= 0 || declaredFeatureLength > MaxHidReportBytes) return;
+            if (declaredFeatureLength <= 0 || declaredFeatureLength > MaxHidReportBytes)
+                return;
             var feature = new byte[Math.Max(41, declaredFeatureLength)];
             feature[0] = 0x05;
             stream.GetFeature(feature);
@@ -466,20 +517,24 @@ public sealed class GamepadService : IDisposable
         {
             var hidInterfaceGuid = GUID_DEVINTERFACE_HID;
             var deviceInfoSet = SetupDiGetClassDevs(ref hidInterfaceGuid, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-            if (deviceInfoSet == INVALID_HANDLE_VALUE) return;
+            if (deviceInfoSet == INVALID_HANDLE_VALUE)
+                return;
 
             try
             {
                 for (uint index = 0; ; index++)
                 {
                     var interfaceData = new SP_DEVICE_INTERFACE_DATA
-                    { cbSize = Marshal.SizeOf<SP_DEVICE_INTERFACE_DATA>() };
+                    {
+                        cbSize = Marshal.SizeOf<SP_DEVICE_INTERFACE_DATA>()
+                    };
                     if (!SetupDiEnumDeviceInterfaces(deviceInfoSet, IntPtr.Zero, ref hidInterfaceGuid, index, ref interfaceData))
                         break;
 
                     uint required = 0;
                     SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref interfaceData, IntPtr.Zero, 0, ref required, IntPtr.Zero);
-                    if (required == 0) continue;
+                    if (required == 0)
+                        continue;
 
                     var detailBuffer = Marshal.AllocHGlobal((int)required);
                     try
@@ -490,7 +545,8 @@ public sealed class GamepadService : IDisposable
 
                         var pathPtr = IntPtr.Add(detailBuffer, IntPtr.Size == 8 ? 8 : 4);
                         var path = Marshal.PtrToStringUni(pathPtr) ?? string.Empty;
-                        if (!IsDualSenseDevicePath(path)) continue;
+                        if (!IsDualSenseDevicePath(path))
+                            continue;
 
                         var handle = CreateFile(path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, IntPtr.Zero, OPEN_EXISTING, 0, IntPtr.Zero);
                         if (handle == INVALID_HANDLE_VALUE)
@@ -549,7 +605,8 @@ public sealed class GamepadService : IDisposable
             SDL_SetHint("SDL_JOYSTICK_RAWINPUT", "1");
             SDL_SetHint("SDL_JOYSTICK_WGI", "1");
             SDL_SetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
-            if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0) return;
+            if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+                return;
             _sdlInitialized = true;
             RefreshSdlController();
         }
@@ -561,15 +618,24 @@ public sealed class GamepadService : IDisposable
 
     private void RefreshSdlController()
     {
-        if (!_sdlInitialized) return;
+        if (!_sdlInitialized)
+            return;
         if (_sdlController != IntPtr.Zero)
         {
-            try { SDL_GameControllerClose(_sdlController); } catch { }
+            try
+            {
+                SDL_GameControllerClose(_sdlController);
+            }
+            catch { }
             _sdlController = IntPtr.Zero;
         }
         if (_sdlJoystick != IntPtr.Zero)
         {
-            try { SDL_JoystickClose(_sdlJoystick); } catch { }
+            try
+            {
+                SDL_JoystickClose(_sdlJoystick);
+            }
+            catch { }
             _sdlJoystick = IntPtr.Zero;
         }
 
@@ -615,7 +681,8 @@ public sealed class GamepadService : IDisposable
                 for (var i = 0; i < count; i++)
                 {
                     var name = GetSdlJoystickName(i);
-                    if (!IsDualSenseName(name)) continue;
+                    if (!IsDualSenseName(name))
+                        continue;
                     var joystick = SDL_JoystickOpen(i);
                     if (joystick != IntPtr.Zero)
                     {
@@ -851,7 +918,8 @@ public sealed class GamepadService : IDisposable
                     return false;
 
                 var joystick = SDL_GameControllerGetJoystick(_sdlController);
-                if (joystick == IntPtr.Zero) return false;
+                if (joystick == IntPtr.Zero)
+                    return false;
                 var namePtr = SDL_JoystickName(joystick);
                 var name = namePtr == IntPtr.Zero ? string.Empty : Marshal.PtrToStringAnsi(namePtr) ?? string.Empty;
                 return IsDualSenseName(name);
@@ -859,7 +927,8 @@ public sealed class GamepadService : IDisposable
 
             if (_sdlJoystick != IntPtr.Zero)
             {
-                if (SDL_JoystickGetAttached(_sdlJoystick) == 0) return false;
+                if (SDL_JoystickGetAttached(_sdlJoystick) == 0)
+                    return false;
                 var namePtr = SDL_JoystickName(_sdlJoystick);
                 var name = namePtr == IntPtr.Zero ? string.Empty : Marshal.PtrToStringAnsi(namePtr) ?? string.Empty;
                 return IsDualSenseName(name);
@@ -873,12 +942,20 @@ public sealed class GamepadService : IDisposable
     {
         if (_sdlController != IntPtr.Zero)
         {
-            try { SDL_GameControllerClose(_sdlController); } catch { }
+            try
+            {
+                SDL_GameControllerClose(_sdlController);
+            }
+            catch { }
             _sdlController = IntPtr.Zero;
         }
         if (_sdlJoystick != IntPtr.Zero)
         {
-            try { SDL_JoystickClose(_sdlJoystick); } catch { }
+            try
+            {
+                SDL_JoystickClose(_sdlJoystick);
+            }
+            catch { }
             _sdlJoystick = IntPtr.Zero;
         }
     }
@@ -932,12 +1009,16 @@ public sealed class GamepadService : IDisposable
         else
             buttons &= ~GamepadButtons.RightTriggerDigital;
 
-        return state with { Buttons = buttons };
+        return state with
+        {
+            Buttons = buttons
+        };
     }
 
     private static void AddSdlButton(ref GamepadButtons result, GamepadButtons mapped, int sdlButton, IntPtr controller)
     {
-        if (SDL_GameControllerGetButton(controller, sdlButton) != 0) result |= mapped;
+        if (SDL_GameControllerGetButton(controller, sdlButton) != 0)
+            result |= mapped;
     }
 
     private static GamepadState ReadRawJoystickState(IntPtr joystick)
@@ -962,10 +1043,14 @@ public sealed class GamepadService : IDisposable
         AddRawButton(ref buttons, GamepadButtons.DPadRight, 15, joystick);
 
         var hat = SDL_JoystickGetHat(joystick, 0);
-        if ((hat & SDL_HAT_UP) != 0) buttons |= GamepadButtons.DPadUp;
-        if ((hat & SDL_HAT_DOWN) != 0) buttons |= GamepadButtons.DPadDown;
-        if ((hat & SDL_HAT_LEFT) != 0) buttons |= GamepadButtons.DPadLeft;
-        if ((hat & SDL_HAT_RIGHT) != 0) buttons |= GamepadButtons.DPadRight;
+        if ((hat & SDL_HAT_UP) != 0)
+            buttons |= GamepadButtons.DPadUp;
+        if ((hat & SDL_HAT_DOWN) != 0)
+            buttons |= GamepadButtons.DPadDown;
+        if ((hat & SDL_HAT_LEFT) != 0)
+            buttons |= GamepadButtons.DPadLeft;
+        if ((hat & SDL_HAT_RIGHT) != 0)
+            buttons |= GamepadButtons.DPadRight;
 
         var lx = SDL_JoystickGetAxis(joystick, 0);
         var ly = SDL_JoystickGetAxis(joystick, 1);
@@ -982,7 +1067,8 @@ public sealed class GamepadService : IDisposable
 
     private static void AddRawButton(ref GamepadButtons result, GamepadButtons mapped, int button, IntPtr joystick)
     {
-        if (SDL_JoystickGetButton(joystick, button) != 0) result |= mapped;
+        if (SDL_JoystickGetButton(joystick, button) != 0)
+            result |= mapped;
     }
 
     private static string GetSdlJoystickName(int index)
@@ -997,7 +1083,8 @@ public sealed class GamepadService : IDisposable
 
     private static bool IsDualSenseName(string? name)
     {
-        if (string.IsNullOrWhiteSpace(name)) return false;
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
         return name.Contains("DualSense", StringComparison.OrdinalIgnoreCase) ||
                name.Contains("Wireless Controller", StringComparison.OrdinalIgnoreCase) ||
                name.Contains("PS5", StringComparison.OrdinalIgnoreCase);
@@ -1022,41 +1109,61 @@ public sealed class GamepadService : IDisposable
         return current.Buttons.HasFlag(button) && !_previous.Buttons.HasFlag(button);
     }
 
-    public bool IsNavigationPressed(GamepadButtons button, GamepadState current)
-    {
-        if (WasPressed(button, current)) { _repeatCooldown = 5; return true; }
-        if (!current.Buttons.HasFlag(button)) return false;
-        if (_repeatCooldown > 0) { _repeatCooldown--; return false; }
-        _repeatCooldown = 3;
-        return true;
-    }
-
     public void Dispose()
     {
-        if (_window is not null) _window.SourceInitialized -= Window_SourceInitialized;
-        try { _hwndSource?.RemoveHook(WndProc); } catch { }
+        if (_window is not null)
+            _window.SourceInitialized -= Window_SourceInitialized;
+        try
+        {
+            _hwndSource?.RemoveHook(WndProc);
+        }
+        catch { }
         _hwndSource = null;
         _rawInputRegistered = false;
-        try { _hidCts?.Cancel(); } catch { }
-        try { _hidTask?.Wait(800); } catch { }
-        try { _hidCts?.Dispose(); } catch { }
+        try
+        {
+            _hidCts?.Cancel();
+        }
+        catch { }
+        try
+        {
+            _hidTask?.Wait(800);
+        }
+        catch { }
+        try
+        {
+            _hidCts?.Dispose();
+        }
+        catch { }
         _hidCts = null;
         _hidTask = null;
         _timer.Stop();
         _timer.Tick -= _tickHandler;
         if (_sdlController != IntPtr.Zero)
         {
-            try { SDL_GameControllerClose(_sdlController); } catch { }
+            try
+            {
+                SDL_GameControllerClose(_sdlController);
+            }
+            catch { }
             _sdlController = IntPtr.Zero;
         }
         if (_sdlJoystick != IntPtr.Zero)
         {
-            try { SDL_JoystickClose(_sdlJoystick); } catch { }
+            try
+            {
+                SDL_JoystickClose(_sdlJoystick);
+            }
+            catch { }
             _sdlJoystick = IntPtr.Zero;
         }
         if (_sdlInitialized)
         {
-            try { SDL_Quit(); } catch { }
+            try
+            {
+                SDL_Quit();
+            }
+            catch { }
             _sdlInitialized = false;
         }
     }

@@ -1,4 +1,4 @@
-using UnifiedGameLauncher.Models;
+﻿using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
 
@@ -62,13 +62,19 @@ public static class DuplicateMetadataService
         var metadata = game.Metadata;
         var score = 0;
 
-        if (!string.IsNullOrWhiteSpace(metadata.Description)) score += 3;
+        if (!string.IsNullOrWhiteSpace(metadata.Description))
+            score += 3;
         score += Math.Min(6, metadata.LocalizedDescriptions?.Count ?? 0) * 2;
-        if (metadata.Genres.Count > 0) score += 2;
-        if (!string.IsNullOrWhiteSpace(metadata.Developer)) score += 2;
-        if (!string.IsNullOrWhiteSpace(metadata.Publisher)) score += 2;
-        if (metadata.ReleaseYear.HasValue) score += 2;
-        if (metadata.AgeRatings.Count > 0) score += 1;
+        if (metadata.Genres.Count > 0)
+            score += 2;
+        if (!string.IsNullOrWhiteSpace(metadata.Developer))
+            score += 2;
+        if (!string.IsNullOrWhiteSpace(metadata.Publisher))
+            score += 2;
+        if (metadata.ReleaseYear.HasValue)
+            score += 2;
+        if (metadata.AgeRatings.Count > 0)
+            score += 1;
 
         var source = metadata.Source ?? string.Empty;
         if (!source.Equals("Local", StringComparison.OrdinalIgnoreCase))

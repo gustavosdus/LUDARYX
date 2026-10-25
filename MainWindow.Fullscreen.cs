@@ -73,7 +73,8 @@ public partial class MainWindow
         // o Windows não aplica sozinho MinWidth/MinHeight do WPF. Define o mínimo
         // também no nível nativo, respeitando o DPI do monitor atual.
         var dpi = GetDpiForWindow(hwnd);
-        if (dpi == 0) dpi = 96;
+        if (dpi == 0)
+            dpi = 96;
         var scale = dpi / 96.0;
         minMaxInfo.ptMinTrackSize.X = Math.Min(
             minMaxInfo.ptMaxTrackSize.X,

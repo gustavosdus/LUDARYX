@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using UnifiedGameLauncher.Models;
 using UnifiedGameLauncher.Services;
@@ -75,7 +75,10 @@ public partial class StatisticsWindow : Window
 
     private static CultureInfo GetCulture(string language)
     {
-        try { return CultureInfo.GetCultureInfo(language); }
+        try
+        {
+            return CultureInfo.GetCultureInfo(language);
+        }
         catch { return CultureInfo.InvariantCulture; }
     }
 

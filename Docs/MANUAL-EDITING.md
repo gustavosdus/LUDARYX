@@ -5,7 +5,7 @@ Este documento indica os pontos principais do projeto para que alterações manu
 ## Estrutura
 
 - `MainWindow.xaml`: layout da janela principal, barra superior, filtros, biblioteca e estilos visuais.
-- `MainWindow.xaml.cs`: comportamento da janela principal. O arquivo está dividido em regiões (`#region`) por responsabilidade.
+- `MainWindow.xaml.cs`: comportamento da janela principal. Os arquivos parciais separam biblioteca, filtros, ações, controles, tema e tela cheia.
 - `SettingsWindow.xaml` / `.xaml.cs`: tela e persistência das opções do usuário.
 - `DetailsWindow.xaml` / `.xaml.cs`: detalhes e personalização de cada jogo.
 - `AddGameWindow.xaml` / `.xaml.cs`: cadastro manual de jogos.
@@ -73,3 +73,22 @@ Os textos `SELECIONAR` e `PERSONALIZAR` são traduzidos em `Services/Localizatio
 
 ### Metadados multiplataforma
 A lógica principal fica em `Services/MetadataService.cs`. Para jogos não-Steam, preserve a ordem de fallback: fonte nativa quando disponível (GOG), Steam por correspondência exata e IGDB opcional. Não faça correspondência aproximada automática de títulos.
+
+## Organização revisada na 1.2.3
+
+- `MainWindow.Library.cs`: descoberta, atualização, capas e filtro de gêneros.
+- `MainWindow.Filters.cs`: seleção de filtros, ordenação, marcadores e apresentação da seleção.
+- `MainWindow.GameActions.cs`: seleção/navegação na grade, detalhes e abertura de jogos.
+- `Services/LocalizationService.cs`: seleção de idioma, tradução e aplicação nos controles.
+- `Services/LocalizationService.Catalog.cs`: textos com campos nomeados para os sete idiomas. A tabela suplementar tem prioridade para aliases; não repita um texto-base na tabela principal.
+- `Tests/`: verificações de catálogo, troca de idioma, atualização visual dos controles WPF e leitura de campos antigos de configuração.
+
+Para alterar uma tradução, procure seu texto-base no catálogo e edite o campo do idioma correspondente. Preserve os marcadores `{0}`, `{1}` e seus formatos. Nunca percorra a árvore visual para traduzir os TextBlocks gerados pelos ContentPresenters: isso impede a atualização de seleções e ícones.
+
+Execute `dotnet run --project Tests/LUDARYX.RegressionTests.csproj -c Release` no Windows. O GitHub Actions também executa essas verificações. `./Format-Code.ps1` formata e compila o aplicativo, o updater e as verificações; `-Verify` verifica a formatação sem modificar arquivos.
+
+## Publicação
+
+O workflow `Publish LUDARYX` (`.github/workflows/release.yml`) é acionado manualmente na branch `main`, somente quando a publicação for solicitada. Informe a versão que já consta no aplicativo, updater, instalador e notas. O workflow valida a versão, executa as verificações, gera o instalador e os hashes e publica a release. Commits comuns não publicam versões.
+
+As migrações de pasta antiga, backups, chaves protegidas, perfis manuais e preferências de duplicatas continuam necessárias para usuários existentes. Não remova essas rotinas apenas por conterem a palavra “legado”.

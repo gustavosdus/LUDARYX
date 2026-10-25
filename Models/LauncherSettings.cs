@@ -1,11 +1,9 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace UnifiedGameLauncher.Models;
 
 public sealed class LauncherSettings
 {
-    // Legado 1.1.x: mantido para desserializar configurações antigas. Jogos Xbox/Store agora são sempre exibidos.
-    public bool ShowStoreApps { get; set; } = true;
     public bool StartClientsAutomatically { get; set; } = true;
     public bool KeepLauncherOpen { get; set; } = true;
     public bool StartWithWindows { get; set; } = false;
@@ -13,7 +11,10 @@ public sealed class LauncherSettings
     public bool ShowHiddenApps { get; set; } = false;
     public bool HideGameDetailsPanels { get; set; } = false;
     public string ParentalControlMode { get; set; } = "Default";
-    public string? ProtectedParentalPin { get; set; }
+    public string? ProtectedParentalPin
+    {
+        get; set;
+    }
     public int LibraryColumns { get; set; } = 6;
     public List<string> HiddenGameIds { get; set; } = new();
     public List<string> ExcludedGameIds { get; set; } = new();
@@ -29,29 +30,56 @@ public sealed class LauncherSettings
     public bool UseIgdbMetadata { get; set; } = false;
     public List<ManualGameDefinition> ManualGames { get; set; } = new();
     [JsonIgnore]
-    public string? IgdbClientId { get; set; }
+    public string? IgdbClientId
+    {
+        get; set;
+    }
     [JsonIgnore]
-    public string? IgdbClientSecret { get; set; }
+    public string? IgdbClientSecret
+    {
+        get; set;
+    }
     [JsonIgnore]
-    public string? SteamGridDbApiKey { get; set; }
+    public string? SteamGridDbApiKey
+    {
+        get; set;
+    }
 
     // Segredos persistidos somente em formato protegido pela DPAPI do Windows.
-    public string? ProtectedIgdbClientId { get; set; }
-    public string? ProtectedIgdbClientSecret { get; set; }
-    public string? ProtectedSteamGridDbApiKey { get; set; }
+    public string? ProtectedIgdbClientId
+    {
+        get; set;
+    }
+    public string? ProtectedIgdbClientSecret
+    {
+        get; set;
+    }
+    public string? ProtectedSteamGridDbApiKey
+    {
+        get; set;
+    }
 
     // Personalização visual
     public string NeonLineColor { get; set; } = "Red";
     public string Theme { get; set; } = "Dark";
     public string Language { get; set; } = "pt-BR";
     public bool CheckForUpdatesOnStartup { get; set; } = true;
-    public DateTime? LastUpdateCheckUtc { get; set; }
-    public string? SkippedUpdateVersion { get; set; }
+    public DateTime? LastUpdateCheckUtc
+    {
+        get; set;
+    }
+    public string? SkippedUpdateVersion
+    {
+        get; set;
+    }
     public bool AutoCleanupCache { get; set; } = true;
     public int MaxCacheSizeMb { get; set; } = 1024;
     public bool AutoHideDuplicateSecondary { get; set; } = false;
     public Dictionary<string, string> PreferredDuplicateProviders { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-    public List<string> DuplicatePlatformPriority { get; set; } = new()
+    public List<string> DuplicatePlatformPriority
+    {
+        get; set;
+    } = new()
     {
         "Steam", "Epic", "GOG", "Xbox", "EAApp", "UbisoftConnect", "BattleNet", "RiotClient", "Manual"
     };
@@ -65,43 +93,109 @@ public sealed class LauncherSettings
 
 public sealed class ManualGameMetadata
 {
-    public string? Name { get; set; }
-    public string? Description { get; set; }
+    public string? Name
+    {
+        get; set;
+    }
+    public string? Description
+    {
+        get; set;
+    }
     public List<string> Genres { get; set; } = new();
-    public string? Developer { get; set; }
-    public string? Publisher { get; set; }
-    public int? ReleaseYear { get; set; }
+    public string? Developer
+    {
+        get; set;
+    }
+    public string? Publisher
+    {
+        get; set;
+    }
+    public int? ReleaseYear
+    {
+        get; set;
+    }
     public Dictionary<string, string> AgeRatings { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-    public string? HorizontalCoverUrl { get; set; }
-    public string? VerticalCoverUrl { get; set; }
-    public bool DisableAutomaticSteamGridDbVertical { get; set; }
-    public bool DisableAutomaticSteamGridDbHorizontal { get; set; }
+    public string? HorizontalCoverUrl
+    {
+        get; set;
+    }
+    public string? VerticalCoverUrl
+    {
+        get; set;
+    }
+    public bool DisableAutomaticSteamGridDbVertical
+    {
+        get; set;
+    }
+    public bool DisableAutomaticSteamGridDbHorizontal
+    {
+        get; set;
+    }
 }
 
 public sealed class ManualGameDefinition
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Name { get; set; } = "Novo jogo";
-    public string? Executable { get; set; }
-    public string? Arguments { get; set; }
-    public string? LaunchUri { get; set; }
-    public string? WorkingDirectory { get; set; }
-    public bool RunAsAdministrator { get; set; }
-    public string? IconPath { get; set; }
-    public string? CoverPath { get; set; }
+    public string? Executable
+    {
+        get; set;
+    }
+    public string? Arguments
+    {
+        get; set;
+    }
+    public string? LaunchUri
+    {
+        get; set;
+    }
+    public string? WorkingDirectory
+    {
+        get; set;
+    }
+    public bool RunAsAdministrator
+    {
+        get; set;
+    }
+    public string? IconPath
+    {
+        get; set;
+    }
+    public string? CoverPath
+    {
+        get; set;
+    }
     public List<ManualLaunchProfile> LaunchProfiles { get; set; } = new();
-    public string? PreferredLaunchProfileId { get; set; }
+    public string? PreferredLaunchProfileId
+    {
+        get; set;
+    }
 }
 
 public sealed class ManualLaunchProfile
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Name { get; set; } = "Padrão";
-    public string? Executable { get; set; }
-    public string? Arguments { get; set; }
-    public string? LaunchUri { get; set; }
-    public string? WorkingDirectory { get; set; }
-    public bool RunAsAdministrator { get; set; }
+    public string? Executable
+    {
+        get; set;
+    }
+    public string? Arguments
+    {
+        get; set;
+    }
+    public string? LaunchUri
+    {
+        get; set;
+    }
+    public string? WorkingDirectory
+    {
+        get; set;
+    }
+    public bool RunAsAdministrator
+    {
+        get; set;
+    }
 
     public override string ToString() => string.IsNullOrWhiteSpace(Name) ? "Perfil" : Name;
 }

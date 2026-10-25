@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using UnifiedGameLauncher.Services;
 
 namespace UnifiedGameLauncher;

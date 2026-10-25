@@ -24,7 +24,8 @@ public sealed class GogProvider : IGameProvider
     public Task StartClientAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (IsRunning()) return Task.CompletedTask;
+        if (IsRunning())
+            return Task.CompletedTask;
 
         var exe = FindGalaxyClientExecutable();
         if (string.IsNullOrWhiteSpace(exe))
@@ -61,7 +62,8 @@ public sealed class GogProvider : IGameProvider
         if (!string.IsNullOrWhiteSpace(game.Id) && !game.Id.Equals(game.InstallPath, StringComparison.OrdinalIgnoreCase))
             return game.Id;
 
-        if (string.IsNullOrWhiteSpace(game.InstallPath)) return null;
+        if (string.IsNullOrWhiteSpace(game.InstallPath))
+            return null;
         return ReadGogId(game.InstallPath);
     }
 
@@ -69,7 +71,8 @@ public sealed class GogProvider : IGameProvider
     {
         var roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var registryRoot = FindGalaxyRoot();
-        if (!string.IsNullOrWhiteSpace(registryRoot)) roots.Add(registryRoot);
+        if (!string.IsNullOrWhiteSpace(registryRoot))
+            roots.Add(registryRoot);
 
         roots.Add(@"C:\Program Files (x86)\GOG Galaxy");
         roots.Add(@"C:\Program Files\GOG Galaxy");
@@ -77,7 +80,8 @@ public sealed class GogProvider : IGameProvider
         foreach (var root in roots)
         {
             var exe = Path.Combine(root, "GalaxyClient.exe");
-            if (File.Exists(exe)) return exe;
+            if (File.Exists(exe))
+                return exe;
         }
 
         return null;
@@ -125,7 +129,8 @@ public sealed class GogProvider : IGameProvider
 
                 // Sem caminho de instalação, o registro pode representar uma
                 // biblioteca/integração e não um jogo GOG instalado.
-                if (id is null || title is null || installPath is null) continue;
+                if (id is null || title is null || installPath is null)
+                    continue;
 
                 var sql = $"SELECT \"{id}\", \"{title}\", \"{installPath}\" FROM \"{EscapeIdentifier(table)}\"";
                 await using var cmd = connection.CreateCommand();
@@ -140,14 +145,18 @@ public sealed class GogProvider : IGameProvider
 
                     if (string.IsNullOrWhiteSpace(gameId) || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(install))
                         continue;
-                    if (IsNonGameName(name)) continue;
+                    if (IsNonGameName(name))
+                        continue;
 
                     install = Environment.ExpandEnvironmentVariables(install.Trim().TrimEnd('\\'));
-                    if (!Directory.Exists(install)) continue;
-                    if (!IsLikelyGogDirectory(install)) continue;
+                    if (!Directory.Exists(install))
+                        continue;
+                    if (!IsLikelyGogDirectory(install))
+                        continue;
 
                     var exe = InstalledGameDiscoveryService.FindLikelyGameExe(install, name);
-                    if (exe is null) continue;
+                    if (exe is null)
+                        continue;
 
                     result.Add(new Game
                     {
@@ -180,14 +189,17 @@ public sealed class GogProvider : IGameProvider
             {
                 foreach (var directory in Directory.EnumerateDirectories(root, "*", SearchOption.TopDirectoryOnly))
                 {
-                    if (!IsLikelyGogDirectory(directory)) continue;
+                    if (!IsLikelyGogDirectory(directory))
+                        continue;
 
                     var folderName = Path.GetFileName(directory);
-                    if (string.IsNullOrWhiteSpace(folderName) || IsNonGameName(folderName)) continue;
+                    if (string.IsNullOrWhiteSpace(folderName) || IsNonGameName(folderName))
+                        continue;
 
                     var name = ReadGogName(directory) ?? folderName.Replace("_", " ").Trim();
                     var exe = InstalledGameDiscoveryService.FindLikelyGameExe(directory, name);
-                    if (exe is null) continue;
+                    if (exe is null)
+                        continue;
 
                     var gameId = ReadGogId(directory) ?? directory;
                     result.Add(new Game
@@ -222,9 +234,11 @@ public sealed class GogProvider : IGameProvider
         try
         {
             var file = Directory.EnumerateFiles(directory, "goggame-*.info", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            if (file is null) return null;
+            if (file is null)
+                return null;
             using var doc = JsonDocument.Parse(SafeFileReadService.ReadAllText(file, SafeFileReadService.ManifestMaxBytes, "manifesto GOG"));
-            if (doc.RootElement.TryGetProperty("name", out var name)) return name.GetString();
+            if (doc.RootElement.TryGetProperty("name", out var name))
+                return name.GetString();
         }
         catch { }
         return null;
@@ -235,9 +249,11 @@ public sealed class GogProvider : IGameProvider
         try
         {
             var file = Directory.EnumerateFiles(directory, "goggame-*.info", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            if (file is null) return null;
+            if (file is null)
+                return null;
             using var doc = JsonDocument.Parse(SafeFileReadService.ReadAllText(file, SafeFileReadService.ManifestMaxBytes, "manifesto GOG"));
-            if (doc.RootElement.TryGetProperty("gameId", out var id)) return id.ToString();
+            if (doc.RootElement.TryGetProperty("gameId", out var id))
+                return id.ToString();
         }
         catch { }
         return null;
@@ -292,7 +308,8 @@ public sealed class GogProvider : IGameProvider
         await using var cmd = c.CreateCommand();
         cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name";
         await using var r = await cmd.ExecuteReaderAsync(token);
-        while (await r.ReadAsync(token)) list.Add(r.GetString(0));
+        while (await r.ReadAsync(token))
+            list.Add(r.GetString(0));
         return list;
     }
 
@@ -302,7 +319,8 @@ public sealed class GogProvider : IGameProvider
         await using var cmd = c.CreateCommand();
         cmd.CommandText = $"PRAGMA table_info(\"{EscapeIdentifier(table)}\")";
         await using var r = await cmd.ExecuteReaderAsync(token);
-        while (await r.ReadAsync(token)) list.Add(r.GetString(1));
+        while (await r.ReadAsync(token))
+            list.Add(r.GetString(1));
         return list;
     }
 
@@ -326,12 +344,13 @@ public sealed class GogProvider : IGameProvider
     private static string? FindGalaxyRoot()
     {
         foreach (var hive in new[] { Registry.LocalMachine, Registry.CurrentUser })
-        foreach (var sub in new[] { @"Software\WOW6432Node\GOG.com\GalaxyClient", @"Software\GOG.com\GalaxyClient" })
-        {
-            using var key = hive.OpenSubKey(sub);
-            var path = key?.GetValue("path")?.ToString() ?? key?.GetValue("clientPath")?.ToString();
-            if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path)) return path;
-        }
+            foreach (var sub in new[] { @"Software\WOW6432Node\GOG.com\GalaxyClient", @"Software\GOG.com\GalaxyClient" })
+            {
+                using var key = hive.OpenSubKey(sub);
+                var path = key?.GetValue("path")?.ToString() ?? key?.GetValue("clientPath")?.ToString();
+                if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
+                    return path;
+            }
         return null;
     }
 }

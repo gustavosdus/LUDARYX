@@ -54,28 +54,31 @@ public sealed class UbisoftConnectProvider : ClientShortcutProvider
         };
 
         var existing = candidates.FirstOrDefault(File.Exists);
-        if (existing is not null) return existing;
+        if (existing is not null)
+            return existing;
 
         foreach (var hive in new[] { RegistryHive.LocalMachine, RegistryHive.CurrentUser })
-        foreach (var view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
-        foreach (var subKey in new[] { @"SOFTWARE\Ubisoft\Launcher", @"SOFTWARE\WOW6432Node\Ubisoft\Launcher" })
-        {
-            try
-            {
-                using var baseKey = RegistryKey.OpenBaseKey(hive, view);
-                using var key = baseKey.OpenSubKey(subKey);
-                var installDir = key?.GetValue("InstallDir")?.ToString()
-                    ?? key?.GetValue("InstallLocation")?.ToString();
-                if (string.IsNullOrWhiteSpace(installDir)) continue;
-
-                foreach (var fileName in new[] { "upc.exe", "UbisoftConnect.exe" })
+            foreach (var view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
+                foreach (var subKey in new[] { @"SOFTWARE\Ubisoft\Launcher", @"SOFTWARE\WOW6432Node\Ubisoft\Launcher" })
                 {
-                    var path = Path.Combine(installDir, fileName);
-                    if (File.Exists(path)) return path;
+                    try
+                    {
+                        using var baseKey = RegistryKey.OpenBaseKey(hive, view);
+                        using var key = baseKey.OpenSubKey(subKey);
+                        var installDir = key?.GetValue("InstallDir")?.ToString()
+                            ?? key?.GetValue("InstallLocation")?.ToString();
+                        if (string.IsNullOrWhiteSpace(installDir))
+                            continue;
+
+                        foreach (var fileName in new[] { "upc.exe", "UbisoftConnect.exe" })
+                        {
+                            var path = Path.Combine(installDir, fileName);
+                            if (File.Exists(path))
+                                return path;
+                        }
+                    }
+                    catch { }
                 }
-            }
-            catch { }
-        }
 
         return null;
     }
@@ -83,17 +86,18 @@ public sealed class UbisoftConnectProvider : ClientShortcutProvider
     private static string? ResolveName(string id, string installDir)
     {
         foreach (var hive in new[] { RegistryHive.LocalMachine, RegistryHive.CurrentUser })
-        foreach (var view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
-        {
-            try
+            foreach (var view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
             {
-                using var baseKey = RegistryKey.OpenBaseKey(hive, view);
-                using var key = baseKey.OpenSubKey($@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\UPlay Install {id}");
-                var name = key?.GetValue("DisplayName")?.ToString();
-                if (!string.IsNullOrWhiteSpace(name)) return name;
+                try
+                {
+                    using var baseKey = RegistryKey.OpenBaseKey(hive, view);
+                    using var key = baseKey.OpenSubKey($@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\UPlay Install {id}");
+                    var name = key?.GetValue("DisplayName")?.ToString();
+                    if (!string.IsNullOrWhiteSpace(name))
+                        return name;
+                }
+                catch { }
             }
-            catch { }
-        }
         return Path.GetFileName(installDir.TrimEnd('\\', '/'));
     }
 }

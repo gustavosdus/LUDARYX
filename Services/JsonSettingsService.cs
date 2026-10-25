@@ -56,7 +56,8 @@ public sealed class JsonSettingsService
         json = string.Empty;
         try
         {
-            if (!File.Exists(path)) return false;
+            if (!File.Exists(path))
+                return false;
             json = SafeFileReadService.ReadAllText(path, SafeFileReadService.SettingsMaxBytes, "configurações");
             settings = JsonSerializer.Deserialize<LauncherSettings>(json, Options) ?? new LauncherSettings();
 
@@ -139,7 +140,6 @@ public sealed class JsonSettingsService
                 settings.AutoHideDuplicateSecondary = true;
                 settings.ShowOnlyPrimaryDuplicates = false;
             }
-            settings.ShowStoreApps = true;
             settings.LibraryColumns = Math.Clamp(settings.LibraryColumns <= 0 ? 6 : settings.LibraryColumns, 4, 6);
             if (!string.Equals(settings.CoverMode, "Vertical", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(settings.CoverMode, "Horizontal", StringComparison.OrdinalIgnoreCase))
@@ -209,7 +209,8 @@ public sealed class JsonSettingsService
                 migrated = true;
             }
 
-            if (migrated) SaveAfterLegacySecretMigration(settings);
+            if (migrated)
+                SaveAfterLegacySecretMigration(settings);
         }
         catch { }
     }
@@ -248,7 +249,11 @@ public sealed class JsonSettingsService
         // gravação interrompida ou a um arquivo principal corrompido.
         if (File.Exists(_file))
         {
-            try { File.Copy(_file, _backupFile, true); } catch { }
+            try
+            {
+                File.Copy(_file, _backupFile, true);
+            }
+            catch { }
         }
 
         // Grava primeiro em arquivo temporário e só então substitui o original para reduzir risco de corrupção.
@@ -258,7 +263,11 @@ public sealed class JsonSettingsService
         // Na primeira gravação, cria também uma cópia de segurança inicial.
         if (!File.Exists(_backupFile))
         {
-            try { File.Copy(_file, _backupFile, true); } catch { }
+            try
+            {
+                File.Copy(_file, _backupFile, true);
+            }
+            catch { }
         }
     }
 

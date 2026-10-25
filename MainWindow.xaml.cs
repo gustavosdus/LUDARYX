@@ -168,7 +168,8 @@ public partial class MainWindow : Window
         {
             var uri = new Uri($"pack://application:,,,/{relativePath}", UriKind.Absolute);
             var resource = System.Windows.Application.GetResourceStream(uri);
-            if (resource?.Stream is null) return null;
+            if (resource?.Stream is null)
+                return null;
 
             var memory = new MemoryStream();
             resource.Stream.CopyTo(memory);
@@ -185,17 +186,26 @@ public partial class MainWindow : Window
 
     private void PlayNavigationSound()
     {
-        try { _navigationSound?.Play(); } catch { }
+        try
+        {
+            _navigationSound?.Play();
+        }
+        catch { }
     }
 
     private void PlayLaunchSound()
     {
-        try { _launchSound?.Play(); } catch { }
+        try
+        {
+            _launchSound?.Play();
+        }
+        catch { }
     }
 
     private async Task PlayStartupAnimationAsync()
     {
-        if (_startupAnimationPlayed) return;
+        if (_startupAnimationPlayed)
+            return;
         _startupAnimationPlayed = true;
 
         StartupOverlay.Visibility = Visibility.Visible;
@@ -206,7 +216,11 @@ public partial class MainWindow : Window
 
         // O pulso principal da animação acontece por volta de 3,5 s.
         await Task.Delay(3500);
-        try { _powerOnSound?.Play(); } catch { }
+        try
+        {
+            _powerOnSound?.Play();
+        }
+        catch { }
 
         // O storyboard inicia o fade-out aos 4,5 s e termina em torno de 5 s.
         await Task.Delay(1500);
@@ -236,7 +250,11 @@ public partial class MainWindow : Window
                 return;
 
             _allowRealClose = true;
-            try { _trayIcon?.Dispose(); } catch { }
+            try
+            {
+                _trayIcon?.Dispose();
+            }
+            catch { }
             Close();
             System.Windows.Application.Current.Shutdown();
         }
@@ -288,12 +306,14 @@ public partial class MainWindow : Window
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        if (_allowRealClose) return;
+        if (_allowRealClose)
+            return;
 
         // Nunca transforme um fechamento ocorrido durante a inicialização em
         // uma janela invisível presa na bandeja. O comportamento de ocultar
         // só é habilitado depois que a janela principal realmente carregou.
-        if (!_mainWindowLoaded) return;
+        if (!_mainWindowLoaded)
+            return;
 
         e.Cancel = true;
         Hide();
@@ -303,9 +323,11 @@ public partial class MainWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            if (!IsVisible) Show();
+            if (!IsVisible)
+                Show();
             ShowInTaskbar = true;
-            if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
             Activate();
             Topmost = true;
             Topmost = false;

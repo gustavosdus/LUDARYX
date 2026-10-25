@@ -168,7 +168,7 @@ public sealed class SteamGridDbService
         CancellationToken cancellationToken = default)
     {
         EnsureApiKey(apiKey);
-        var imageBytes = await SafeImageDownloadService.DownloadAsync(_http, grid.Url, cancellationToken);
+        var imageBytes = await SafeImageDownloadService.DownloadAsync(grid.Url, cancellationToken);
 
         var extension = GetExtension(grid.Url);
         var safeId = string.Concat(game.ProviderId.Select(c => char.IsLetterOrDigit(c) ? c : '_'));
@@ -193,14 +193,17 @@ public sealed class SteamGridDbService
     private async Task<int?> FindGameIdAsync(string gameName, string apiKey, CancellationToken cancellationToken)
     {
         var games = await SearchGamesAsync(gameName, apiKey, cancellationToken);
-        if (games.Count == 0) return null;
+        if (games.Count == 0)
+            return null;
 
         var exact = games.FirstOrDefault(x => string.Equals(x.Name.Trim(), gameName.Trim(), StringComparison.OrdinalIgnoreCase));
-        if (exact is not null) return exact.Id;
+        if (exact is not null)
+            return exact.Id;
 
         var normalized = Normalize(gameName);
         var normalizedMatch = games.FirstOrDefault(x => Normalize(x.Name) == normalized);
-        if (normalizedMatch is not null) return normalizedMatch.Id;
+        if (normalizedMatch is not null)
+            return normalizedMatch.Id;
 
         var verifiedSteam = games.FirstOrDefault(x => x.Verified && x.Types.Any(t => t.Equals("steam", StringComparison.OrdinalIgnoreCase)));
         return (verifiedSteam ?? games[0]).Id;
@@ -250,32 +253,74 @@ public sealed class SteamGridDbService
     private sealed class ResponseWrapper<T>
     {
         [JsonPropertyName("data")]
-        public List<T>? Data { get; set; }
+        public List<T>? Data
+        {
+            get; set;
+        }
     }
 
     private sealed class SteamGridDbGame
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public List<string>? Types { get; set; }
-        public bool Verified { get; set; }
+        public int Id
+        {
+            get; set;
+        }
+        public string? Name
+        {
+            get; set;
+        }
+        public List<string>? Types
+        {
+            get; set;
+        }
+        public bool Verified
+        {
+            get; set;
+        }
     }
 
     private sealed class SteamGridDbGrid
     {
-        public int Id { get; set; }
-        public int Score { get; set; }
-        public string? Style { get; set; }
-        public string? Url { get; set; }
-        public string? Thumb { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public SteamGridDbAuthor? Author { get; set; }
+        public int Id
+        {
+            get; set;
+        }
+        public int Score
+        {
+            get; set;
+        }
+        public string? Style
+        {
+            get; set;
+        }
+        public string? Url
+        {
+            get; set;
+        }
+        public string? Thumb
+        {
+            get; set;
+        }
+        public int Width
+        {
+            get; set;
+        }
+        public int Height
+        {
+            get; set;
+        }
+        public SteamGridDbAuthor? Author
+        {
+            get; set;
+        }
     }
 
     private sealed class SteamGridDbAuthor
     {
-        public string? Name { get; set; }
+        public string? Name
+        {
+            get; set;
+        }
     }
 }
 

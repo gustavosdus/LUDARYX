@@ -22,7 +22,8 @@ public sealed class ArtworkService
             CheckFileExists = true,
             Multiselect = false
         };
-        if (dialog.ShowDialog() != true) return false;
+        if (dialog.ShowDialog() != true)
+            return false;
 
         var extension = Path.GetExtension(dialog.FileName).ToLowerInvariant();
         var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -38,8 +39,10 @@ public sealed class ArtworkService
         var target = Path.Combine(_directory, $"{safeId}_{(vertical ? "vertical" : "horizontal")}{extension}");
         File.WriteAllBytes(target, validatedBytes);
 
-        if (vertical) game.Metadata.CustomVerticalCoverLocalPath = target;
-        else game.Metadata.CustomHorizontalCoverLocalPath = target;
+        if (vertical)
+            game.Metadata.CustomVerticalCoverLocalPath = target;
+        else
+            game.Metadata.CustomHorizontalCoverLocalPath = target;
         return true;
     }
 
@@ -48,9 +51,16 @@ public sealed class ArtworkService
         var path = vertical ? game.Metadata.CustomVerticalCoverLocalPath : game.Metadata.CustomHorizontalCoverLocalPath;
         if (!string.IsNullOrWhiteSpace(path))
         {
-            try { if (File.Exists(path)) File.Delete(path); } catch { }
+            try
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch { }
         }
-        if (vertical) game.Metadata.CustomVerticalCoverLocalPath = null;
-        else game.Metadata.CustomHorizontalCoverLocalPath = null;
+        if (vertical)
+            game.Metadata.CustomVerticalCoverLocalPath = null;
+        else
+            game.Metadata.CustomHorizontalCoverLocalPath = null;
     }
 }

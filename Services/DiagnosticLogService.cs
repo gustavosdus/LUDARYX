@@ -99,9 +99,11 @@ public static class DiagnosticLogService
 
     private static void RotateIfNeeded()
     {
-        if (!File.Exists(CurrentLogPath)) return;
+        if (!File.Exists(CurrentLogPath))
+            return;
         var info = new FileInfo(CurrentLogPath);
-        if (info.Length < MaxLogFileBytes) return;
+        if (info.Length < MaxLogFileBytes)
+            return;
 
         var previous = Path.Combine(LogDirectory, $"ludaryx-{SessionId}.previous.log");
         File.Move(CurrentLogPath, previous, true);
@@ -117,7 +119,11 @@ public static class DiagnosticLogService
                          .OrderByDescending(x => x.LastWriteTimeUtc)
                          .Skip(10))
             {
-                try { file.Delete(); } catch { }
+                try
+                {
+                    file.Delete();
+                }
+                catch { }
             }
         }
         catch

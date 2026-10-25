@@ -383,7 +383,8 @@ public partial class SettingsWindow : Window
 
     private void RestoreExcluded_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not System.Windows.Controls.Button b || b.Tag is not GameVisibilityItem item) return;
+        if (sender is not System.Windows.Controls.Button b || b.Tag is not GameVisibilityItem item)
+            return;
         _settings.ExcludedGameIds.RemoveAll(x => x.Equals(item.Game.ProviderId, StringComparison.OrdinalIgnoreCase));
         item.Game.IsExcluded = false;
         item.IsVisible = true;
@@ -527,7 +528,8 @@ public partial class SettingsWindow : Window
             Filter = "Backup do LUDARYX (*.zip)|*.zip",
             FileName = $"LUDARYX-backup-{DateTime.Now:yyyy-MM-dd}.zip"
         };
-        if (dialog.ShowDialog(this) != true) return;
+        if (dialog.ShowDialog(this) != true)
+            return;
 
         try
         {
@@ -546,7 +548,8 @@ public partial class SettingsWindow : Window
     private void ImportBackup_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Backup do LUDARYX (*.zip)|*.zip" };
-        if (dialog.ShowDialog(this) != true) return;
+        if (dialog.ShowDialog(this) != true)
+            return;
 
         var optionsWindow = new BackupOptionsWindow(importMode: true, sourceZip: dialog.FileName) { Owner = this };
         if (optionsWindow.ShowDialog() != true)
@@ -581,7 +584,11 @@ public partial class SettingsWindow : Window
             "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    private void Cancel_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
 
     private static LauncherSettings Clone(LauncherSettings source) => new()
     {
@@ -661,15 +668,31 @@ public partial class SettingsWindow : Window
 
     private sealed class GameVisibilityItem : INotifyPropertyChanged
     {
-        public Game Game { get; }
+        public Game Game
+        {
+            get;
+        }
         public string Name => Game.Name;
         public string ProviderId => Game.ProviderId;
         public bool IsFavorite => Game.IsFavorite;
         public bool IsExcluded => Game.IsExcluded;
         public bool IsHidden => Game.IsHidden;
         private bool _isVisible;
-        public bool IsVisible { get => _isVisible; set { if (_isVisible == value) return; _isVisible = value; OnPropertyChanged(); } }
-        public GameVisibilityItem(Game game, bool isVisible) { Game = game; _isVisible = isVisible; }
+        public bool IsVisible
+        {
+            get => _isVisible; set
+            {
+                if (_isVisible == value)
+                    return;
+                _isVisible = value;
+                OnPropertyChanged();
+            }
+        }
+        public GameVisibilityItem(Game game, bool isVisible)
+        {
+            Game = game;
+            _isVisible = isVisible;
+        }
 
         public void SetHidden(bool hidden)
         {

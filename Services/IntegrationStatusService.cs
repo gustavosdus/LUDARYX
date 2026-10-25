@@ -1,4 +1,4 @@
-using UnifiedGameLauncher.Models;
+﻿using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
 
@@ -22,8 +22,16 @@ public static class IntegrationStatusService
             {
                 var available = false;
                 var running = false;
-                try { available = provider.IsInstalled(); } catch { }
-                try { running = available && provider.IsRunning(); } catch { }
+                try
+                {
+                    available = provider.IsInstalled();
+                }
+                catch { }
+                try
+                {
+                    running = available && provider.IsRunning();
+                }
+                catch { }
 
                 var diagnostic = IntegrationDiagnosticService.Get(provider.Platform);
                 var status = !available
