@@ -51,10 +51,10 @@ public partial class SettingsWindow : Window
         AutoCleanupCacheCheck.IsChecked = _settings.AutoCleanupCache;
         MaxCacheSizeBox.Text = _settings.MaxCacheSizeMb.ToString();
         RefreshCacheSize();
+        LocalizationService.SetLanguage(_settings.Language);
         IntegrationStatusList.ItemsSource = IntegrationStatusService.GetStatuses(_settings);
         UpdateChangeParentalPinButtonVisibility();
 
-        LocalizationService.SetLanguage(_settings.Language);
         LocalizationService.Apply(this);
         ChangeParentalPinButton.Content = LocalizationService.Translate("Alterar PIN").ToUpperInvariant();
 
