@@ -31,5 +31,9 @@ Versão em desenvolvimento.
   - Acima de 18 anos: CERO D e Z.
 - As regras existentes de ClassInd, ESRB e PEGI continuam funcionando sem conversão entre sistemas.
 
+- Corrigidos textos restantes que permaneciam em pt-BR nos templates de integrações, SteamGridDB, badges de duplicata, perfis de jogo manual, rodapé de controles e diálogos de backup/duplicação.
+- Avisos de backup e duplicação passaram a usar diálogo próprio do LUDARYX, permitindo traduzir também botões de confirmação independentemente do idioma do Windows.
+- O instalador 1.2.3 agora oferece seleção entre Português (Brasil) e English, incluindo tarefas, ação pós-instalação e mensagens de programa em execução.
+
 ## Em desenvolvimento
 Estas notas serão ampliadas conforme a 1.2.3 receber novas correções.
