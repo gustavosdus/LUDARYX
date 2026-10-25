@@ -43,7 +43,7 @@ public static class LocalizationService
         string EsEs);
 
     private static readonly IReadOnlyDictionary<string, string> JapaneseTranslations =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["Configurações"] = "設定",
             ["CONFIGURAÇÕES"] = "設定",
@@ -522,6 +522,18 @@ public static class LocalizationService
     private static Translation? FindTranslation(string text)
     {
         var normalizedText = text.Trim();
+
+        // Permite sair do japonês para qualquer outro idioma sem deixar textos
+        // já traduzidos presos na interface.
+        var japaneseSource = JapaneseTranslations.FirstOrDefault(pair =>
+            normalizedText.Equals(pair.Value, StringComparison.Ordinal));
+        if (!string.IsNullOrWhiteSpace(japaneseSource.Key))
+        {
+            var japaneseMatch = Translations.FirstOrDefault(x =>
+                japaneseSource.Key.Equals(x.PtBr, StringComparison.Ordinal));
+            if (japaneseMatch is not null)
+                return japaneseMatch;
+        }
 
         // Mantém a intenção visual de rótulos em caixa alta quando existem
         // traduções específicas para eles. O fallback sem diferenciar maiúsculas
