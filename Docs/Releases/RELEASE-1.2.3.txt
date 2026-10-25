@@ -12,6 +12,14 @@ Versão em desenvolvimento.
 - Consultas localizadas de descrição passam a usar Steam em japonês/região JP e Wikipedia em japonês quando disponível.
 - A interface possui traduções japonesas para os principais fluxos e usa inglês como fallback para textos legados ainda sem tradução japonesa explícita.
 
+## Localização
+- Revisado o sistema de localização para eliminar textos de interface que permaneciam em pt-BR em outros idiomas.
+- Ampliada a cobertura japonesa da interface principal, fullscreen, configurações, detalhes, jogo manual, estatísticas, backup, SteamGridDB, controle parental e atualizador.
+- Corrigidos títulos de janelas no formato "LUDARYX / seção", que agora traduzem corretamente apenas o nome da seção.
+- Textos dinâmicos como partidas/inicializações, tempo jogado, "Nunca jogado", resumos de estatísticas, estimativas de backup, status de integrações e ações do hero agora respeitam o idioma selecionado.
+- Gêneros canônicos receberam cobertura japonesa adicional.
+- Textos legados que não estavam no catálogo central receberam traduções para pt-PT, en-US, en-GB, es-419, es-ES e ja-JP.
+
 ## CERO
 - Para o idioma japonês, CERO passa a ser o sistema de classificação indicativa prioritário.
 - A consulta regional da Steam inclui Japão e o parser reconhece classificações CERO A, B, C, D e Z em texto/assets quando disponíveis.
