@@ -532,8 +532,9 @@ public partial class SettingsWindow : Window
         try
         {
             BackupService.Export(dialog.FileName, selection);
-            MessageBox.Show(this, "Backup exportado com sucesso.", "LUDARYX",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            LocalizedMessageWindow.ShowInfo(
+                this,
+                LocalizationService.Translate("Backup exportado com sucesso."));
         }
         catch (Exception ex)
         {
@@ -552,17 +553,17 @@ public partial class SettingsWindow : Window
             return;
 
         var selection = optionsWindow.Selection;
-        if (MessageBox.Show(this,
-                "Somente as categorias selecionadas serão restauradas e poderão substituir os dados locais correspondentes. Continuar?",
-                "LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        if (!LocalizedMessageWindow.ShowConfirm(
+                this,
+                LocalizationService.Translate("Somente as categorias selecionadas serão restauradas e poderão substituir os dados locais correspondentes.\nContinuar?")))
             return;
 
         try
         {
             BackupService.Import(dialog.FileName, selection);
-            MessageBox.Show(this,
-                "Backup restaurado com sucesso para as categorias selecionadas.\n\nReinicie o LUDARYX para aplicar os dados restaurados. O cache automático de capas continua sendo recriado quando necessário.",
-                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+            LocalizedMessageWindow.ShowInfo(
+                this,
+                LocalizationService.Translate("Backup restaurado com sucesso para as categorias selecionadas.\n\nReinicie o LUDARYX para aplicar todos os dados restaurados. O cache automático de capas continua sendo recriado quando necessário."));
             DialogResult = true;
             Close();
         }
