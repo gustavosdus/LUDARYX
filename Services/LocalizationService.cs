@@ -319,6 +319,22 @@ public static class LocalizationService
             ["USAR SELECIONADO"] = "選択したゲームを使用",
             ["Versão"] = "バージョン",
             ["Não classificado"] = "未分類",
+            ["Nunca jogado"] = "未プレイ",
+            ["Jogando"] = "プレイ中",
+            ["Detectado"] = "検出済み",
+            ["Não encontrado"] = "未検出",
+            ["API não configurada"] = "API未設定",
+            ["API configurada"] = "API設定済み",
+            ["Disponível"] = "利用可能",
+            ["Em execução"] = "実行中",
+            ["Padrão"] = "標準",
+            ["Perfil"] = "プロファイル",
+            ["Editar inicialização"] = "起動設定を編集",
+            ["EDITAR CONFIGURAÇÕES DE INICIALIZAÇÃO"] = "起動設定を編集",
+            ["RESTAURAR BACKUP"] = "バックアップを復元",
+            ["Restaurar backup"] = "バックアップを復元",
+            ["Escolha quais categorias deseja restaurar deste backup."] = "このバックアップから復元するカテゴリを選択してください。",
+            ["Sem descrição."] = "説明なし。",
 
         };
 
@@ -679,6 +695,75 @@ public static class LocalizationService
 
     public static string Format(string baseText, params object[] args) =>
         string.Format(Translate(baseText), args);
+
+    public static string FormatPlayCount(int count) => CurrentLanguage switch
+    {
+        JapaneseJapan => $"{count}回",
+        EnglishUnitedStates or EnglishUnitedKingdom => count == 1 ? "1 launch" : $"{count} launches",
+        SpanishLatinAmerica or SpanishEurope => count == 1 ? "1 partida" : $"{count} partidas",
+        _ => count == 1 ? "1 partida" : $"{count} partidas"
+    };
+
+    public static string FormatLaunchCount(int count) => CurrentLanguage switch
+    {
+        JapaneseJapan => $"{count}回起動",
+        EnglishUnitedStates or EnglishUnitedKingdom => count == 1 ? "1 launch" : $"{count} launches",
+        SpanishLatinAmerica or SpanishEurope => count == 1 ? "1 inicio" : $"{count} inicios",
+        _ => count == 1 ? "1 inicialização" : $"{count} inicializações"
+    };
+
+    public static string FormatDuration(long seconds)
+    {
+        if (seconds <= 0)
+            return CurrentLanguage == JapaneseJapan ? "0分" : "0 min";
+
+        var duration = TimeSpan.FromSeconds(seconds);
+        if (CurrentLanguage == JapaneseJapan)
+        {
+            if (duration.TotalHours >= 1)
+                return $"{(int)duration.TotalHours}時間 {duration.Minutes}分";
+            return $"{Math.Max(1, duration.Minutes)}分";
+        }
+
+        if (duration.TotalHours >= 1)
+            return $"{(int)duration.TotalHours}h {duration.Minutes:D2}min";
+        return $"{Math.Max(1, duration.Minutes)} min";
+    }
+
+    public static string FormatLastPlayed(DateTime? value)
+    {
+        if (!value.HasValue)
+            return Translate("Nunca jogado");
+
+        var cultureName = CurrentLanguage switch
+        {
+            JapaneseJapan => "ja-JP",
+            PortuguesePortugal => "pt-PT",
+            EnglishUnitedStates => "en-US",
+            EnglishUnitedKingdom => "en-GB",
+            SpanishLatinAmerica => "es-MX",
+            SpanishEurope => "es-ES",
+            _ => "pt-BR"
+        };
+
+        try
+        {
+            return value.Value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.GetCultureInfo(cultureName));
+        }
+        catch
+        {
+            return value.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
+        }
+    }
+
+    public static string FormatStatisticsSummary(int games, int launches, string totalTime) => CurrentLanguage switch
+    {
+        JapaneseJapan => $"{games}本のゲーム • {launches}回起動 • 記録時間 {totalTime}",
+        EnglishUnitedStates or EnglishUnitedKingdom => $"{games} games • {launches} launches • {totalTime} recorded",
+        SpanishLatinAmerica or SpanishEurope => $"{games} juegos • {launches} inicios • {totalTime} registrados",
+        PortuguesePortugal => $"{games} jogos • {launches} inicializações • {totalTime} registados",
+        _ => $"{games} jogos • {launches} inicializações • {totalTime} de tempo registrado"
+    };
 
     public static void Apply(DependencyObject root)
     {
