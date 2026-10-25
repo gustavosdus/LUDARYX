@@ -10,6 +10,8 @@ public partial class DetailsWindow : Window
 {
     private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly Game _game;
+    private string _initialName = "";
+    private string _initialDescription = "";
     private readonly LauncherSettings _settings;
     private readonly GameStateService _state = new();
     private readonly GameLaunchService _launcher;
@@ -89,7 +91,7 @@ public partial class DetailsWindow : Window
 
     private void LoadData()
     {
-        TitleText.Text = _game.Name;
+        TitleText.Text = _game.DisplayName;
         PlatformText.Text = $"{_game.PlatformDisplay} • {_game.PlayCountDisplay} • {_game.LastPlayedDisplay}";
         var localizedGenres = GenreService.DisplayMany(_game.Metadata.Genres);
         GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? LocalizationService.Translate("Não classificado") : localizedGenres;
@@ -120,7 +122,7 @@ public partial class DetailsWindow : Window
 
         SetImage(VerticalCoverImage, _game.VerticalCover);
         SetImage(HorizontalCoverImage, _game.HorizontalCover);
-        ManualNameBox.Text = _game.Name;
+        ManualNameBox.Text = _initialName = _game.DisplayName;
         ManualGenresBox.Text = GenreService.DisplayManyCommaSeparated(_game.Metadata.Genres);
         ManualDeveloperBox.Text = _game.Metadata.Developer ?? "";
         ManualPublisherBox.Text = _game.Metadata.Publisher ?? "";
@@ -128,7 +130,7 @@ public partial class DetailsWindow : Window
         var preferredRatingSystem = AgeRatingService.GetPreferredSystemKey(_settings.Language);
         ManualAgeRatingBox.Text = AgeRatingService.GetValue(_game.Metadata, preferredRatingSystem) ?? "";
         ManualAgeRatingBox.ToolTip = $"{LocalizationService.Translate("Classificação indicativa")} ({AgeRatingService.GetPreferredSystemLabel(_settings.Language)})";
-        ManualDescriptionBox.Text = displayDescription ?? "";
+        ManualDescriptionBox.Text = _initialDescription = displayDescription ?? "";
         EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
         DuplicateManualGameButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
         MakePrimaryDuplicateButton.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
@@ -399,6 +401,8 @@ public partial class DetailsWindow : Window
         {
             Name = sourceMetadata?.Name ?? _game.Name,
             Description = sourceMetadata?.Description,
+            LocalizedNames = new(sourceMetadata?.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase),
+            LocalizedDescriptions = new(sourceMetadata?.LocalizedDescriptions ?? new(), StringComparer.OrdinalIgnoreCase),
             Genres = sourceMetadata?.Genres?.ToList() ?? new(),
             Developer = sourceMetadata?.Developer,
             Publisher = sourceMetadata?.Publisher,
@@ -738,15 +742,22 @@ public partial class DetailsWindow : Window
 
         var manual = new ManualGameMetadata
         {
-            Name = ManualNameBox.Text,
+            Name = previousManual?.Name,
+            LocalizedNames = new(previousManual?.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase),
+            LocalizedDescriptions = new(previousManual?.LocalizedDescriptions ?? new(), StringComparer.OrdinalIgnoreCase),
             Genres = GenreService.NormalizeMany(ManualGenresBox.Text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList(),
             Developer = ManualDeveloperBox.Text,
             Publisher = ManualPublisherBox.Text,
             ReleaseYear = releaseYear,
             AgeRatings = ageRatings,
-            Description = ManualDescriptionBox.Text
+            Description = previousManual?.Description
         };
+        if (ManualNameBox.Text != _initialName)
+            manual.LocalizedNames[_settings.Language] = ManualNameBox.Text.Trim();
+        if (ManualDescriptionBox.Text != _initialDescription)
+            manual.LocalizedDescriptions[_settings.Language] = ManualDescriptionBox.Text.Trim();
         _state.SaveManualMetadata(_game, _settings, manual);
+        _game.RefreshLocalizedLabels();
         LoadData();
     }
 

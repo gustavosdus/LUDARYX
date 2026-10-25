@@ -229,7 +229,7 @@ public partial class MainWindow
             ? LocalizationService.Translate("Sem descrição.")
             : description;
 
-        SelectedGameNameText.Text = game.Name;
+        SelectedGameNameText.Text = game.DisplayName;
         SelectedGameMetaText.Text = $"{game.PlatformDisplay}  •  {genres}";
         SelectedGameUsageText.Text =
             $"{game.PlayCountDisplay}  •  {game.TotalPlayTimeDisplay}\n" +
@@ -240,7 +240,7 @@ public partial class MainWindow
         SelectedPlayButton.Content = LocalizationService.Translate(game.IsRunning ? "EM EXECUÇÃO" : "JOGAR");
         SelectedPlayButton.IsEnabled = !game.IsRunning;
 
-        TvHeroTitle.Text = game.Name;
+        TvHeroTitle.Text = game.DisplayName;
         TvHeroMeta.Text = $"{game.PlatformDisplay}  •  {genres}  •  {rating}";
         TvHeroUsage.Text = $"{game.TotalPlayTimeDisplay}  •  {game.PlayCountDisplay}  •  {game.LastPlayedDisplay}";
         TvHeroDescription.Text = description;
@@ -321,7 +321,7 @@ public partial class MainWindow
 
         try
         {
-            var localized = await _metadata.EnsureLocalizedDescriptionAsync(game, _settings, cts.Token);
+            await _metadata.EnsureLocalizedDescriptionAsync(game, _settings, cts.Token);
             if (cts.IsCancellationRequested)
                 return;
 
@@ -330,7 +330,10 @@ public partial class MainWindow
                 !selected.ProviderId.Equals(game.ProviderId, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var display = _metadata.GetDisplayDescription(game, _settings) ?? localized;
+            var display = _metadata.GetDisplayDescription(game, _settings);
+            game.RefreshLocalizedLabels();
+            SelectedGameNameText.Text = game.DisplayName;
+            TvHeroTitle.Text = game.DisplayName;
             if (string.IsNullOrWhiteSpace(display))
                 display = LocalizationService.Translate("Sem descrição.");
 
@@ -635,46 +638,46 @@ public partial class MainWindow
             "Recent" => descending
                 ? filtered.OrderBy(g => !g.LastPlayedUtc.HasValue)
                           .ThenByDescending(g => g.LastPlayedUtc)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => !g.LastPlayedUtc.HasValue)
                           .ThenBy(g => g.LastPlayedUtc)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             "MostPlayed" => descending
                 ? filtered.OrderByDescending(g => g.PlayCount)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => g.PlayCount)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             "PlayTime" => descending
                 ? filtered.OrderByDescending(g => g.TotalPlayTimeSeconds)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => g.TotalPlayTimeSeconds)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             "Platform" => descending
                 ? filtered.OrderByDescending(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => g.PlatformDisplay, StringComparer.OrdinalIgnoreCase)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             "ReleaseDate" => descending
                 ? filtered.OrderBy(g => !g.Metadata.ReleaseYear.HasValue)
                           .ThenByDescending(g => g.Metadata.ReleaseYear)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => !g.Metadata.ReleaseYear.HasValue)
                           .ThenBy(g => g.Metadata.ReleaseYear)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             _ when _specialFilter == "recent" => descending
                 ? filtered.OrderByDescending(g => g.LastPlayedUtc)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
                 : filtered.OrderBy(g => g.LastPlayedUtc)
-                          .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase),
+                          .ThenBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase),
 
             _ => descending
-                ? filtered.OrderByDescending(g => g.Name, StringComparer.OrdinalIgnoreCase)
-                : filtered.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                ? filtered.OrderByDescending(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
+                : filtered.OrderBy(g => g.DisplayName, StringComparer.OrdinalIgnoreCase)
         };
 
         _visibleGames = filtered.ToList();

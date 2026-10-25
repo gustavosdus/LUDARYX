@@ -1,4 +1,4 @@
-<Window x:Class="UnifiedGameLauncher.StatisticsWindow"
+﻿<Window x:Class="UnifiedGameLauncher.StatisticsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
@@ -76,7 +76,7 @@
                                     <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource LudaryxTextPrimary}"/>
+                                <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource LudaryxTextPrimary}"/>
                                 <TextBlock Grid.Column="1" Text="{Binding PlayCountDisplay}" Foreground="{DynamicResource LudaryxTextSecondary}"/>
                                 <TextBlock Grid.Column="2" Text="{Binding TotalPlayTimeDisplay}" Foreground="{DynamicResource LudaryxTextSecondary}"/>
                             </Grid>

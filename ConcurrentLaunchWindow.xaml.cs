@@ -34,8 +34,8 @@ public partial class ConcurrentLaunchWindow : Window
 
         LocalizationService.SetLanguage(settings.Language);
         LocalizationService.Apply(this);
-        TitleText.Text = requestedGame.Name;
-        CurrentGameText.Text = LocalizationService.Format("Em execução agora: {0}", activeGame.Name);
+        TitleText.Text = requestedGame.DisplayName;
+        CurrentGameText.Text = LocalizationService.Format("Em execução agora: {0}", activeGame.DisplayName);
 
         _controllerNavigation = new WindowGamepadNavigationService(
             this,

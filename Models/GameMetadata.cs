@@ -7,6 +7,8 @@ public sealed class GameMetadata
     {
         get; set;
     }
+    public int LocalizedTextVersion { get; set; }
+    public Dictionary<string, string> LocalizedNames { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, string> LocalizedDescriptions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public List<string> Genres { get; set; } = new();
     public List<string> Platforms { get; set; } = new();

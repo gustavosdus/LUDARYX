@@ -90,6 +90,8 @@ public static class DuplicateMetadataService
     private static void CopyTextMetadata(GameMetadata source, GameMetadata target)
     {
         target.CanonicalName = source.CanonicalName;
+        target.LocalizedTextVersion = source.LocalizedTextVersion;
+        target.LocalizedNames = new(source.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase);
         target.Description = source.Description;
         target.LocalizedDescriptions = new Dictionary<string, string>(
             source.LocalizedDescriptions ?? new(),
@@ -133,6 +135,8 @@ public static class DuplicateMetadataService
         targetManual.Name = sourceManual?.Name ?? source.Name;
         target.Name = targetManual.Name;
         targetManual.Description = sourceManual?.Description;
+        targetManual.LocalizedNames = new(sourceManual?.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase);
+        targetManual.LocalizedDescriptions = new(sourceManual?.LocalizedDescriptions ?? new(), StringComparer.OrdinalIgnoreCase);
         targetManual.Genres = sourceManual?.Genres?.ToList() ?? new();
         targetManual.Developer = sourceManual?.Developer;
         targetManual.Publisher = sourceManual?.Publisher;

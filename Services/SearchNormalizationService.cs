@@ -37,6 +37,7 @@ public static class SearchNormalizationService
         var fields = new[]
         {
             game.Name,
+            game.DisplayName,
             game.PlatformDisplay,
             game.Metadata.Developer,
             game.Metadata.Publisher,

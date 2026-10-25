@@ -147,6 +147,8 @@ public partial class MainWindow : Window
         Closed += (_, _) =>
         {
             _trayIcon?.Dispose();
+            _libraryTextCts?.Cancel();
+            _libraryTextCts?.Dispose();
             _selectedDescriptionCts?.Cancel();
             _selectedDescriptionCts?.Dispose();
             _selectedAgeRatingCts?.Cancel();

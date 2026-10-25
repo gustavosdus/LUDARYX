@@ -89,8 +89,14 @@ public sealed class GameStateService
     {
         if (!string.IsNullOrWhiteSpace(manual.Name))
             game.Name = manual.Name.Trim();
-        if (!string.IsNullOrWhiteSpace(manual.Description))
-            game.Metadata.Description = manual.Description;
+        if (manual.LocalizedNames is { Count: > 0 } || manual.LocalizedDescriptions is { Count: > 0 })
+        {
+            LocalizedMetadataText.Prepare(game.Metadata);
+            foreach (var pair in manual.LocalizedNames ?? new())
+                game.Metadata.LocalizedNames[pair.Key] = pair.Value;
+            foreach (var pair in manual.LocalizedDescriptions ?? new())
+                game.Metadata.LocalizedDescriptions[pair.Key] = pair.Value;
+        }
         if (manual.Genres.Count > 0)
             game.Metadata.Genres = GenreService.NormalizeMany(manual.Genres).ToList();
         if (!string.IsNullOrWhiteSpace(manual.Developer))

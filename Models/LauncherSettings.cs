@@ -93,6 +93,8 @@ public sealed class LauncherSettings
 
 public sealed class ManualGameMetadata
 {
+    public Dictionary<string, string> LocalizedNames { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, string> LocalizedDescriptions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public string? Name
     {
         get; set;

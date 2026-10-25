@@ -18,6 +18,7 @@ internal static class Program
         {
             CheckCatalog();
             CheckLanguageSwitching();
+            MetadataRegression.RunAsync().GetAwaiter().GetResult();
             CheckGeneratedControlText();
             CheckLegacySettings();
             Console.WriteLine("Localization, WPF control updates and legacy settings checks passed.");

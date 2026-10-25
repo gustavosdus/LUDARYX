@@ -8,6 +8,7 @@ public sealed class Game : INotifyPropertyChanged
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
+    public string DisplayName => LocalizedMetadataText.GetName(Metadata, LocalizationService.CurrentLanguage) ?? Name;
     public GamePlatform Platform
     {
         get; set;
@@ -138,6 +139,7 @@ public sealed class Game : INotifyPropertyChanged
 
     public void RefreshLocalizedLabels()
     {
+        OnPropertyChanged(nameof(DisplayName));
         OnPropertyChanged(nameof(PlatformDisplay));
         OnPropertyChanged(nameof(LastPlayedDisplay));
         OnPropertyChanged(nameof(PlayCountDisplay));

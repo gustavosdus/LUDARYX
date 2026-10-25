@@ -136,7 +136,7 @@ public partial class MainWindow
 
         if (includeSelectedGame)
         {
-            var gameName = _visibleGames.ElementAtOrDefault(_selectedIndex)?.Name
+            var gameName = _visibleGames.ElementAtOrDefault(_selectedIndex)?.DisplayName
                 ?? LocalizationService.Translate("Nenhum jogo");
             return $"{LocalizationService.Translate("Controle conectado")} • {gameName}";
         }

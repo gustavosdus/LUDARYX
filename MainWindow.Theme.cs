@@ -45,6 +45,7 @@ public partial class MainWindow
         UpdateFilterChips();
         UpdateSelectedGamePresentation();
         UpdateFooterInputHints();
+        RefreshLibraryLocalizedTextAsync();
 
         if (_trayIcon?.ContextMenuStrip is { } menu && menu.Items.Count >= 3)
         {

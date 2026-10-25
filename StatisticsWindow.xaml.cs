@@ -32,7 +32,7 @@ public partial class StatisticsWindow : Window
             .Where(game => game.PlayCount > 0 || game.TotalPlayTimeSeconds > 0)
             .OrderByDescending(game => game.TotalPlayTimeSeconds)
             .ThenByDescending(game => game.PlayCount)
-            .ThenBy(game => game.Name, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(game => game.DisplayName, StringComparer.OrdinalIgnoreCase)
             .Take(20)
             .ToList();
 

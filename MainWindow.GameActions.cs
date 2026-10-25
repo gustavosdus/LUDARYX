@@ -310,8 +310,8 @@ public partial class MainWindow
         if (game.IsRunning || _sessions.IsRunning(game))
         {
             game.IsRunning = true;
-            StatusText.Text = $"{game.Name} já está em execução";
-            ShowToast($"{game.Name} já está em execução.");
+            StatusText.Text = $"{game.DisplayName} já está em execução";
+            ShowToast($"{game.DisplayName} já está em execução.");
             return;
         }
 
@@ -327,7 +327,7 @@ public partial class MainWindow
 
             if (choice.ShowDialog() != true || !choice.AllowConcurrentLaunch)
             {
-                StatusText.Text = $"Mantendo sessão atual: {activeGame.Name}";
+                StatusText.Text = $"Mantendo sessão atual: {activeGame.DisplayName}";
                 return;
             }
         }
@@ -344,7 +344,7 @@ public partial class MainWindow
         try
         {
             PlayLaunchSound();
-            StatusText.Text = $"Iniciando {game.Name}...";
+            StatusText.Text = $"Iniciando {game.DisplayName}...";
             ShowGameLaunchOverlay(game);
 
             // Garante que a interface seja desenhada antes de o provider começar.
@@ -374,7 +374,7 @@ public partial class MainWindow
             {
                 SetGameLaunchProgress(100);
                 GameLaunchStatusText.Text = LocalizationService.Translate("Jogo iniciado");
-                StatusText.Text = $"Executando: {game.Name}";
+                StatusText.Text = $"Executando: {game.DisplayName}";
                 ApplyFilter();
 
                 // Mantém 100% por um instante para tornar a conclusão perceptível.
@@ -385,7 +385,7 @@ public partial class MainWindow
                 // Alguns launchers/jogos não expõem um executável detectável.
                 // A barra permanece quase completa, mas não afirma 100% sem confirmação.
                 SetGameLaunchProgress(95);
-                StatusText.Text = $"Inicialização enviada: {game.Name}";
+                StatusText.Text = $"Inicialização enviada: {game.DisplayName}";
                 await Task.Delay(250, CancellationToken.None);
             }
         }
@@ -400,7 +400,7 @@ public partial class MainWindow
         {
             StatusText.Text = "Falha ao iniciar o jogo";
             MessageBox.Show(
-                $"Não foi possível iniciar {game.Name}.\n\n{ex.Message}",
+                $"Não foi possível iniciar {game.DisplayName}.\n\n{ex.Message}",
                 "LUDARYX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -494,7 +494,7 @@ public partial class MainWindow
 
     private void ShowGameLaunchOverlay(Game game)
     {
-        GameLaunchNameText.Text = game.Name;
+        GameLaunchNameText.Text = game.DisplayName;
         GameLaunchPlatformText.Text = game.PlatformDisplay.ToUpperInvariant();
         GameLaunchStatusText.Text = LocalizationService.Translate("Preparando inicialização...");
         CancelGameLaunchButton.Content = LocalizationService.Translate("INTERROMPER");

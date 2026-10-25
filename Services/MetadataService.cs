@@ -10,9 +10,9 @@ using UnifiedGameLauncher.Models;
 
 namespace UnifiedGameLauncher.Services;
 
-public sealed class MetadataService
+public sealed partial class MetadataService
 {
-    private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(12) };
+    private readonly HttpClient _http;
     private readonly string _cacheFile;
     private readonly string _coverDir;
     private Dictionary<string, GameMetadata> _cache = new(StringComparer.OrdinalIgnoreCase);
@@ -95,10 +95,14 @@ public sealed class MetadataService
     private readonly SemaphoreSlim _steamStoreGate = new(2, 2);
     private Dictionary<string, List<int>>? _steamAppIdsByNormalizedName;
 
-    public MetadataService()
+    public MetadataService() : this(null, null) { }
+
+    public MetadataService(HttpClient? http, string? dataDirectory)
     {
-        AppDataService.EnsureMigrated();
-        var root = AppDataService.RootDirectory;
+        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
+        if (dataDirectory is null)
+            AppDataService.EnsureMigrated();
+        var root = dataDirectory ?? AppDataService.RootDirectory;
         Directory.CreateDirectory(root);
         _cacheFile = Path.Combine(root, "metadata.json");
         _coverDir = Path.Combine(root, "covers");
@@ -194,6 +198,7 @@ public sealed class MetadataService
             // suportadas, sem depender de um portal governamental específico.
             if (!HasPreferredAgeRating(game.Metadata, settings.Language))
                 await EnsureLocalizedAgeRatingAsync(game, settings, token);
+            await EnsureLocalizedDescriptionAsync(game, settings, token);
             return;
         }
 
@@ -345,145 +350,28 @@ public sealed class MetadataService
         // já forneceu classificação, evitando rede desnecessária na biblioteca.
         if (!HasPreferredAgeRating(game.Metadata, settings.Language))
             await EnsureLocalizedAgeRatingAsync(game, settings, token);
+        await EnsureLocalizedDescriptionAsync(game, settings, token);
     }
 
     public void SaveCacheSnapshot() => SaveCache();
 
     /// <summary>
     /// Retorna a descrição já armazenada para o idioma atual do programa.
-    /// Descrições editadas manualmente pelo usuário sempre têm prioridade e não são
-    /// traduzidas/substituídas automaticamente.
+    /// Edições manuais são específicas por idioma. A preferência é o idioma atual,
+    /// seguido de inglês; textos legados sem idioma não são usados como fallback.
     /// </summary>
     public string? GetDisplayDescription(Game game, LauncherSettings settings)
     {
-        if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual) &&
-            !string.IsNullOrWhiteSpace(manual.Description))
-        {
-            return manual.Description;
-        }
-
-        var language = NormalizeDescriptionLanguage(settings.Language);
-        var descriptions = game.Metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
-        if (descriptions.TryGetValue(language, out var exact) && !IsLowQualityDescription(exact))
-            return exact;
-
-        // Se uma variante regional ainda não foi buscada, uma variante do mesmo idioma
-        // é melhor do que misturar inglês/português/espanhol sem necessidade.
-        foreach (var fallback in GetSameLanguageFallbacks(language))
-        {
-            if (descriptions.TryGetValue(fallback, out var value) && !IsLowQualityDescription(value))
-                return value;
-        }
-
-        // Se não houver uma descrição no idioma selecionado, mantém uma descrição
-        // válida em inglês em vez de ocultar o texto. Isso é especialmente importante
-        // para fontes como GOG e alguns fallbacks enciclopédicos, que podem não oferecer
-        // conteúdo em português/espanhol. A descrição inglesa nunca é gravada como se
-        // pertencesse ao idioma atual; portanto, uma tradução futura ainda pode substituí-la.
-        var englishFallback = GetCachedEnglishDescription(game.Metadata);
-        return !IsLowQualityDescription(englishFallback) ? englishFallback : null;
-    }
-
-    /// <summary>
-    /// Busca somente a descrição no idioma selecionado, sem refazer os demais
-    /// metadados do jogo. O resultado fica em cache por idioma para que trocar o
-    /// idioma do programa não misture descrições de sessões anteriores.
-    /// </summary>
-    public async Task<string?> EnsureLocalizedDescriptionAsync(
-        Game game,
-        LauncherSettings settings,
-        CancellationToken token = default)
-    {
-        if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual) &&
-            !string.IsNullOrWhiteSpace(manual.Description))
-        {
-            return manual.Description;
-        }
-
-        var language = NormalizeDescriptionLanguage(settings.Language);
-        var descriptions = game.Metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
-        if (descriptions.TryGetValue(language, out var existing) && !IsLowQualityDescription(existing))
-            return existing;
-
-        string? localized = null;
-
-        // Para jogos Steam, o App ID instalado é a fonte mais confiável. Para jogos de
-        // outros launchers que já foram relacionados à Steam, reutiliza o ExternalId.
-        if (game.Platform == GamePlatform.Steam && int.TryParse(game.Id, out var installedAppId))
-        {
-            localized = await GetSteamLocalizedDescriptionAsync(installedAppId, language, token);
-        }
-        else if (game.Metadata.Source?.Contains("Steam Store", StringComparison.OrdinalIgnoreCase) == true &&
-                 int.TryParse(game.Metadata.ExternalId, out var relatedSteamAppId))
-        {
-            localized = await GetSteamLocalizedDescriptionAsync(relatedSteamAppId, language, token);
-        }
-
-        // Steam nem sempre possui tradução para todos os idiomas. Wikipedia é usada
-        // apenas como fallback de descrição, nunca para sobrescrever empresas/gêneros.
-        if (IsLowQualityDescription(localized))
-            localized = await GetLocalizedWikipediaDescriptionAsync(game.Name, language, token);
-
-        if (!IsLowQualityDescription(localized))
-        {
-            localized = SanitizeDescription(localized);
-            descriptions[language] = localized!;
-
-            lock (_cacheSync)
-            {
-                if (_cache.TryGetValue(game.ProviderId, out var cached))
-                {
-                    cached.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
-                    cached.LocalizedDescriptions[language] = localized!;
-                }
-                else
-                {
-                    _cache[game.ProviderId] = game.Metadata;
-                }
-            }
-
-            SaveCache();
-            return localized;
-        }
-
-        foreach (var fallback in GetSameLanguageFallbacks(language))
-        {
-            if (descriptions.TryGetValue(fallback, out var value) && !IsLowQualityDescription(value))
-                return value;
-        }
-
-        // Regra global de fallback: se a fonte não disponibilizar a descrição no idioma
-        // selecionado, exibe a versão inglesa. Primeiro reaproveita o inglês já existente
-        // no cache/metadados; somente consulta a rede se realmente não houver uma versão
-        // inglesa disponível localmente.
-        var englishFallback = GetCachedEnglishDescription(game.Metadata);
-        if (IsLowQualityDescription(englishFallback) &&
-            !language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
-        {
-            englishFallback = await FetchEnglishFallbackDescriptionAsync(game, token);
-            if (!IsLowQualityDescription(englishFallback))
-            {
-                englishFallback = SanitizeDescription(englishFallback);
-                descriptions["en-US"] = englishFallback!;
-
-                lock (_cacheSync)
-                {
-                    if (_cache.TryGetValue(game.ProviderId, out var cached))
-                    {
-                        cached.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
-                        cached.LocalizedDescriptions["en-US"] = englishFallback!;
-                    }
-                    else
-                    {
-                        _cache[game.ProviderId] = game.Metadata;
-                    }
-                }
-
-                SaveCache();
-            }
-        }
-
-        return !IsLowQualityDescription(englishFallback) ? englishFallback : null;
+        settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual);
+        var exactManual = LocalizedMetadataText.Exact(manual?.LocalizedDescriptions, settings.Language);
+        if (!string.IsNullOrWhiteSpace(exactManual))
+            return exactManual;
+        var exactAutomatic = game.Metadata.LocalizedTextVersion == LocalizedMetadataText.CacheVersion
+            ? LocalizedMetadataText.Exact(game.Metadata.LocalizedDescriptions, settings.Language) : null;
+        if (!string.IsNullOrWhiteSpace(exactAutomatic))
+            return exactAutomatic;
+        return LocalizedMetadataText.Select(manual?.LocalizedDescriptions, "en-US")
+            ?? LocalizedMetadataText.GetDescription(game.Metadata, "en-US");
     }
 
     public async Task EnsureLocalizedAgeRatingAsync(
@@ -944,160 +832,6 @@ public sealed class MetadataService
         return match.Success && int.TryParse(match.Value, out var year) ? year : null;
     }
 
-    private static string? GetCachedEnglishDescription(GameMetadata metadata)
-    {
-        metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var englishLanguage in new[] { "en-US", "en-GB" })
-        {
-            if (metadata.LocalizedDescriptions.TryGetValue(englishLanguage, out var localized) &&
-                !IsLowQualityDescription(localized))
-            {
-                return localized;
-            }
-        }
-
-        return !IsLowQualityDescription(metadata.Description)
-            ? metadata.Description
-            : null;
-    }
-
-    private async Task<string?> FetchEnglishFallbackDescriptionAsync(
-        Game game,
-        CancellationToken token)
-    {
-        string? english = null;
-
-        if (game.Platform == GamePlatform.Steam && int.TryParse(game.Id, out var installedAppId))
-        {
-            english = await GetSteamLocalizedDescriptionAsync(installedAppId, "en-US", token);
-        }
-        else if (game.Metadata.Source?.Contains("Steam Store", StringComparison.OrdinalIgnoreCase) == true &&
-                 int.TryParse(game.Metadata.ExternalId, out var relatedSteamAppId))
-        {
-            english = await GetSteamLocalizedDescriptionAsync(relatedSteamAppId, "en-US", token);
-        }
-
-        if (IsLowQualityDescription(english))
-            english = await GetLocalizedWikipediaDescriptionAsync(game.Name, "en-US", token);
-
-        return english;
-    }
-
-    private async Task<string?> GetSteamLocalizedDescriptionAsync(
-        int appId,
-        string language,
-        CancellationToken token)
-    {
-        var (steamLanguage, countryCode) = GetSteamLocale(language);
-
-        await _steamStoreGate.WaitAsync(token);
-        try
-        {
-            for (var attempt = 0; attempt < 2; attempt++)
-            {
-                try
-                {
-                    var url = $"https://store.steampowered.com/api/appdetails?appids={appId}" +
-                              $"&l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
-                    using var response = await _http.GetAsync(url, token);
-                    if ((int)response.StatusCode == 429 || (int)response.StatusCode >= 500)
-                    {
-                        if (attempt == 0)
-                        {
-                            await Task.Delay(600, token);
-                            continue;
-                        }
-                        break;
-                    }
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using var doc = JsonDocument.Parse(await SafeHttpResponseService.ReadTextAsync(
-                            response, maxBytes: 2 * 1024 * 1024, cancellationToken: token));
-                        var appIdText = appId.ToString(CultureInfo.InvariantCulture);
-                        if (doc.RootElement.TryGetProperty(appIdText, out var entry) &&
-                            entry.TryGetProperty("success", out var success) && success.GetBoolean() &&
-                            entry.TryGetProperty("data", out var data) &&
-                            data.TryGetProperty("short_description", out var description))
-                        {
-                            var text = SanitizeDescription(description.GetString());
-                            if (!IsLowQualityDescription(text))
-                                return text;
-                        }
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch when (attempt == 0)
-                {
-                    await Task.Delay(500, token);
-                }
-                catch
-                {
-                    break;
-                }
-            }
-
-            // Fallback para layouts em que appdetails não retorna short_description.
-            try
-            {
-                var pageUrl = $"https://store.steampowered.com/app/{appId}/" +
-                              $"?l={Uri.EscapeDataString(steamLanguage)}&cc={Uri.EscapeDataString(countryCode)}";
-                using var response = await _http.GetAsync(pageUrl, token);
-                if (!response.IsSuccessStatusCode)
-                    return null;
-
-                var html = await SafeHttpResponseService.ReadTextAsync(
-                    response, maxBytes: 4 * 1024 * 1024, cancellationToken: token);
-
-                var snippet = Regex.Match(
-                    html,
-                    @"<div[^>]+class=[""'][^""']*game_description_snippet[^""']*[""'][^>]*>(?<value>.*?)</div>",
-                    RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-                if (snippet.Success)
-                {
-                    var text = Regex.Replace(snippet.Groups["value"].Value, @"<br\s*/?>", " ", RegexOptions.IgnoreCase);
-                    text = Regex.Replace(text, @"<[^>]+>", " ");
-                    text = WebUtility.HtmlDecode(text);
-                    text = Regex.Replace(text, @"\s+", " ").Trim();
-                    text = SanitizeDescription(text);
-                    if (!IsLowQualityDescription(text))
-                        return text;
-                }
-
-                foreach (var pattern in new[]
-                {
-                    @"<meta[^>]+property=[""']og:description[""'][^>]+content=[""'](?<value>.*?)[""']",
-                    @"<meta[^>]+content=[""'](?<value>.*?)[""'][^>]+property=[""']og:description[""']"
-                })
-                {
-                    var match = Regex.Match(html, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-                    if (!match.Success)
-                        continue;
-                    var text = SanitizeDescription(WebUtility.HtmlDecode(match.Groups["value"].Value));
-                    if (!IsLowQualityDescription(text))
-                        return text;
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch
-            {
-            }
-        }
-        finally
-        {
-            _steamStoreGate.Release();
-        }
-
-        return null;
-    }
-
     private async Task<string?> GetLocalizedWikipediaDescriptionAsync(
         string? gameName,
         string language,
@@ -1203,18 +937,6 @@ public sealed class MetadataService
         "es-ES" => "es-ES",
         "ja-JP" => "ja-JP",
         _ => "pt-BR"
-    };
-
-    private static IEnumerable<string> GetSameLanguageFallbacks(string language) => language switch
-    {
-        "pt-BR" => new[] { "pt-PT" },
-        "pt-PT" => new[] { "pt-BR" },
-        "en-US" => new[] { "en-GB" },
-        "en-GB" => new[] { "en-US" },
-        "es-419" => new[] { "es-ES" },
-        "es-ES" => new[] { "es-419" },
-        "ja-JP" => Array.Empty<string>(),
-        _ => Array.Empty<string>()
     };
 
     private static IReadOnlyList<(string Language, string Country, string LudaryxLanguage)> GetSteamAgeRatingLocales(
@@ -3060,6 +2782,14 @@ public sealed class MetadataService
 
     private static void MergeLocalizedDescriptions(GameMetadata target, GameMetadata source)
     {
+        if (source.LocalizedTextVersion == LocalizedMetadataText.CacheVersion)
+        {
+            LocalizedMetadataText.Prepare(target);
+            foreach (var pair in source.LocalizedNames ?? new())
+                target.LocalizedNames.TryAdd(pair.Key, pair.Value);
+        }
+        if (source.LocalizedTextVersion != LocalizedMetadataText.CacheVersion)
+            return;
         target.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
         if (source.LocalizedDescriptions is null)
             return;

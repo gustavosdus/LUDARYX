@@ -150,7 +150,8 @@ public static class AgeRatingService
             @"[^A-Z0-9+]",
             "");
 
-        if (compact.Contains("E10+", StringComparison.Ordinal) ||
+        if (compact is "E10" or "ESRBE10" or "EVERYONE10" ||
+            compact.Contains("E10+", StringComparison.Ordinal) ||
             compact.Contains("EVERYONE10+", StringComparison.Ordinal) ||
             compact.Contains("EVERYONE10PLUS", StringComparison.Ordinal))
             return "E10+";
