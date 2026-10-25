@@ -1099,7 +1099,7 @@
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7"
                                                         Visibility="{Binding IsDuplicate, Converter={StaticResource BoolToVisibility}}">
-                                                    <TextBlock Text="DUPLICATA" Foreground="#E4C576" FontSize="8" FontWeight="Bold"/>
+                                                    <TextBlock Text="{x:Static services:LocalizationService.DuplicateLabel}" Foreground="#E4C576" FontSize="8" FontWeight="Bold"/>
                                                 </Border>
 
                                                 <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="7"
