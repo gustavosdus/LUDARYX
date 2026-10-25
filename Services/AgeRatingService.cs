@@ -125,6 +125,22 @@ public static class AgeRatingService
             return classIndValue is "L" or "LIVRE" ? "L" : raw;
         }
 
+        if (normalizedSystem == "cero")
+        {
+            var compactCero = System.Text.RegularExpressions.Regex.Replace(
+                raw.ToUpperInvariant(),
+                @"[^A-Z]",
+                "");
+            if (compactCero.StartsWith("CERO", StringComparison.Ordinal))
+                compactCero = compactCero[4..];
+
+            return compactCero switch
+            {
+                "A" or "B" or "C" or "D" or "Z" => compactCero,
+                _ => raw
+            };
+        }
+
         if (normalizedSystem != "esrb")
             return raw;
 
