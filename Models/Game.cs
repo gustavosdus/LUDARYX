@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using UnifiedGameLauncher.Services;
 
 namespace UnifiedGameLauncher.Models;
 
@@ -43,20 +44,10 @@ public sealed class Game : INotifyPropertyChanged
 
     public string GenresDisplay => string.Join(" • ", Metadata.Genres);
     public string ReleaseYearDisplay => Metadata.ReleaseYear?.ToString() ?? "";
-    public string LastPlayedDisplay => LastPlayedUtc.HasValue ? LastPlayedUtc.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "Nunca jogado";
-    public string PlayCountDisplay => PlayCount == 1 ? "1 partida" : $"{PlayCount} partidas";
-    public string TotalPlayTimeDisplay
-    {
-        get
-        {
-            if (TotalPlayTimeSeconds <= 0) return "0 min";
-            var duration = TimeSpan.FromSeconds(TotalPlayTimeSeconds);
-            if (duration.TotalHours >= 1)
-                return $"{(int)duration.TotalHours}h {duration.Minutes:D2}min";
-            return $"{Math.Max(1, duration.Minutes)} min";
-        }
-    }
-    public string RunningDisplay => IsRunning ? "Jogando" : "";
+    public string LastPlayedDisplay => LocalizationService.FormatLastPlayed(LastPlayedUtc);
+    public string PlayCountDisplay => LocalizationService.FormatPlayCount(PlayCount);
+    public string TotalPlayTimeDisplay => LocalizationService.FormatDuration(TotalPlayTimeSeconds);
+    public string RunningDisplay => IsRunning ? LocalizationService.Translate("Jogando") : "";
     public string PlatformDisplay => Platform.ToString();
     public string ProviderId => $"{Platform}:{Id}";
     public string DisplayCover => CoverImage ?? "";
