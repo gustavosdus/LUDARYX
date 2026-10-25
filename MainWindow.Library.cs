@@ -689,8 +689,8 @@ public partial class MainWindow
             $"{LocalizationService.Translate("Última execução")}: {game.LastPlayedDisplay}\n" +
             $"{LocalizationService.Translate("Classificação indicativa")}: {rating}";
         SelectedGameDescriptionText.Text = description;
-        SelectedFavoriteButton.Content = game.IsFavorite ? "★ FAVORITO" : "☆ FAVORITO";
-        SelectedPlayButton.Content = game.IsRunning ? "EM EXECUÇÃO" : "JOGAR";
+        SelectedFavoriteButton.Content = LocalizationService.Translate(game.IsFavorite ? "★ FAVORITO" : "☆ FAVORITO");
+        SelectedPlayButton.Content = LocalizationService.Translate(game.IsRunning ? "EM EXECUÇÃO" : "JOGAR");
         SelectedPlayButton.IsEnabled = !game.IsRunning;
 
         TvHeroTitle.Text = game.Name;
