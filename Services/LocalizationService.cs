@@ -149,6 +149,13 @@ public static class LocalizationService
         new("Backup restaurado com sucesso para as categorias selecionadas.\n\nReinicie o LUDARYX para aplicar todos os dados restaurados. O cache automático de capas continua sendo recriado quando necessário.", "Cópia de segurança restaurada com sucesso para as categorias selecionadas.\n\nReinicie o LUDARYX para aplicar todos os dados restaurados. A cache automática de capas continuará a ser recriada quando necessário.", "Backup restored successfully for the selected categories.\n\nRestart LUDARYX to apply all restored data. The automatic artwork cache will continue to be rebuilt when needed.", "Backup restored successfully for the selected categories.\n\nRestart LUDARYX to apply all restored data. The automatic artwork cache will continue to be rebuilt when needed.", "Copia de seguridad restaurada correctamente para las categorías seleccionadas.\n\nReinicia LUDARYX para aplicar todos los datos restaurados. La caché automática de carátulas seguirá regenerándose cuando sea necesario.", "Copia de seguridad restaurada correctamente para las categorías seleccionadas.\n\nReinicia LUDARYX para aplicar todos los datos restaurados. La caché automática de carátulas seguirá regenerándose cuando sea necesario.", "選択したカテゴリのバックアップを正常に復元しました。\n\n復元したすべてのデータを適用するにはLUDARYXを再起動してください。アートワークの自動キャッシュは必要に応じて再生成されます。"),
         new("Sim", "Sim", "Yes", "Yes", "Sí", "Sí", "はい"),
         new("Não", "Não", "No", "No", "No", "No", "いいえ")
+        new("FAVORITO", "FAVORITO", "FAVORITE", "FAVOURITE", "FAVORITO", "FAVORITO", "お気に入り"),
+        new("VOLTAR", "VOLTAR", "BACK", "BACK", "VOLVER", "VOLVER", "戻る"),
+        new("COLEÇÃO", "COLEÇÃO", "COLLECTION", "COLLECTION", "COLECCIÓN", "COLECCIÓN", "コレクション"),
+        new("PLATAFORMA", "PLATAFORMA", "PLATFORM", "PLATFORM", "PLATAFORMA", "PLATAFORMA", "プラットフォーム"),
+        new("PAINEL", "PAINEL", "PANEL", "PANEL", "PANEL", "PANEL", "パネル"),
+        new("HERO", "HERO", "HERO", "HERO", "HERO", "HERO", "ヒーロー"),
+        new("TELA CHEIA", "ECRÃ INTEIRO", "FULLSCREEN", "FULLSCREEN", "PANTALLA COMPLETA", "PANTALLA COMPLETA", "全画面")
     ];
 
     private static readonly IReadOnlyDictionary<string, string> JapaneseTranslations =
