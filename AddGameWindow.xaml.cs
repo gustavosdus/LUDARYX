@@ -31,9 +31,9 @@ public partial class AddGameWindow : Window
 
         if (existing is not null)
         {
-            Title = "Editar inicialização";
-            HeaderText.Text = "EDITAR CONFIGURAÇÕES DE INICIALIZAÇÃO";
-            SaveButton.Content = "SALVAR";
+            Title = LocalizationService.Translate("Editar inicialização");
+            HeaderText.Text = LocalizationService.Translate("EDITAR CONFIGURAÇÕES DE INICIALIZAÇÃO");
+            SaveButton.Content = LocalizationService.Translate("SALVAR");
             NameBox.Text = existing.Name;
             IconPathBox.Text = existing.IconPath ?? "";
 
@@ -132,7 +132,7 @@ public partial class AddGameWindow : Window
             return;
 
         _currentProfile.Name = string.IsNullOrWhiteSpace(ProfileNameBox.Text)
-            ? "Perfil"
+            ? LocalizationService.Translate("Perfil")
             : ProfileNameBox.Text.Trim();
         _currentProfile.Executable = string.IsNullOrWhiteSpace(ExeBox.Text) ? null : ExeBox.Text.Trim();
         _currentProfile.Arguments = string.IsNullOrWhiteSpace(ArgumentsBox.Text) ? null : ArgumentsBox.Text.Trim();
@@ -144,7 +144,7 @@ public partial class AddGameWindow : Window
     private void NewProfile_Click(object sender, RoutedEventArgs e)
     {
         SaveCurrentProfileFields();
-        var profile = new ManualLaunchProfile { Name = $"Perfil {_profiles.Count + 1}" };
+        var profile = new ManualLaunchProfile { Name = $"{LocalizationService.Translate("Perfil")} {_profiles.Count + 1}" };
         _profiles.Add(profile);
         RefreshProfiles(profile.Id);
     }
@@ -153,7 +153,7 @@ public partial class AddGameWindow : Window
     {
         if (_profiles.Count <= 1 || ProfileCombo.SelectedItem is not ManualLaunchProfile selected)
         {
-            MessageBox.Show(this, "O jogo precisa manter pelo menos um perfil de inicialização.",
+            MessageBox.Show(this, LocalizationService.Translate("O jogo precisa manter pelo menos um perfil de inicialização."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -207,7 +207,7 @@ public partial class AddGameWindow : Window
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            MessageBox.Show(this, "Informe o nome do jogo.", "LUDARYX",
+            MessageBox.Show(this, LocalizationService.Translate("Informe o nome do jogo."), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
