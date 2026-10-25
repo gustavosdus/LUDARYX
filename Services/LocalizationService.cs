@@ -42,6 +42,69 @@ public static class LocalizationService
         string Es419,
         string EsEs);
 
+    private sealed record SupplementalTranslation(
+        string PtBr,
+        string PtPt,
+        string EnUs,
+        string EnGb,
+        string Es419,
+        string EsEs,
+        string JaJp);
+
+    private static readonly SupplementalTranslation[] SupplementalTranslations =
+    [
+        new("Atualizar biblioteca", "Atualizar biblioteca", "Refresh library", "Refresh library", "Actualizar biblioteca", "Actualizar biblioteca", "ライブラリを更新"),
+        new("Estatísticas", "Estatísticas", "Statistics", "Statistics", "Estadísticas", "Estadísticas", "統計"),
+        new("Buscar nas configurações", "Pesquisar nas definições", "Search settings", "Search settings", "Buscar en configuración", "Buscar en configuración", "設定を検索"),
+        new("Pesquisar", "Pesquisar", "Search", "Search", "Buscar", "Buscar", "検索"),
+        new("Buscar jogos", "Pesquisar jogos", "Search games", "Search games", "Buscar juegos", "Buscar juegos", "ゲームを検索"),
+        new("Backup", "Cópia de segurança", "Backup", "Backup", "Copia de seguridad", "Copia de seguridad", "バックアップ"),
+        new("Jogo manual", "Jogo manual", "Manual game", "Manual game", "Juego manual", "Juego manual", "手動ゲーム"),
+        new("Nome exibido na biblioteca.", "Nome apresentado na biblioteca.", "Name shown in the library.", "Name shown in the library.", "Nombre mostrado en la biblioteca.", "Nombre mostrado en la biblioteca.", "ライブラリに表示する名前です。"),
+        new("Use perfis para argumentos ou modos diferentes.", "Use perfis para argumentos ou modos diferentes.", "Use profiles for different arguments or modes.", "Use profiles for different arguments or modes.", "Usa perfiles para argumentos o modos diferentes.", "Usa perfiles para argumentos o modos diferentes.", "引数や起動モードごとにプロファイルを使えます。"),
+        new("Identificação deste perfil.", "Identificação deste perfil.", "Identifier for this profile.", "Identifier for this profile.", "Identificador de este perfil.", "Identificador de este perfil.", "このプロファイルの名前です。"),
+        new("Arquivo principal do jogo.", "Ficheiro principal do jogo.", "Main game executable.", "Main game executable.", "Ejecutable principal del juego.", "Ejecutable principal del juego.", "ゲームのメイン実行ファイルです。"),
+        new("Argumentos de inicialização", "Argumentos de inicialização", "Launch arguments", "Launch arguments", "Argumentos de inicio", "Argumentos de inicio", "起動引数"),
+        new("Parâmetros adicionais (opcional).", "Parâmetros adicionais (opcional).", "Additional parameters (optional).", "Additional parameters (optional).", "Parámetros adicionales (opcional).", "Parámetros adicionales (opcional).", "追加パラメーター（任意）。"),
+        new("URI de inicialização", "URI de inicialização", "Launch URI", "Launch URI", "URI de inicio", "URI de inicio", "起動URI"),
+        new("Comando URI personalizado (opcional).", "Comando URI personalizado (opcional).", "Custom URI command (optional).", "Custom URI command (optional).", "Comando URI personalizado (opcional).", "Comando URI personalizado (opcional).", "カスタムURIコマンド（任意）。"),
+        new("Pasta de trabalho", "Pasta de trabalho", "Working directory", "Working directory", "Carpeta de trabajo", "Carpeta de trabajo", "作業フォルダー"),
+        new("Diretório de trabalho do jogo (opcional).", "Diretório de trabalho do jogo (opcional).", "Game working directory (optional).", "Game working directory (optional).", "Directorio de trabajo del juego (opcional).", "Directorio de trabajo del juego (opcional).", "ゲームの作業フォルダー（任意）。"),
+        new("Privilégios", "Privilégios", "Privileges", "Privileges", "Privilegios", "Privilegios", "権限"),
+        new("Use apenas quando o jogo exigir.", "Use apenas quando o jogo exigir.", "Use only when the game requires it.", "Use only when the game requires it.", "Úsalo solo cuando el juego lo requiera.", "Úsalo solo cuando el juego lo requiera.", "ゲームで必要な場合のみ使用してください。"),
+        new("Ícone personalizado", "Ícone personalizado", "Custom icon", "Custom icon", "Icono personalizado", "Icono personalizado", "カスタムアイコン"),
+        new("Imagem ou ícone do jogo (opcional).", "Imagem ou ícone do jogo (opcional).", "Game image or icon (optional).", "Game image or icon (optional).", "Imagen o icono del juego (opcional).", "Imagen o icono del juego (opcional).", "ゲーム画像またはアイコン（任意）。"),
+        new("Crie perfis diferentes para iniciar o mesmo jogo com argumentos distintos, por exemplo Normal, Sem mods ou Modo janela. O perfil selecionado será usado ao iniciar.", "Crie perfis diferentes para iniciar o mesmo jogo com argumentos distintos, por exemplo Normal, Sem mods ou Modo janela. O perfil selecionado será usado ao iniciar.", "Create different profiles to launch the same game with different arguments, for example Normal, No mods, or Windowed mode. The selected profile will be used when launching.", "Create different profiles to launch the same game with different arguments, for example Normal, No mods, or Windowed mode. The selected profile will be used when launching.", "Crea perfiles distintos para iniciar el mismo juego con argumentos diferentes, por ejemplo Normal, Sin mods o Modo ventana. Se usará el perfil seleccionado al iniciar.", "Crea perfiles distintos para iniciar el mismo juego con argumentos diferentes, por ejemplo Normal, Sin mods o Modo ventana. Se usará el perfil seleccionado al iniciar.", "同じゲームを異なる引数で起動するために、通常、MODなし、ウィンドウモードなど複数のプロファイルを作成できます。起動時には選択中のプロファイルが使われます。"),
+        new("Edite informações locais sem alterar os arquivos originais do jogo.", "Edite informações locais sem alterar os ficheiros originais do jogo.", "Edit local information without changing the original game files.", "Edit local information without changing the original game files.", "Edita información local sin cambiar los archivos originales del juego.", "Edita información local sin cambiar los archivos originales del juego.", "ゲーム本体のファイルを変更せずにローカル情報を編集します。"),
+        new("Nome do jogo", "Nome do jogo", "Game name", "Game name", "Nombre del juego", "Nombre del juego", "ゲーム名"),
+        new("Ano de lançamento", "Ano de lançamento", "Release year", "Release year", "Año de lanzamiento", "Año de lanzamiento", "発売年"),
+        new("Classificação indicativa do sistema correspondente ao idioma atual", "Classificação indicativa do sistema correspondente ao idioma atual", "Age rating for the system associated with the current language", "Age rating for the system associated with the current language", "Clasificación por edad del sistema correspondiente al idioma actual", "Clasificación por edad del sistema correspondiente al idioma actual", "現在の言語に対応する年齢レーティング"),
+        new("As imagens escolhidas são copiadas para a pasta do LUDARYX.", "As imagens escolhidas são copiadas para a pasta do LUDARYX.", "Selected images are copied to the LUDARYX folder.", "Selected images are copied to the LUDARYX folder.", "Las imágenes elegidas se copian a la carpeta de LUDARYX.", "Las imágenes elegidas se copian a la carpeta de LUDARYX.", "選択した画像はLUDARYXフォルダーにコピーされます。"),
+        new("Busque e selecione artes para este jogo.", "Pesquise e selecione artes para este jogo.", "Search and select artwork for this game.", "Search and select artwork for this game.", "Busca y selecciona imágenes para este juego.", "Busca y selecciona imágenes para este juego.", "このゲームの画像を検索して選択します。"),
+        new("Escolha manualmente qual jogo do SteamGridDB corresponde a este jogo.", "Escolha manualmente qual jogo do SteamGridDB corresponde a este jogo.", "Manually choose which SteamGridDB game matches this game.", "Manually choose which SteamGridDB game matches this game.", "Elige manualmente qué juego de SteamGridDB corresponde a este juego.", "Elige manualmente qué juego de SteamGridDB corresponde a este juego.", "このゲームに対応するSteamGridDBのゲームを手動で選択します。"),
+        new("Use a API Key para buscar capas verticais e horizontais, inclusive de jogos de outros launchers.", "Use a chave API para procurar capas verticais e horizontais, incluindo jogos de outros launchers.", "Use the API key to fetch vertical and horizontal artwork, including games from other launchers.", "Use the API key to fetch vertical and horizontal artwork, including games from other launchers.", "Usa la clave API para buscar carátulas verticales y horizontales, incluso de juegos de otros launchers.", "Usa la clave API para buscar carátulas verticales y horizontales, incluso de juegos de otros launchers.", "APIキーを使って、他のランチャーのゲームを含む縦・横のアートワークを取得します。"),
+        new("API Key do SteamGridDB", "Chave API do SteamGridDB", "SteamGridDB API key", "SteamGridDB API key", "Clave API de SteamGridDB", "Clave API de SteamGridDB", "SteamGridDB APIキー"),
+        new("Verifique novas versões publicadas no GitHub.", "Verifique novas versões publicadas no GitHub.", "Check for new versions published on GitHub.", "Check for new versions published on GitHub.", "Comprueba nuevas versiones publicadas en GitHub.", "Comprueba nuevas versiones publicadas en GitHub.", "GitHubで公開された新しいバージョンを確認します。"),
+        new("Limite do cache (MB)", "Limite da cache (MB)", "Cache limit (MB)", "Cache limit (MB)", "Límite de caché (MB)", "Límite de caché (MB)", "キャッシュ上限 (MB)"),
+        new("O backup pode preservar configurações, favoritos, jogos manuais e artes personalizadas. O cache automático de capas é regenerável.", "A cópia de segurança pode preservar definições, favoritos, jogos manuais e artes personalizadas. A cache automática de capas pode ser regenerada.", "Backups can preserve settings, favourites, manual games, and custom artwork. The automatic artwork cache can be rebuilt.", "Backups can preserve settings, favourites, manual games, and custom artwork. The automatic artwork cache can be rebuilt.", "La copia de seguridad puede conservar configuración, favoritos, juegos manuales y arte personalizado. La caché automática de carátulas se puede regenerar.", "La copia de seguridad puede conservar configuración, favoritos, juegos manuales y arte personalizado. La caché automática de carátulas se puede regenerar.", "バックアップには設定、お気に入り、手動ゲーム、カスタムアートを保存できます。自動アートキャッシュは再生成できます。"),
+        new("Mostra os clientes encontrados, status e detalhes de diagnóstico.", "Mostra os clientes encontrados, estado e detalhes de diagnóstico.", "Shows detected clients, status, and diagnostic details.", "Shows detected clients, status, and diagnostic details.", "Muestra los clientes detectados, su estado y detalles de diagnóstico.", "Muestra los clientes detectados, su estado y detalles de diagnóstico.", "検出されたクライアント、状態、診断情報を表示します。"),
+        new("Oculte, restaure ou recupere jogos excluídos da biblioteca.", "Oculte, restaure ou recupere jogos excluídos da biblioteca.", "Hide, restore, or recover games removed from the library.", "Hide, restore, or recover games removed from the library.", "Oculta, restaura o recupera juegos eliminados de la biblioteca.", "Oculta, restaura o recupera juegos eliminados de la biblioteca.", "ライブラリから削除したゲームを非表示、復元、回復できます。"),
+        new("Tempo jogado por mês", "Tempo jogado por mês", "Play time by month", "Play time by month", "Tiempo jugado por mes", "Tiempo jugado por mes", "月別プレイ時間"),
+        new("Selecione um jogo", "Selecione um jogo", "Select a game", "Select a game", "Selecciona un juego", "Selecciona un juego", "ゲームを選択"),
+        new("CARREGANDO...", "A CARREGAR...", "LOADING...", "LOADING...", "CARGANDO...", "CARGANDO...", "読み込み中..."),
+        new("DUPLICATA", "DUPLICADO", "DUPLICATE", "DUPLICATE", "DUPLICADO", "DUPLICADO", "重複"),
+        new("● JOGANDO", "● A JOGAR", "● PLAYING", "● PLAYING", "● JUGANDO", "● JUGANDO", "● プレイ中"),
+        new("Jogo", "Jogo", "Game", "Game", "Juego", "Juego", "ゲーム"),
+        new("Digite o PIN de 4 números para alterar a faixa etária.", "Introduza o PIN de 4 números para alterar a faixa etária.", "Enter the 4-digit PIN to change the age range.", "Enter the 4-digit PIN to change the age range.", "Ingresa el PIN de 4 dígitos para cambiar el rango de edad.", "Introduce el PIN de 4 dígitos para cambiar el rango de edad.", "年齢区分を変更するには4桁のPINを入力してください。"),
+        new("PIN de 4 números", "PIN de 4 números", "4-digit PIN", "4-digit PIN", "PIN de 4 dígitos", "PIN de 4 dígitos", "4桁のPIN"),
+        new("ALTERAR PIN", "ALTERAR PIN", "CHANGE PIN", "CHANGE PIN", "CAMBIAR PIN", "CAMBIAR PIN", "PINを変更"),
+        new("OUTRO JOGO JÁ ESTÁ EM EXECUÇÃO", "OUTRO JOGO JÁ ESTÁ EM EXECUÇÃO", "ANOTHER GAME IS ALREADY RUNNING", "ANOTHER GAME IS ALREADY RUNNING", "YA HAY OTRO JUEGO EN EJECUCIÓN", "YA HAY OTRO JUEGO EN EJECUCIÓN", "別のゲームがすでに実行中です"),
+        new("Executar dois jogos ao mesmo tempo pode aumentar o uso de CPU, GPU e memória, reduzir FPS, causar travamentos ou deixar o sistema menos responsivo.", "Executar dois jogos ao mesmo tempo pode aumentar o uso de CPU, GPU e memória, reduzir FPS, causar bloqueios ou deixar o sistema menos responsivo.", "Running two games at once can increase CPU, GPU, and memory usage, reduce FPS, cause freezes, or make the system less responsive.", "Running two games at once can increase CPU, GPU, and memory usage, reduce FPS, cause freezes, or make the system less responsive.", "Ejecutar dos juegos al mismo tiempo puede aumentar el uso de CPU, GPU y memoria, reducir los FPS, causar bloqueos o volver el sistema menos responsivo.", "Ejecutar dos juegos al mismo tiempo puede aumentar el uso de CPU, GPU y memoria, reducir los FPS, causar bloqueos o volver el sistema menos responsivo.", "2つのゲームを同時に実行すると、CPU・GPU・メモリ使用量が増え、FPS低下、フリーズ、システム応答性の低下が起こる場合があります。"),
+        new("Você pode manter apenas a sessão atual ou continuar e abrir o novo jogo também.", "Pode manter apenas a sessão atual ou continuar e abrir também o novo jogo.", "You can keep only the current session or continue and open the new game too.", "You can keep only the current session or continue and open the new game too.", "Puedes mantener solo la sesión actual o continuar y abrir también el nuevo juego.", "Puedes mantener solo la sesión actual o continuar y abrir también el nuevo juego.", "現在のゲームだけを維持するか、新しいゲームも同時に開くことができます。"),
+        new("MANTER JOGO ATUAL", "MANTER JOGO ATUAL", "KEEP CURRENT GAME", "KEEP CURRENT GAME", "MANTENER JUEGO ACTUAL", "MANTENER JUEGO ACTUAL", "現在のゲームを維持"),
+        new("ABRIR TAMBÉM", "ABRIR TAMBÉM", "OPEN BOTH", "OPEN BOTH", "ABRIR TAMBIÉN", "ABRIR TAMBIÉN", "両方開く")
+    ];
+
     private static readonly IReadOnlyDictionary<string, string> JapaneseTranslations =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -479,6 +542,9 @@ public static class LocalizationService
         if (string.IsNullOrEmpty(text))
             return text ?? string.Empty;
 
+        if (TryTranslateSupplemental(text, out var supplemental))
+            return supplemental;
+
         var translation = FindTranslation(text);
         return translation is null ? text : SelectLanguage(translation);
     }
@@ -518,6 +584,40 @@ public static class LocalizationService
         if (item is FrameworkElement frameworkElement && frameworkElement.ToolTip is string tooltip)
             frameworkElement.ToolTip = Translate(tooltip);
     }
+
+    private static bool TryTranslateSupplemental(string text, out string translated)
+    {
+        var normalized = text.Trim();
+        foreach (var item in SupplementalTranslations)
+        {
+            if (!MatchesSupplemental(item, normalized))
+                continue;
+
+            translated = CurrentLanguage switch
+            {
+                PortuguesePortugal => item.PtPt,
+                EnglishUnitedStates => item.EnUs,
+                EnglishUnitedKingdom => item.EnGb,
+                SpanishLatinAmerica => item.Es419,
+                SpanishEurope => item.EsEs,
+                JapaneseJapan => item.JaJp,
+                _ => item.PtBr
+            };
+            return true;
+        }
+
+        translated = string.Empty;
+        return false;
+    }
+
+    private static bool MatchesSupplemental(SupplementalTranslation item, string text) =>
+        text.Equals(item.PtBr, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.PtPt, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.EnUs, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.EnGb, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.Es419, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.EsEs, StringComparison.OrdinalIgnoreCase) ||
+        text.Equals(item.JaJp, StringComparison.Ordinal);
 
     private static Translation? FindTranslation(string text)
     {
@@ -567,7 +667,7 @@ public static class LocalizationService
         SpanishEurope => translation.EsEs,
         JapaneseJapan => JapaneseTranslations.TryGetValue(translation.PtBr, out var japanese)
             ? japanese
-            : translation.EnUs,
+            : translation.PtBr,
         _ => translation.PtBr
     };
 }
