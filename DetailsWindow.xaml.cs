@@ -92,9 +92,9 @@ public partial class DetailsWindow : Window
         TitleText.Text = _game.Name;
         PlatformText.Text = $"{_game.Platform} • {_game.PlayCountDisplay} • {_game.LastPlayedDisplay}";
         var localizedGenres = GenreService.DisplayMany(_game.Metadata.Genres);
-        GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? "Não classificado" : localizedGenres;
+        GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? LocalizationService.Translate("Não classificado") : localizedGenres;
         CompanyText.Text = string.Join(" / ", new[] { _game.Metadata.Developer, _game.Metadata.Publisher }.Where(x => !string.IsNullOrWhiteSpace(x)));
-        if (string.IsNullOrWhiteSpace(CompanyText.Text)) CompanyText.Text = "Não informado";
+        if (string.IsNullOrWhiteSpace(CompanyText.Text)) CompanyText.Text = LocalizationService.Translate("Não informado");
         ReleaseText.Text = _game.ReleaseYearDisplay.Length > 0 ? _game.ReleaseYearDisplay : LocalizationService.Translate("Não informado");
         AgeRatingText.Text = AgeRatingService.GetDisplay(_game.Metadata, _settings.Language);
         UsageText.Text = $"{_game.PlayCountDisplay} • {_game.TotalPlayTimeDisplay} • {LocalizationService.Translate("Última execução")}: {_game.LastPlayedDisplay}";
