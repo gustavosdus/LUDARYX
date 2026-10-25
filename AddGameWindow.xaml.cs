@@ -21,7 +21,9 @@ public partial class AddGameWindow : Window
     public AddGameWindow(ManualGameDefinition? existing = null)
     {
         InitializeComponent();
-        LudaryxThemeService.Apply(new JsonSettingsService().Load());
+        var loadedSettings = new JsonSettingsService().Load();
+        LocalizationService.SetLanguage(loadedSettings.Language);
+        LudaryxThemeService.Apply(loadedSettings);
         _controllerNavigation = new WindowGamepadNavigationService(this, () =>
         {
             if (IsVisible)
@@ -94,7 +96,6 @@ public partial class AddGameWindow : Window
         _loadingProfile = true;
         ProfileCombo.ItemsSource = null;
         ProfileCombo.ItemsSource = _profiles;
-        ProfileCombo.DisplayMemberPath = nameof(ManualLaunchProfile.Name);
         ProfileCombo.SelectedItem = _profiles.FirstOrDefault(profile =>
             profile.Id.Equals(selectedId, StringComparison.OrdinalIgnoreCase)) ?? _profiles.FirstOrDefault();
         _loadingProfile = false;
@@ -117,7 +118,7 @@ public partial class AddGameWindow : Window
             return;
 
         _loadingProfile = true;
-        ProfileNameBox.Text = _currentProfile.Name;
+        ProfileNameBox.Text = LocalizationService.DisplayProfileName(_currentProfile.Name);
         ExeBox.Text = _currentProfile.Executable ?? "";
         ArgumentsBox.Text = _currentProfile.Arguments ?? "";
         UriBox.Text = _currentProfile.LaunchUri ?? "";
@@ -131,9 +132,14 @@ public partial class AddGameWindow : Window
         if (_loadingProfile || _currentProfile is null)
             return;
 
-        _currentProfile.Name = string.IsNullOrWhiteSpace(ProfileNameBox.Text)
+        var enteredProfileName = ProfileNameBox.Text.Trim();
+        var localizedDefaultName = LocalizationService.Translate("Padrão");
+        _currentProfile.Name = string.IsNullOrWhiteSpace(enteredProfileName)
             ? LocalizationService.Translate("Perfil")
-            : ProfileNameBox.Text.Trim();
+            : string.Equals(_currentProfile.Name, "Padrão", StringComparison.OrdinalIgnoreCase) &&
+              string.Equals(enteredProfileName, localizedDefaultName, StringComparison.Ordinal)
+                ? "Padrão"
+                : enteredProfileName;
         _currentProfile.Executable = string.IsNullOrWhiteSpace(ExeBox.Text) ? null : ExeBox.Text.Trim();
         _currentProfile.Arguments = string.IsNullOrWhiteSpace(ArgumentsBox.Text) ? null : ArgumentsBox.Text.Trim();
         _currentProfile.LaunchUri = string.IsNullOrWhiteSpace(UriBox.Text) ? null : UriBox.Text.Trim();
