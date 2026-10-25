@@ -29,8 +29,10 @@ public partial class ConcurrentLaunchWindow : Window
         SetBrush("PrimaryButtonHoverBg", light ? "#A4E2FC" : "#1A405A");
         SetBrush("WarningPanelBg", light ? "#FFF8FAFC" : "#16000000");
 
+        LocalizationService.SetLanguage(settings.Language);
+        LocalizationService.Apply(this);
         TitleText.Text = requestedGame.Name;
-        CurrentGameText.Text = $"Em execução agora: {activeGame.Name}";
+        CurrentGameText.Text = LocalizationService.Format("Em execução agora: {0}", activeGame.Name);
 
         _controllerNavigation = new WindowGamepadNavigationService(
             this,
