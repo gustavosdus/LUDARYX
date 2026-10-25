@@ -1,0 +1,27 @@
+# LUDARYX 1.2.3
+
+Versão em desenvolvimento.
+
+## Atualizador
+- Corrigido o corte do botão CANCELAR na janela de download de atualização.
+- A área inferior agora reserva espaço próprio para progresso e ação de cancelamento, com altura maior e layout responsivo.
+
+## Japonês
+- Adicionado o idioma Japonês (`ja-JP`) ao LUDARYX.
+- O botão rápido de idioma passa a incluir `JP` como última opção antes de retornar para `PT (BR)`.
+- Consultas localizadas de descrição passam a usar Steam em japonês/região JP e Wikipedia em japonês quando disponível.
+- A interface possui traduções japonesas para os principais fluxos e usa inglês como fallback para textos legados ainda sem tradução japonesa explícita.
+
+## CERO
+- Para o idioma japonês, CERO passa a ser o sistema de classificação indicativa prioritário.
+- A consulta regional da Steam inclui Japão e o parser reconhece classificações CERO A, B, C, D e Z em texto/assets quando disponíveis.
+- Wikidata continua sendo usado como fonte estruturada complementar para CERO quando disponível.
+- Controle parental:
+  - 3–9 anos: CERO A;
+  - 10–13 anos: CERO B;
+  - 14–17 anos: CERO C;
+  - Acima de 18 anos: CERO D e Z.
+- As regras existentes de ClassInd, ESRB e PEGI continuam funcionando sem conversão entre sistemas.
+
+## Em desenvolvimento
+Estas notas serão ampliadas conforme a 1.2.3 receber novas correções.
