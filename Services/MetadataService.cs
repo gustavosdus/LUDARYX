@@ -866,6 +866,23 @@ public sealed class MetadataService
             changed = true;
         }
 
+        // CERO: páginas japonesas podem expor a letra em texto, alt ou nome
+        // do asset. Mantém a classificação original sem converter para outro sistema.
+        var cero = Regex.Match(
+            html,
+            @"CERO[^A-Z0-9]{0,80}(?<value>A|B|C|D|Z)(?![A-Z0-9])|cero(?:[_/\-])(?<asset>A|B|C|D|Z)(?=[^a-z0-9]|$)",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+        if (cero.Success &&
+            (language.Equals("ja-JP", StringComparison.OrdinalIgnoreCase) ||
+             html.Contains("CERO", StringComparison.OrdinalIgnoreCase)))
+        {
+            var value = cero.Groups["value"].Success
+                ? cero.Groups["value"].Value
+                : cero.Groups["asset"].Value;
+            ratings["cero"] = value.ToUpperInvariant();
+            changed = true;
+        }
+
         // ESRB: primeiro tenta o texto visível. Em várias páginas da Steam a
         // classificação existe apenas como imagem/alt e desaparece quando removemos
         // as tags HTML, então também reconhecemos os códigos usados nos assets.
