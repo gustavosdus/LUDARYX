@@ -448,21 +448,29 @@ public partial class MainWindow
         XboxSelectHintText.Text = $"A  {selectText}";
         PlayStationSelectHintText.Text = $"X  {selectText}";
 
+        var favoriteText = LocalizationService.Translate("FAVORITO");
+        var backText = LocalizationService.Translate("VOLTAR");
+        var collectionText = LocalizationService.Translate("COLEÇÃO");
+        var platformText = LocalizationService.Translate("PLATAFORMA");
+        var panelText = LocalizationService.Translate("PAINEL");
+        var heroText = LocalizationService.Translate("HERO");
+        var fullscreenText = LocalizationService.Translate("TELA CHEIA");
+
         if (_fullscreen)
         {
             XboxCustomizeHintText.Text = $"X  {customizeText}";
             PlayStationCustomizeHintText.Text = $"□  {customizeText}";
-            XboxExtraHintText.Text = "Y  FAVORITO   •   B  VOLTAR   •   LB/RB  COLEÇÃO   •   LT/RT  PLATAFORMA";
-            PlayStationExtraHintText.Text = "△  FAVORITO   •   ○  VOLTAR   •   L1/R1  COLEÇÃO   •   L2/R2  PLATAFORMA";
-            KeyboardExtraHintText.Text = "F  FAVORITO   •   TAB  HERO   •   ESC  VOLTAR   •   PGUP/PGDN  COLEÇÃO   •   CTRL+PGUP/PGDN  PLATAFORMA";
+            XboxExtraHintText.Text = $"Y  {favoriteText}   •   B  {backText}   •   LB/RB  {collectionText}   •   LT/RT  {platformText}";
+            PlayStationExtraHintText.Text = $"△  {favoriteText}   •   ○  {backText}   •   L1/R1  {collectionText}   •   L2/R2  {platformText}";
+            KeyboardExtraHintText.Text = $"F  {favoriteText}   •   TAB  {heroText}   •   ESC  {backText}   •   PGUP/PGDN  {collectionText}   •   CTRL+PGUP/PGDN  {platformText}";
         }
         else
         {
-            XboxCustomizeHintText.Text = $"X  {LocalizationService.Translate("TELA CHEIA")}";
-            PlayStationCustomizeHintText.Text = $"□  {LocalizationService.Translate("TELA CHEIA")}";
-            XboxExtraHintText.Text = "B  PERSONALIZAR   •   Y  FAVORITO   •   LB/RB  COLEÇÃO";
-            PlayStationExtraHintText.Text = "○  PERSONALIZAR   •   △  FAVORITO   •   L1/R1  COLEÇÃO";
-            KeyboardExtraHintText.Text = "F  FAVORITO   •   TAB  PAINEL   •   PGUP/PGDN  COLEÇÃO   •   CTRL+PGUP/PGDN  PLATAFORMA   •   F11  TELA CHEIA";
+            XboxCustomizeHintText.Text = $"X  {fullscreenText}";
+            PlayStationCustomizeHintText.Text = $"□  {fullscreenText}";
+            XboxExtraHintText.Text = $"B  {customizeText}   •   Y  {favoriteText}   •   LB/RB  {collectionText}";
+            PlayStationExtraHintText.Text = $"○  {customizeText}   •   △  {favoriteText}   •   L1/R1  {collectionText}";
+            KeyboardExtraHintText.Text = $"F  {favoriteText}   •   TAB  {panelText}   •   PGUP/PGDN  {collectionText}   •   CTRL+PGUP/PGDN  {platformText}   •   F11  {fullscreenText}";
         }
 
         UpdateTvHeroInputLabels();
