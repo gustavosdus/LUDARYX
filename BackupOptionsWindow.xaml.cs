@@ -19,10 +19,10 @@ public partial class BackupOptionsWindow : Window
 
         if (_importMode)
         {
-            Title = "Restaurar backup";
-            HeaderText.Text = "RESTAURAR BACKUP";
-            DescriptionText.Text = "Escolha quais categorias deseja restaurar deste backup.";
-            ContinueButton.Content = "RESTAURAR";
+            Title = LocalizationService.Translate("Restaurar backup");
+            HeaderText.Text = LocalizationService.Translate("RESTAURAR BACKUP");
+            DescriptionText.Text = LocalizationService.Translate("Escolha quais categorias deseja restaurar deste backup.");
+            ContinueButton.Content = LocalizationService.Translate("RESTAURAR");
         }
 
         SettingsCheck.Checked += SelectionChanged;
@@ -55,8 +55,8 @@ public partial class BackupOptionsWindow : Window
             : BackupService.GetEstimatedBackupSourceSizeBytes(selection);
 
         EstimatedSizeText.Text = _importMode
-            ? $"Dados selecionados para restauração: {bytes / 1024d / 1024d:0.0} MB"
-            : $"Dados de origem estimados: {bytes / 1024d / 1024d:0.0} MB";
+            ? LocalizationService.Format("Dados selecionados para restauração: {0:0.0} MB", bytes / 1024d / 1024d)
+            : LocalizationService.Format("Dados de origem estimados: {0:0.0} MB", bytes / 1024d / 1024d);
     }
 
     private void Continue_Click(object sender, RoutedEventArgs e)
@@ -64,7 +64,7 @@ public partial class BackupOptionsWindow : Window
         Selection = ReadSelection();
         if (!Selection.HasAny)
         {
-            MessageBox.Show(this, "Selecione pelo menos uma categoria.", "LUDARYX",
+            MessageBox.Show(this, LocalizationService.Translate("Selecione pelo menos uma categoria."), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
