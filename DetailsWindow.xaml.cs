@@ -402,9 +402,9 @@ public partial class DetailsWindow : Window
             _settings.SteamGridDbGameIds[$"Manual:{copy.Id}"] = sourceSteamGridId;
 
         _settingsServiceSave();
-        MessageBox.Show(this,
-            LocalizationService.Translate("Entrada manual duplicada. Atualize a biblioteca para exibi-la."),
-            "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+        LocalizedMessageWindow.ShowInfo(
+            this,
+            LocalizationService.Translate("Entrada manual duplicada. Atualize a biblioteca para exibi-la."));
     }
 
     private void EditManualLaunch_Click(object sender, RoutedEventArgs e)
