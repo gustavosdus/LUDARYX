@@ -34,6 +34,7 @@ public partial class ParentalPinWindow : Window
         LudaryxThemeService.Apply(settings);
         LocalizationService.SetLanguage(settings.Language);
         LocalizationService.Apply(this);
+        TitleText.Text = $"LUDARYX  /  {LocalizationService.Translate("CONTROLE PARENTAL")}";
         ConfigureFlow();
 
         Loaded += (_, _) =>
@@ -150,7 +151,8 @@ public partial class ParentalPinWindow : Window
 
                 ParentalControlService.UnlockSession();
                 _flow = PinFlow.ChangeNew;
-                ConfigureFlow();
+                TitleText.Text = $"LUDARYX  /  {LocalizationService.Translate("CONTROLE PARENTAL")}";
+        ConfigureFlow();
                 return;
 
             case PinFlow.ChangeNew:

@@ -38,7 +38,7 @@ public static class IntegrationStatusService
                     available,
                     provider.Platform,
                     available,
-                    diagnostic.Summary,
+                    LocalizationService.Translate(diagnostic.Summary),
                     running);
             })
             .ToList();
@@ -47,7 +47,7 @@ public static class IntegrationStatusService
             "SteamGridDB",
             LocalizationService.Translate(string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey) ? "API não configurada" : "API configurada"),
             !string.IsNullOrWhiteSpace(settings.SteamGridDbApiKey),
-            Details: "API de capas opcional"));
+            Details: LocalizationService.Translate("API de capas opcional")));
 
         items.Add(new IntegrationStatusItem(
             "GitHub Updates",

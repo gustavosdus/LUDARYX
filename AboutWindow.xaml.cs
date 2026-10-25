@@ -48,7 +48,7 @@ public partial class AboutWindow : Window
             {
                 MessageBox.Show(
                     this,
-                    $"Nenhuma atualização foi encontrada.\n\nVersão atual: {result.CurrentVersionDisplay}",
+                    LocalizationService.Format("Nenhuma atualização foi encontrada.\n\nVersão atual: {0}", result.CurrentVersionDisplay),
                     "LUDARYX",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);

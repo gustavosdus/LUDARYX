@@ -24,8 +24,8 @@ public sealed class DuplicateDetectionService
 
             var platforms = entries.Select(g => g.Platform).Distinct().ToList();
             var display = platforms.Count > 1
-                ? string.Join(" • ", platforms.Select(x => x.ToString()))
-                : $"{platforms[0]} • {entries.Count} versões";
+                ? string.Join(" • ", platforms.Select(x => LocalizationService.Translate(x.ToString())))
+                : $"{LocalizationService.Translate(platforms[0].ToString())} • {LocalizationService.Format("{0} versões", entries.Count)}";
 
             foreach (var g in entries)
             {

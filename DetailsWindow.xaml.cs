@@ -90,7 +90,7 @@ public partial class DetailsWindow : Window
     private void LoadData()
     {
         TitleText.Text = _game.Name;
-        PlatformText.Text = $"{_game.Platform} • {_game.PlayCountDisplay} • {_game.LastPlayedDisplay}";
+        PlatformText.Text = $"{_game.PlatformDisplay} • {_game.PlayCountDisplay} • {_game.LastPlayedDisplay}";
         var localizedGenres = GenreService.DisplayMany(_game.Metadata.Genres);
         GenreText.Text = string.IsNullOrWhiteSpace(localizedGenres) ? LocalizationService.Translate("Não classificado") : localizedGenres;
         CompanyText.Text = string.Join(" / ", new[] { _game.Metadata.Developer, _game.Metadata.Publisher }.Where(x => !string.IsNullOrWhiteSpace(x)));
@@ -102,13 +102,13 @@ public partial class DetailsWindow : Window
         InstallPathText.Text = string.IsNullOrWhiteSpace(installPath) ? LocalizationService.Translate("Não informado") : installPath;
         OpenInstallFolderButton.IsEnabled = !string.IsNullOrWhiteSpace(installPath) && Directory.Exists(installPath);
         RunningText.Text = _game.IsRunning ? LocalizationService.Translate("JOGANDO AGORA") : string.Empty;
-        DuplicateText.Text = _game.IsDuplicate ? $"Possível duplicata encontrada em: {_game.DuplicatePlatformsDisplay}" : string.Empty;
+        DuplicateText.Text = _game.IsDuplicate ? LocalizationService.Format("Possível duplicata encontrada em: {0}", _game.DuplicatePlatformsDisplay) : string.Empty;
         DuplicateText.Visibility = _game.IsDuplicate ? Visibility.Visible : Visibility.Collapsed;
         var displayDescription = _metadata.GetDisplayDescription(_game, _settings);
-        DescriptionText.Text = string.IsNullOrWhiteSpace(displayDescription) ? "Sem descrição." : displayDescription;
+        DescriptionText.Text = string.IsNullOrWhiteSpace(displayDescription) ? LocalizationService.Translate("Sem descrição.") : displayDescription;
         MetadataSourceText.Text = string.IsNullOrWhiteSpace(_game.Metadata.Source)
             ? string.Empty
-            : $"{LocalizationService.Translate("Fonte dos metadados")}: {_game.Metadata.Source}";
+            : $"{LocalizationService.Translate("Fonte dos metadados")}: {LocalizationService.DisplayMetadataSources(_game.Metadata.Source)}";
         FavoriteButton.Content = _game.IsFavorite ? $"★ {LocalizationService.Translate("FAVORITO")}" : LocalizationService.Translate("☆ FAVORITO");
 
         var isHidden = _settings.HiddenGameIds.Contains(

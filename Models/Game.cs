@@ -47,8 +47,9 @@ public sealed class Game : INotifyPropertyChanged
     public string LastPlayedDisplay => LocalizationService.FormatLastPlayed(LastPlayedUtc);
     public string PlayCountDisplay => LocalizationService.FormatPlayCount(PlayCount);
     public string TotalPlayTimeDisplay => LocalizationService.FormatDuration(TotalPlayTimeSeconds);
+    public string DuplicateBadgeLabel => LocalizationService.DuplicateLabel;
     public string RunningDisplay => IsRunning ? LocalizationService.Translate("Jogando") : "";
-    public string PlatformDisplay => Platform.ToString();
+    public string PlatformDisplay => LocalizationService.Translate(Platform.ToString());
     public string ProviderId => $"{Platform}:{Id}";
     public string DisplayCover => CoverImage ?? "";
     public string HeroArtwork => Metadata.CustomHorizontalCoverLocalPath
@@ -84,6 +85,17 @@ public sealed class Game : INotifyPropertyChanged
     }
     public double CoverWidth { get; set; } = 220;
     public double CoverHeight { get; set; } = 124;
+
+    public void RefreshLocalizedLabels()
+    {
+        OnPropertyChanged(nameof(PlatformDisplay));
+        OnPropertyChanged(nameof(LastPlayedDisplay));
+        OnPropertyChanged(nameof(PlayCountDisplay));
+        OnPropertyChanged(nameof(TotalPlayTimeDisplay));
+        OnPropertyChanged(nameof(RunningDisplay));
+        OnPropertyChanged(nameof(DuplicateBadgeLabel));
+        OnPropertyChanged(nameof(DuplicatePlatformsDisplay));
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

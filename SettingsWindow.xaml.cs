@@ -400,7 +400,7 @@ public partial class SettingsWindow : Window
     {
         CheckForUpdatesOnStartupCheck.IsEnabled = false;
         CheckUpdatesNowButton.IsEnabled = false;
-        UpdateStatusText.Text = "Verificando atualizações no GitHub...";
+        UpdateStatusText.Text = LocalizationService.Translate("Verificando atualizações no GitHub...");
 
         try
         {
@@ -413,17 +413,17 @@ public partial class SettingsWindow : Window
 
             if (!result.IsUpdateAvailable)
             {
-                UpdateStatusText.Text = $"Você já está na versão mais recente ({result.CurrentVersionDisplay}).";
+                UpdateStatusText.Text = LocalizationService.Format("Você já está na versão mais recente ({0}).", result.CurrentVersionDisplay);
                 MessageBox.Show(
                     this,
-                    $"Nenhuma atualização foi encontrada.\n\nVersão atual: {result.CurrentVersionDisplay}",
+                    LocalizationService.Format("Nenhuma atualização foi encontrada.\n\nVersão atual: {0}", result.CurrentVersionDisplay),
                     "LUDARYX",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 return;
             }
 
-            UpdateStatusText.Text = $"Nova versão encontrada: {result.LatestVersionDisplay}";
+            UpdateStatusText.Text = LocalizationService.Format("Nova versão encontrada: {0}", result.LatestVersionDisplay);
             var installNow = await GitHubUpdateService.PromptAndDownloadUpdateAsync(this, result, CancellationToken.None);
             if (installNow)
             {
@@ -433,11 +433,11 @@ public partial class SettingsWindow : Window
         }
         catch (Exception ex)
         {
-            UpdateStatusText.Text = "Não foi possível verificar atualizações agora.";
+            UpdateStatusText.Text = LocalizationService.Translate("Não foi possível verificar atualizações agora.");
             DiagnosticLogService.LogException("Could not check for updates", ex);
             MessageBox.Show(
                 this,
-                $"Não foi possível verificar atualizações agora.\n\n{ex.Message}",
+                $"{LocalizationService.Translate("Não foi possível verificar atualizações agora.")}\n\n{ex.Message}",
                 "LUDARYX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
@@ -460,7 +460,7 @@ public partial class SettingsWindow : Window
     private void RefreshCacheSize()
     {
         var mb = CacheMaintenanceService.GetCacheSizeBytes() / 1024d / 1024d;
-        CacheSizeText.Text = $"Uso atual: {mb:0.0} MB";
+        CacheSizeText.Text = LocalizationService.Format("Uso atual: {0:0.0} MB", mb);
     }
 
     private void ClearCache_Click(object sender, RoutedEventArgs e)

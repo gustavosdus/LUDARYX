@@ -22,6 +22,9 @@ public partial class MainWindow
     private void ApplyLanguage()
     {
         LocalizationService.Apply(this);
+        _duplicates.Detect(_games);
+        foreach (var game in _games)
+            game.RefreshLocalizedLabels();
 
         // Os gêneros são objetos gerados em tempo de execução, portanto não são
         // atualizados por LocalizationService.Apply. Reconstrói o filtro no idioma

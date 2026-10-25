@@ -65,6 +65,33 @@ public static class LocalizationService
 
     private static readonly SupplementalTranslation[] SupplementalTranslations =
     [
+        new("MAIS RECENTES", "MAIS RECENTES", "MOST RECENT", "MOST RECENT", "MÁS RECIENTES", "MÁS RECIENTES", "最近プレイ"),
+        new("Não classificado", "Não classificado", "Unclassified", "Unclassified", "Sin clasificar", "Sin clasificar", "未分類"),
+        new("Jogando", "A jogar", "Playing", "Playing", "Jugando", "Jugando", "プレイ中"),
+        new("Perfil", "Perfil", "Profile", "Profile", "Perfil", "Perfil", "プロファイル"),
+        new("★ FAVORITO", "★ FAVORITO", "★ FAVORITE", "★ FAVOURITE", "★ FAVORITO", "★ FAVORITO", "★ お気に入り"),
+        new("Nunca jogado", "Nunca jogado", "Never played", "Never played", "Nunca jugado", "Nunca jugado", "未プレイ"),
+        new("DETALHES", "DETALHES", "DETAILS", "DETAILS", "DETALLES", "DETALLES", "詳細"),
+        new("Manual", "Manual", "Manual", "Manual", "Manual", "Manual", "手動"),
+        new("RESTAURAR BACKUP", "RESTAURAR CÓPIA DE SEGURANÇA", "RESTORE BACKUP", "RESTORE BACKUP", "RESTAURAR COPIA DE SEGURIDAD", "RESTAURAR COPIA DE SEGURIDAD", "バックアップを復元"),
+        new("Restaurar backup", "Restaurar cópia de segurança", "Restore backup", "Restore backup", "Restaurar copia de seguridad", "Restaurar copia de seguridad", "バックアップを復元"),
+        new("Escolha quais categorias deseja restaurar deste backup.", "Escolha as categorias que pretende restaurar desta cópia de segurança.", "Choose which categories to restore from this backup.", "Choose which categories to restore from this backup.", "Elige qué categorías restaurar de esta copia de seguridad.", "Elige qué categorías restaurar de esta copia de seguridad.", "このバックアップから復元するカテゴリを選択してください。"),
+        new("RESTAURAR", "RESTAURAR", "RESTORE", "RESTORE", "RESTAURAR", "RESTAURAR", "復元"),
+        new("CONTROLE PARENTAL", "CONTROLO PARENTAL", "PARENTAL CONTROLS", "PARENTAL CONTROLS", "CONTROL PARENTAL", "CONTROL PARENTAL", "ペアレンタルコントロール"),
+        new("API de capas opcional", "API de capas opcional", "Optional artwork API", "Optional artwork API", "API de carátulas opcional", "API de carátulas opcional", "任意のアートワークAPI"),
+        new("Aplicativo Microsoft Store / Gaming Services", "Aplicação Microsoft Store / Gaming Services", "Microsoft Store / Gaming Services app", "Microsoft Store / Gaming Services app", "Aplicación Microsoft Store / Gaming Services", "Aplicación Microsoft Store / Gaming Services", "Microsoft Store / Gaming Servicesアプリ"),
+        new("Executável do cliente não localizado em caminho padrão.", "Executável do cliente não encontrado no caminho padrão.", "Client executable not found in a default location.", "Client executable not found in a default location.", "Ejecutable del cliente no encontrado en una ubicación predeterminada.", "Ejecutable del cliente no encontrado en una ubicación predeterminada.", "標準の場所にクライアントの実行ファイルが見つかりません。"),
+        new("Possível duplicata encontrada em: {0}", "Possível duplicado encontrado em: {0}", "Possible duplicate found in: {0}", "Possible duplicate found in: {0}", "Posible duplicado encontrado en: {0}", "Posible duplicado encontrado en: {0}", "重複の可能性: {0}"),
+        new("{0} versões", "{0} versões", "{0} versions", "{0} versions", "{0} versiones", "{0} versiones", "{0}バージョン"),
+        new("Você já está na versão mais recente ({0}).", "Já está na versão mais recente ({0}).", "You already have the latest version ({0}).", "You already have the latest version ({0}).", "Ya tienes la versión más reciente ({0}).", "Ya tienes la versión más reciente ({0}).", "最新バージョン（{0}）を使用しています。"),
+        new("Nenhuma atualização foi encontrada.\n\nVersão atual: {0}", "Não foram encontradas atualizações.\n\nVersão atual: {0}", "No updates found.\n\nCurrent version: {0}", "No updates found.\n\nCurrent version: {0}", "No se encontraron actualizaciones.\n\nVersión actual: {0}", "No se encontraron actualizaciones.\n\nVersión actual: {0}", "アップデートは見つかりませんでした。\n\n現在のバージョン: {0}"),
+        new("Nova versão encontrada: {0}", "Nova versão encontrada: {0}", "New version found: {0}", "New version found: {0}", "Nueva versión encontrada: {0}", "Nueva versión encontrada: {0}", "新しいバージョンが見つかりました: {0}"),
+        new("Não foi possível verificar atualizações agora.", "Não foi possível verificar atualizações agora.", "Could not check for updates now.", "Could not check for updates now.", "No se pudieron buscar actualizaciones ahora.", "No se pudieron buscar actualizaciones ahora.", "現在アップデートを確認できません。"),
+        new("Uso atual: {0:0.0} MB", "Utilização atual: {0:0.0} MB", "Current usage: {0:0.0} MB", "Current usage: {0:0.0} MB", "Uso actual: {0:0.0} MB", "Uso actual: {0:0.0} MB", "現在の使用量: {0:0.0} MB"),
+        new("Steam Store (nome exato)", "Steam Store (nome exato)", "Steam Store (exact name)", "Steam Store (exact name)", "Steam Store (nombre exacto)", "Steam Store (nombre exacto)", "Steam Store（名前の完全一致）"),
+        new("Local", "Local", "Local", "Local", "Local", "Local", "ローカル"),
+        new("Wikidata: dados estruturados sob CC0. Wikipedia: texto normalmente sob CC BY-SA. PCGamingWiki: conteúdo sob CC BY-NC-SA, salvo indicação diferente; o LUDARYX limita essa integração a dados estruturados/factuais. ClassInd, ESRB, PEGI, USK, CERO, ACB e BBFC não são raspados diretamente pelo LUDARYX; classificações desses sistemas podem vir de fontes estruturadas permitidas, como Steam, Wikidata ou outras fontes configuradas. As dependências de software e seus avisos estão listados em THIRD-PARTY-NOTICES.txt.", "Wikidata: dados estruturados sob CC0. Wikipedia: texto normalmente sob CC BY-SA. PCGamingWiki: conteúdo sob CC BY-NC-SA, salvo indicação diferente; o LUDARYX limita essa integração a dados estruturados/factuais. ClassInd, ESRB, PEGI, USK, CERO, ACB e BBFC não são raspados diretamente pelo LUDARYX; classificações desses sistemas podem vir de fontes estruturadas permitidas, como Steam, Wikidata ou outras fontes configuradas. As dependências de software e seus avisos estão listados em THIRD-PARTY-NOTICES.txt.", "Wikidata: structured data under CC0. Wikipedia: text generally under CC BY-SA. PCGamingWiki: content under CC BY-NC-SA unless otherwise stated; LUDARYX limits this integration to structured/factual data. LUDARYX does not scrape ClassInd, ESRB, PEGI, USK, CERO, ACB or BBFC directly; ratings from these systems may come from permitted structured sources, such as Steam, Wikidata or other configured sources. Software dependencies and their notices are listed in THIRD-PARTY-NOTICES.txt.", "Wikidata: structured data under CC0. Wikipedia: text generally under CC BY-SA. PCGamingWiki: content under CC BY-NC-SA unless otherwise stated; LUDARYX limits this integration to structured/factual data. LUDARYX does not scrape ClassInd, ESRB, PEGI, USK, CERO, ACB or BBFC directly; ratings from these systems may come from permitted structured sources, such as Steam, Wikidata or other configured sources. Software dependencies and their notices are listed in THIRD-PARTY-NOTICES.txt.", "Wikidata: datos estructurados bajo CC0. Wikipedia: texto normalmente bajo CC BY-SA. PCGamingWiki: contenido bajo CC BY-NC-SA salvo indicación contraria; LUDARYX limita esta integración a datos estructurados/fácticos. LUDARYX no extrae datos directamente de ClassInd, ESRB, PEGI, USK, CERO, ACB ni BBFC; sus clasificaciones pueden proceder de fuentes estructuradas permitidas, como Steam, Wikidata u otras fuentes configuradas. Las dependencias de software y sus avisos figuran en THIRD-PARTY-NOTICES.txt.", "Wikidata: datos estructurados bajo CC0. Wikipedia: texto normalmente bajo CC BY-SA. PCGamingWiki: contenido bajo CC BY-NC-SA salvo indicación contraria; LUDARYX limita esta integración a datos estructurados/fácticos. LUDARYX no extrae datos directamente de ClassInd, ESRB, PEGI, USK, CERO, ACB ni BBFC; sus clasificaciones pueden proceder de fuentes estructuradas permitidas, como Steam, Wikidata u otras fuentes configuradas. Las dependencias de software y sus avisos figuran en THIRD-PARTY-NOTICES.txt.", "Wikidata: 構造化データはCC0。Wikipedia: テキストは通常CC BY-SA。PCGamingWiki: 別途記載がない限りCC BY-NC-SA。LUDARYXはこの連携を構造化データ・事実情報に限定します。ClassInd、ESRB、PEGI、USK、CERO、ACB、BBFCを直接スクレイピングしません。これらのレーティングはSteam、Wikidataなど設定済みの利用可能な構造化ソースから取得する場合があります。ソフトウェアの依存関係と告知はTHIRD-PARTY-NOTICES.txtに記載されています。"),
+        new("THIRD-PARTY-NOTICES.txt — bibliotecas e licenças\nDATA-SOURCES.md — fontes de metadados e regras de uso\nPRIVACY.md — comportamento de privacidade\nLEGAL-NOTICE.md — marcas, conteúdo de terceiros e limitações\nDocs/AI-ASSISTANCE.md — transparência sobre o uso de inteligência artificial no desenvolvimento", "THIRD-PARTY-NOTICES.txt — bibliotecas e licenças\nDATA-SOURCES.md — fontes de metadados e regras de uso\nPRIVACY.md — comportamento de privacidade\nLEGAL-NOTICE.md — marcas, conteúdo de terceiros e limitações\nDocs/AI-ASSISTANCE.md — transparência sobre o uso de inteligência artificial no desenvolvimento", "THIRD-PARTY-NOTICES.txt — libraries and licences\nDATA-SOURCES.md — metadata sources and usage rules\nPRIVACY.md — privacy behaviour\nLEGAL-NOTICE.md — trademarks, third-party content and limitations\nDocs/AI-ASSISTANCE.md — transparency about AI assistance in development", "THIRD-PARTY-NOTICES.txt — libraries and licences\nDATA-SOURCES.md — metadata sources and usage rules\nPRIVACY.md — privacy behaviour\nLEGAL-NOTICE.md — trademarks, third-party content and limitations\nDocs/AI-ASSISTANCE.md — transparency about AI assistance in development", "THIRD-PARTY-NOTICES.txt — bibliotecas y licencias\nDATA-SOURCES.md — fuentes de metadatos y reglas de uso\nPRIVACY.md — privacidad\nLEGAL-NOTICE.md — marcas, contenido de terceros y limitaciones\nDocs/AI-ASSISTANCE.md — transparencia sobre el uso de inteligencia artificial en el desarrollo", "THIRD-PARTY-NOTICES.txt — bibliotecas y licencias\nDATA-SOURCES.md — fuentes de metadatos y reglas de uso\nPRIVACY.md — privacidad\nLEGAL-NOTICE.md — marcas, contenido de terceros y limitaciones\nDocs/AI-ASSISTANCE.md — transparencia sobre el uso de inteligencia artificial en el desarrollo", "THIRD-PARTY-NOTICES.txt — ライブラリとライセンス\nDATA-SOURCES.md — メタデータソースと利用規則\nPRIVACY.md — プライバシー\nLEGAL-NOTICE.md — 商標、第三者コンテンツ、制限事項\nDocs/AI-ASSISTANCE.md — 開発におけるAI支援の透明性"),
         new("Atualizar biblioteca", "Atualizar biblioteca", "Refresh library", "Refresh library", "Actualizar biblioteca", "Actualizar biblioteca", "ライブラリを更新"),
         new("Estatísticas", "Estatísticas", "Statistics", "Statistics", "Estadísticas", "Estadísticas", "統計"),
         new("Buscar nas configurações", "Pesquisar nas definições", "Search settings", "Search settings", "Buscar en configuración", "Buscar en configuración", "設定を検索"),
@@ -838,9 +865,16 @@ public static class LocalizationService
         if (TryTranslateSupplemental(text, out var supplemental))
             return supplemental;
 
+        if (CurrentLanguage == JapaneseJapan && JapaneseTranslations.TryGetValue(trimmed, out var japanese))
+            return japanese;
+
         var translation = FindTranslation(text);
         return translation is null ? text : SelectLanguage(translation);
     }
+
+    public static string DisplayMetadataSources(string sources) =>
+        string.Join(" + ", sources.Split(" + ", StringSplitOptions.TrimEntries)
+            .Select(Translate));
 
     public static string Format(string baseText, params object[] args) =>
         string.Format(Translate(baseText), args);
@@ -914,14 +948,25 @@ public static class LocalizationService
         _ => $"{games} jogos • {launches} inicializações • {totalTime} de tempo registrado"
     };
 
-    public static void Apply(DependencyObject root)
+    public static void Apply(DependencyObject root) => Apply(root, new HashSet<DependencyObject>());
+
+    private static void Apply(DependencyObject root, HashSet<DependencyObject> visited)
     {
+        if (!visited.Add(root))
+            return;
+
         ApplyToObject(root);
+
+        if (root is Visual || root is System.Windows.Media.Media3D.Visual3D)
+        {
+            for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+                Apply(VisualTreeHelper.GetChild(root, index), visited);
+        }
 
         foreach (var child in LogicalTreeHelper.GetChildren(root))
         {
             if (child is DependencyObject dependencyObject)
-                Apply(dependencyObject);
+                Apply(dependencyObject, visited);
         }
     }
 

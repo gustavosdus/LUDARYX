@@ -22,7 +22,7 @@
                     BorderThickness="0,0,0,1"
                     MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid Margin="14,0,8,0">
-                    <TextBlock Text="LUDARYX  /  CONTROLE PARENTAL"
+                    <TextBlock x:Name="TitleText" Text="LUDARYX"
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource LudaryxTextPrimary}"
                                FontWeight="Bold"
