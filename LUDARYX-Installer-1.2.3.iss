@@ -33,6 +33,7 @@ UninstallDisplayName={#MyAppName} {#MyAppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
+ShowLanguageDialog=yes
 PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -40,7 +41,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 VersionInfoVersion=1.2.3.0
 VersionInfoProductVersion=1.2.3.0
 VersionInfoProductName={#MyAppName}
-VersionInfoDescription=Instalador do LUDARYX
+VersionInfoDescription=LUDARYX Installer
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoCopyright=Copyright (C) 2026 {#MyAppPublisher}
 
@@ -54,9 +55,26 @@ RestartApplications=no
 
 [Languages]
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[CustomMessages]
+brazilianportuguese.CreateDesktopIcon=Criar um atalho na Área de Trabalho
+english.CreateDesktopIcon=Create a desktop shortcut
+brazilianportuguese.AdditionalShortcuts=Atalhos adicionais:
+english.AdditionalShortcuts=Additional shortcuts:
+brazilianportuguese.LaunchLudaryx=Abrir LUDARYX
+english.LaunchLudaryx=Launch LUDARYX
+brazilianportuguese.AppRunningTitle=O LUDARYX está aberto.
+english.AppRunningTitle=LUDARYX is currently running.
+brazilianportuguese.AppRunningInstruction=Feche o programa, inclusive pela opção "Encerrar" da System Tray, e clique em OK para continuar.
+english.AppRunningInstruction=Close the program, including from the "Exit" option in the system tray, then click OK to continue.
+brazilianportuguese.InstallCancelled=Instalação cancelada pelo usuário.
+english.InstallCancelled=Installation cancelled by the user.
+brazilianportuguese.AppStillRunning=O LUDARYX ainda está em execução. Encerre o programa completamente e execute o instalador novamente.
+english.AppStillRunning=LUDARYX is still running. Close the program completely and run the installer again.
 
 [Tasks]
-Name: "desktopicon"; Description: "Criar um atalho na Área de Trabalho"; GroupDescription: "Atalhos adicionais:"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalShortcuts}"; Flags: unchecked
 
 [Files]
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -66,7 +84,7 @@ Name: "{group}\LUDARYX"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
 Name: "{autodesktop}\LUDARYX"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Abrir LUDARYX"; Flags: nowait postinstall skipifsilent runasoriginaluser
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchLudaryx}"; Flags: nowait postinstall skipifsilent runasoriginaluser
 
 ; Não usamos [UninstallDelete] recursivo em {app}: o Inno Setup remove apenas
 ; os arquivos que pertencem à instalação, preservando arquivos alheios em pasta personalizada.
@@ -119,17 +137,17 @@ begin
   if IsAppRunning() then
   begin
     if MsgBox(
-      'O LUDARYX está aberto.' + #13#10 + #13#10 +
-      'Feche o programa, inclusive pela opção "Encerrar" da System Tray, e clique em OK para continuar.',
+      CustomMessage('AppRunningTitle') + #13#10 + #13#10 +
+      CustomMessage('AppRunningInstruction'),
       mbInformation,
       MB_OKCANCEL
     ) = IDCANCEL then
     begin
-      Result := 'Instalação cancelada pelo usuário.';
+      Result := CustomMessage('InstallCancelled');
       Exit;
     end;
 
     if IsAppRunning() then
-      Result := 'O LUDARYX ainda está em execução. Encerre o programa completamente e execute o instalador novamente.';
+      Result := CustomMessage('AppStillRunning');
   end;
 end;
