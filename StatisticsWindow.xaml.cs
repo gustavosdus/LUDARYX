@@ -24,9 +24,9 @@ public partial class StatisticsWindow : Window
 
         var totalLaunches = list.Sum(game => game.PlayCount);
         var totalSeconds = list.Sum(game => game.TotalPlayTimeSeconds);
-        var totalTime = FormatDuration(totalSeconds);
+        var totalTime = LocalizationService.FormatDuration(totalSeconds);
 
-        SummaryText.Text = $"{list.Count} jogos • {totalLaunches} inicializações • {totalTime} de tempo registrado";
+        SummaryText.Text = LocalizationService.FormatStatisticsSummary(list.Count, totalLaunches, totalTime);
 
         MostPlayedList.ItemsSource = list
             .Where(game => game.PlayCount > 0 || game.TotalPlayTimeSeconds > 0)
@@ -60,15 +60,6 @@ public partial class StatisticsWindow : Window
         LocalizationService.Apply(this);
     }
 
-    private static string FormatDuration(long seconds)
-    {
-        if (seconds <= 0) return "0 min";
-        var duration = TimeSpan.FromSeconds(seconds);
-        if (duration.TotalHours >= 1)
-            return $"{(int)duration.TotalHours}h {duration.Minutes:D2}min";
-        return $"{Math.Max(1, duration.Minutes)} min";
-    }
-
     private static MonthlyStat? CreateMonthlyStat(string key, long seconds, CultureInfo culture)
     {
         if (!DateTime.TryParseExact(key + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture,
@@ -92,13 +83,13 @@ public partial class StatisticsWindow : Window
 
     private sealed record PlatformStat(string Platform, int LaunchCount, long TotalSeconds)
     {
-        public string Launches => LaunchCount == 1 ? "1 inicialização" : $"{LaunchCount} inicializações";
-        public string PlayTime => FormatDuration(TotalSeconds);
+        public string Launches => LocalizationService.FormatLaunchCount(LaunchCount);
+        public string PlayTime => LocalizationService.FormatDuration(TotalSeconds);
     }
 
     private sealed record MonthlyStat(string Month, string SortKey, long TotalSeconds)
     {
-        public string PlayTime => FormatDuration(TotalSeconds);
+        public string PlayTime => LocalizationService.FormatDuration(TotalSeconds);
     }
     private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
