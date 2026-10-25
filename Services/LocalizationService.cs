@@ -103,6 +103,13 @@ public static class LocalizationService
         new("Você pode manter apenas a sessão atual ou continuar e abrir o novo jogo também.", "Pode manter apenas a sessão atual ou continuar e abrir também o novo jogo.", "You can keep only the current session or continue and open the new game too.", "You can keep only the current session or continue and open the new game too.", "Puedes mantener solo la sesión actual o continuar y abrir también el nuevo juego.", "Puedes mantener solo la sesión actual o continuar y abrir también el nuevo juego.", "現在のゲームだけを維持するか、新しいゲームも同時に開くことができます。"),
         new("MANTER JOGO ATUAL", "MANTER JOGO ATUAL", "KEEP CURRENT GAME", "KEEP CURRENT GAME", "MANTENER JUEGO ACTUAL", "MANTENER JUEGO ACTUAL", "現在のゲームを維持"),
         new("ABRIR TAMBÉM", "ABRIR TAMBÉM", "OPEN BOTH", "OPEN BOTH", "ABRIR TAMBIÉN", "ABRIR TAMBIÉN", "両方開く")
+        new("Dados selecionados para restauração: {0:0.0} MB", "Dados selecionados para restauro: {0:0.0} MB", "Selected data to restore: {0:0.0} MB", "Selected data to restore: {0:0.0} MB", "Datos seleccionados para restaurar: {0:0.0} MB", "Datos seleccionados para restaurar: {0:0.0} MB", "復元対象データ: {0:0.0} MB"),
+        new("Dados de origem estimados: {0:0.0} MB", "Dados de origem estimados: {0:0.0} MB", "Estimated source data: {0:0.0} MB", "Estimated source data: {0:0.0} MB", "Datos de origen estimados: {0:0.0} MB", "Datos de origen estimados: {0:0.0} MB", "推定元データ: {0:0.0} MB"),
+        new("Selecione pelo menos uma categoria.", "Selecione pelo menos uma categoria.", "Select at least one category.", "Select at least one category.", "Selecciona al menos una categoría.", "Selecciona al menos una categoría.", "少なくとも1つのカテゴリを選択してください。"),
+        new("Em execução agora: {0}", "Em execução agora: {0}", "Currently running: {0}", "Currently running: {0}", "En ejecución ahora: {0}", "En ejecución ahora: {0}", "現在実行中: {0}"),
+        new("O jogo precisa manter pelo menos um perfil de inicialização.", "O jogo precisa manter pelo menos um perfil de inicialização.", "The game must keep at least one launch profile.", "The game must keep at least one launch profile.", "El juego debe conservar al menos un perfil de inicio.", "El juego debe conservar al menos un perfil de inicio.", "ゲームには少なくとも1つの起動プロファイルが必要です。"),
+        new("Informe o nome do jogo.", "Introduza o nome do jogo.", "Enter the game name.", "Enter the game name.", "Ingresa el nombre del juego.", "Introduce el nombre del juego.", "ゲーム名を入力してください。"),
+        new("TODOS OS GÊNEROS", "TODOS OS GÉNEROS", "ALL GENRES", "ALL GENRES", "TODOS LOS GÉNEROS", "TODOS LOS GÉNEROS", "すべてのジャンル"),
     ];
 
     private static readonly IReadOnlyDictionary<string, string> JapaneseTranslations =
@@ -335,6 +342,14 @@ public static class LocalizationService
             ["Restaurar backup"] = "バックアップを復元",
             ["Escolha quais categorias deseja restaurar deste backup."] = "このバックアップから復元するカテゴリを選択してください。",
             ["Sem descrição."] = "説明なし。",
+            ["TODOS OS GÊNEROS"] = "すべてのジャンル",
+            ["EM EXECUÇÃO"] = "実行中",
+            ["★ FAVORITO"] = "★ お気に入り",
+            ["Aguardando o jogo..."] = "ゲームを待機中...",
+            ["Jogo iniciado"] = "ゲームを開始しました",
+            ["Inicialização interrompida"] = "起動を中止しました",
+            ["Interrompendo..."] = "中止しています...",
+            ["Se o jogo não abrir e o Windows Security mostrar uma notificação, permita o aplicativo e tente novamente."] = "ゲームが開かずWindows セキュリティの通知が表示された場合は、アプリを許可してもう一度お試しください。",
 
         };
 
