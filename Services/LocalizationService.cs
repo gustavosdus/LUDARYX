@@ -948,25 +948,17 @@ public static class LocalizationService
         _ => $"{games} jogos • {launches} inicializações • {totalTime} de tempo registrado"
     };
 
-    public static void Apply(DependencyObject root) => Apply(root, new HashSet<DependencyObject>());
-
-    private static void Apply(DependencyObject root, HashSet<DependencyObject> visited)
+    public static void Apply(DependencyObject root)
     {
-        if (!visited.Add(root))
-            return;
-
+        // Translate authored controls only. ContentPresenter creates visual text
+        // whose value is maintained by WPF; writing to it freezes ComboBox
+        // selections and button glyphs when their source content changes.
         ApplyToObject(root);
-
-        if (root is Visual || root is System.Windows.Media.Media3D.Visual3D)
-        {
-            for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
-                Apply(VisualTreeHelper.GetChild(root, index), visited);
-        }
 
         foreach (var child in LogicalTreeHelper.GetChildren(root))
         {
             if (child is DependencyObject dependencyObject)
-                Apply(dependencyObject, visited);
+                Apply(dependencyObject);
         }
     }
 
