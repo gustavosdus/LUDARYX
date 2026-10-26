@@ -92,7 +92,7 @@ public partial class MainWindow
                 try
                 {
                     using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(45));
-                    await _metadata.EnrichGameAsync(game, _settings, forceArtworkRefresh: true, cts.Token);
+                    await _metadata.EnrichGameAsync(game, _settings, forceArtworkRefresh: true, cts.Token, forceLocalizedText: true);
                 }
                 catch
                 {

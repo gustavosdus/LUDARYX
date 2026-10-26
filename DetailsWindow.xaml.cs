@@ -316,7 +316,7 @@ public partial class DetailsWindow : Window
         try
         {
             Mouse.OverrideCursor = Cursors.Wait;
-            await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true, timeout.Token);
+            await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true, timeout.Token, forceLocalizedText: true);
 
             if (DuplicateMetadataService.Synchronize(_libraryGames, _settings))
                 new JsonSettingsService().Save(_settings);

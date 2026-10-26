@@ -52,6 +52,42 @@ internal static class MetadataRegression
                 }
                 Require(propagated, "Caller cancellation was swallowed as an optional source failure.");
             }
+            var retryHandler = new RetryHandler();
+            using (var retryHttp = new HttpClient(retryHandler))
+            {
+                var retryService = new MetadataService(retryHttp, Path.Combine(folder, "retry"));
+                var retryGame = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Retry game" };
+                var retrySettings = new LauncherSettings { Language = "ja-JP" };
+                await retryService.EnsureLocalizedDescriptionAsync(retryGame, retrySettings);
+                Require(!retryGame.Metadata.LocalizedDescriptions.ContainsKey("ja-JP"), "Fixture unexpectedly returned Japanese.");
+                retryHandler.Available = true;
+                await retryService.EnsureLocalizedDescriptionAsync(retryGame, retrySettings);
+                Require(!retryGame.Metadata.LocalizedDescriptions.ContainsKey("ja-JP"), "Automatic retry ignored the cooldown.");
+                var notified = false;
+                retryGame.PropertyChanged += (_, args) => notified |= args.PropertyName == nameof(Game.DisplayName);
+                await retryService.EnsureLocalizedDescriptionAsync(retryGame, retrySettings, forceRefresh: true);
+                Require(LocalizedMetadataText.GetDescription(retryGame.Metadata, "ja-JP") == Japanese,
+                    "Explicit refresh failed to bypass the recent unsuccessful attempt.");
+                Require(notified, "Localized title update did not notify UI bindings.");
+                retryGame.Metadata.LocalizedNames["ja-JP"] = "Old cached title";
+                await retryService.EnsureLocalizedDescriptionAsync(retryGame, retrySettings, forceRefresh: true);
+                Require(LocalizedMetadataText.GetName(retryGame.Metadata, "ja-JP") == "日本語のタイトル",
+                    "Explicit refresh reused a complete but stale locale cache.");
+
+                retryGame.IsDuplicate = true;
+                retryGame.CanonicalGameId = "same-game";
+                var preferred = new Game { Id = "456", Platform = GamePlatform.Steam, Name = "Preferred game",
+                    IsDuplicate = true, CanonicalGameId = "same-game" };
+                LocalizedMetadataText.Prepare(preferred.Metadata);
+                preferred.Metadata.LocalizedNames["ja-JP"] = "Older duplicate title";
+                preferred.Metadata.LocalizedDescriptions["en-US"] = English;
+                retrySettings.PreferredDuplicateProviders["same-game"] = preferred.ProviderId;
+                DuplicateMetadataService.Synchronize(new[] { preferred, retryGame }, retrySettings);
+                Require(LocalizedMetadataText.GetName(retryGame.Metadata, "ja-JP") == "日本語のタイトル",
+                    "Duplicate synchronization overwrote the freshly localized title.");
+                Require(LocalizedMetadataText.GetDescription(retryGame.Metadata, "ja-JP") == Japanese,
+                    "Duplicate synchronization erased the freshly localized description.");
+            }
             var service = new MetadataService(http, folder);
             var game = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Stable installed name" };
             game.Metadata.Description = "Descrição antiga sem idioma que não pode ser tratada como inglês.";
@@ -97,6 +133,18 @@ internal static class MetadataRegression
     {
         if (!condition)
             throw new InvalidOperationException(message);
+    }
+
+    private sealed class RetryHandler : FixtureHandler
+    {
+        public bool Available { get; set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (!Available && request.RequestUri!.Query.Contains("l=japanese", StringComparison.Ordinal))
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
+            return base.SendAsync(request, cancellationToken);
+        }
     }
 
     private sealed class TimeoutHandler : FixtureHandler

@@ -90,12 +90,17 @@ public static class DuplicateMetadataService
     private static void CopyTextMetadata(GameMetadata source, GameMetadata target)
     {
         target.CanonicalName = source.CanonicalName;
-        target.LocalizedTextVersion = source.LocalizedTextVersion;
-        target.LocalizedNames = new(source.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase);
+        // Duplicate synchronization must not erase a freshly fetched translation
+        // with an older or incomplete copy from the preferred library entry.
+        LocalizedMetadataText.Prepare(target);
+        if (source.LocalizedTextVersion == LocalizedMetadataText.CacheVersion)
+        {
+            foreach (var pair in source.LocalizedNames ?? new())
+                target.LocalizedNames.TryAdd(pair.Key, pair.Value);
+            foreach (var pair in source.LocalizedDescriptions ?? new())
+                target.LocalizedDescriptions.TryAdd(pair.Key, pair.Value);
+        }
         target.Description = source.Description;
-        target.LocalizedDescriptions = new Dictionary<string, string>(
-            source.LocalizedDescriptions ?? new(),
-            StringComparer.OrdinalIgnoreCase);
         target.Genres = source.Genres.ToList();
         target.Platforms = source.Platforms.ToList();
         target.Developer = source.Developer;

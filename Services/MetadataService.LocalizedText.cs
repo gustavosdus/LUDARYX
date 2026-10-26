@@ -13,19 +13,19 @@ public sealed partial class MetadataService
     private sealed record LocalizedStoreText(string? Name, string? Description);
 
     public async Task<string?> EnsureLocalizedDescriptionAsync(
-        Game game, LauncherSettings settings, CancellationToken token = default)
+        Game game, LauncherSettings settings, CancellationToken token = default, bool forceRefresh = false)
     {
         var language = NormalizeDescriptionLanguage(settings.Language);
-        var requestKey = $"{game.ProviderId}:{language}";
+        var requestKey = $"{game.ProviderId}:{game.Metadata.ExternalId}:{game.Metadata.Source}:{language}";
         var gate = _localizedTextGates.GetOrAdd(game.ProviderId, _ => new SemaphoreSlim(1, 1));
         await gate.WaitAsync(token);
         try
         {
             LocalizedMetadataText.Prepare(game.Metadata);
             var metadata = game.Metadata;
-            if (metadata.LocalizedDescriptions.ContainsKey(language) && metadata.LocalizedNames.ContainsKey(language))
+            if (!forceRefresh && metadata.LocalizedDescriptions.ContainsKey(language) && metadata.LocalizedNames.ContainsKey(language))
                 return GetDisplayDescription(game, settings);
-            if (_localizedTextAttempts.TryGetValue(requestKey, out var lastAttempt) &&
+            if (!forceRefresh && _localizedTextAttempts.TryGetValue(requestKey, out var lastAttempt) &&
                 DateTime.UtcNow - lastAttempt < TimeSpan.FromMinutes(5))
                 return GetDisplayDescription(game, settings);
 
@@ -36,7 +36,7 @@ public sealed partial class MetadataService
 
             // Fetch English independently. A fallback response must never be saved
             // under the requested locale, otherwise future refreshes never retry it.
-            if (!metadata.LocalizedNames.ContainsKey("en-US") || !metadata.LocalizedDescriptions.ContainsKey("en-US"))
+            if (forceRefresh || !metadata.LocalizedNames.ContainsKey("en-US") || !metadata.LocalizedDescriptions.ContainsKey("en-US"))
                 await FetchAndStoreLocaleAsync(metadata, game.Name, appId, "en-US", token);
             if (!language.Equals("en-US", StringComparison.OrdinalIgnoreCase))
                 await FetchAndStoreLocaleAsync(metadata, game.Name, appId, language, token);
@@ -54,6 +54,7 @@ public sealed partial class MetadataService
             lock (_cacheSync)
                 _cache[game.ProviderId] = game.Metadata;
             SaveCache();
+            game.RefreshLocalizedLabels();
             _localizedTextAttempts[requestKey] = DateTime.UtcNow;
             return GetDisplayDescription(game, settings);
         }

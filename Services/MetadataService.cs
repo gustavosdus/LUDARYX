@@ -136,9 +136,14 @@ public sealed partial class MetadataService
         Game game,
         LauncherSettings settings,
         bool forceArtworkRefresh = false,
-        CancellationToken token = default)
+        CancellationToken token = default,
+        bool forceLocalizedText = false)
     {
         token.ThrowIfCancellationRequested();
+        // Explicit refreshes must retry localized text even after a recent failed
+        // automatic lookup. Fetch it before slower artwork and rating requests.
+        if (forceLocalizedText)
+            await EnsureLocalizedDescriptionAsync(game, settings, token, forceRefresh: true);
         var key = game.ProviderId;
 
         GameMetadata? cached = null;
