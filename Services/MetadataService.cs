@@ -461,7 +461,7 @@ public sealed partial class MetadataService
                         }
                     }
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
                     throw;
                 }
@@ -497,7 +497,7 @@ public sealed partial class MetadataService
                         }
                     }
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
                     throw;
                 }
@@ -632,7 +632,7 @@ public sealed partial class MetadataService
                 _cache[game.ProviderId] = game.Metadata;
             SaveCache();
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -690,7 +690,7 @@ public sealed partial class MetadataService
                 _cache[game.ProviderId] = game.Metadata;
             SaveCache();
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -899,7 +899,7 @@ public sealed partial class MetadataService
                     return summary;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1064,7 +1064,7 @@ public sealed partial class MetadataService
                         Apply(game, metadata);
                     }
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
                     throw;
                 }
@@ -1276,7 +1276,7 @@ public sealed partial class MetadataService
                     GenreService.NormalizeInPlace(metadata);
                     return metadata;
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
                     throw;
                 }
@@ -1430,7 +1430,7 @@ public sealed partial class MetadataService
             GenreService.NormalizeInPlace(metadata);
             return metadata;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1571,7 +1571,7 @@ public sealed partial class MetadataService
 
             return candidateIds.Take(20).ToList();
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1658,7 +1658,7 @@ public sealed partial class MetadataService
                 ? matches.Take(8).ToList()
                 : new List<int>();
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1698,7 +1698,7 @@ public sealed partial class MetadataService
                     result.Add(appId);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1739,7 +1739,7 @@ public sealed partial class MetadataService
                     result.Add(appId);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1802,7 +1802,7 @@ public sealed partial class MetadataService
                     result.Add(appId);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1844,7 +1844,7 @@ public sealed partial class MetadataService
                     result.Add(appId);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -1998,7 +1998,7 @@ public sealed partial class MetadataService
 
             return current;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -2079,7 +2079,7 @@ public sealed partial class MetadataService
                 if (metadata is not null)
                     combined = MergeMetadata(combined, metadata);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
                 throw;
             }
@@ -2139,7 +2139,7 @@ public sealed partial class MetadataService
                 return (productId, metadata);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -3085,7 +3085,7 @@ public sealed partial class MetadataService
             GenreService.NormalizeInPlace(metadata);
             return HasAnyUsefulTextMetadata(metadata) ? metadata : null;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -3181,7 +3181,7 @@ public sealed partial class MetadataService
                 }
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -3273,7 +3273,7 @@ public sealed partial class MetadataService
                     return summary;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -3309,7 +3309,7 @@ public sealed partial class MetadataService
                     return summary;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }
@@ -3764,7 +3764,7 @@ public sealed partial class MetadataService
 
             metadata.CoverLocalPath = metadata.HorizontalCoverLocalPath ?? metadata.VerticalCoverLocalPath;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             throw;
         }

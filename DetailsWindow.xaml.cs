@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using UnifiedGameLauncher.Models;
@@ -10,6 +11,7 @@ public partial class DetailsWindow : Window
 {
     private readonly WindowGamepadNavigationService _controllerNavigation;
     private readonly Game _game;
+    private bool _refreshingMetadata;
     private string _initialName = "";
     private string _initialDescription = "";
     private readonly LauncherSettings _settings;
@@ -304,14 +306,17 @@ public partial class DetailsWindow : Window
 
     private async void RefreshMetadata_Click(object sender, RoutedEventArgs e)
     {
+        if (_refreshingMetadata)
+            return;
+        _refreshingMetadata = true;
+        var button = sender as Button;
+        if (button is not null)
+            button.IsEnabled = false;
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
         try
         {
             Mouse.OverrideCursor = Cursors.Wait;
-            await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true);
-
-            await _metadata.EnsureLocalizedAgeRatingAsync(
-                _game,
-                _settings);
+            await _metadata.EnrichGameAsync(_game, _settings, forceArtworkRefresh: true, timeout.Token);
 
             if (DuplicateMetadataService.Synchronize(_libraryGames, _settings))
                 new JsonSettingsService().Save(_settings);
@@ -320,15 +325,28 @@ public partial class DetailsWindow : Window
             LoadData();
             LocalizationService.Apply(this);
         }
+        catch (OperationCanceledException) when (timeout.IsCancellationRequested)
+        {
+            _metadata.SaveCacheSnapshot();
+            LoadData();
+            LocalizationService.Apply(this);
+            MessageBox.Show(this,
+                LocalizationService.Translate("A atualização de metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde."),
+                "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine(ex);
             MessageBox.Show(this,
-                $"Não foi possível atualizar os metadados deste jogo.\n\n{ex.Message}",
+                LocalizationService.Translate("Não foi possível atualizar os metadados deste jogo. Tente novamente mais tarde."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
         {
             Mouse.OverrideCursor = null;
+            _refreshingMetadata = false;
+            if (button is not null)
+                button.IsEnabled = true;
         }
     }
 

@@ -25,6 +25,33 @@ internal static class MetadataRegression
         using var http = new HttpClient(new FixtureHandler());
         try
         {
+            using (var timeoutHttp = new HttpClient(new TimeoutHandler()))
+            {
+                var timeoutService = new MetadataService(timeoutHttp, Path.Combine(folder, "timeouts"));
+                var timeoutGame = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Timeout game" };
+                await timeoutService.EnsureLocalizedDescriptionAsync(timeoutGame, new LauncherSettings { Language = "ja-JP" });
+                Require(LocalizedMetadataText.GetDescription(timeoutGame.Metadata, "ja-JP") == Japanese,
+                    "An English source timeout prevented the Japanese source from loading.");
+                Require(!timeoutGame.Metadata.LocalizedDescriptions.ContainsKey("en-US"),
+                    "A failed English lookup was incorrectly cached as successful.");
+            }
+            using (var cancellation = new CancellationTokenSource())
+            using (var canceledHttp = new HttpClient(new CancelHandler(cancellation)))
+            {
+                var canceledService = new MetadataService(canceledHttp, Path.Combine(folder, "canceled"));
+                var canceledGame = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Canceled game" };
+                var propagated = false;
+                try
+                {
+                    await canceledService.EnsureLocalizedDescriptionAsync(canceledGame,
+                        new LauncherSettings { Language = "en-US" }, cancellation.Token);
+                }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                {
+                    propagated = true;
+                }
+                Require(propagated, "Caller cancellation was swallowed as an optional source failure.");
+            }
             var service = new MetadataService(http, folder);
             var game = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Stable installed name" };
             game.Metadata.Description = "Descrição antiga sem idioma que não pode ser tratada como inglês.";
@@ -72,7 +99,29 @@ internal static class MetadataRegression
             throw new InvalidOperationException(message);
     }
 
-    private sealed class FixtureHandler : HttpMessageHandler
+    private sealed class TimeoutHandler : FixtureHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (request.RequestUri!.Host == "store.steampowered.com" &&
+                request.RequestUri.Query.Contains("l=japanese", StringComparison.Ordinal))
+                return base.SendAsync(request, cancellationToken);
+            // HttpClient timeouts cancel its internal request token, not the caller's token.
+            throw new TaskCanceledException("Simulated source timeout", new TimeoutException());
+        }
+    }
+
+    private sealed class CancelHandler(CancellationTokenSource cancellation) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            cancellation.Cancel();
+            cancellationToken.ThrowIfCancellationRequested();
+            throw new InvalidOperationException("Expected cancellation.");
+        }
+    }
+
+    private class FixtureHandler : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

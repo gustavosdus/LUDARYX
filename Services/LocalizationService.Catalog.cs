@@ -14,6 +14,22 @@ public static partial class LocalizationService
     private static readonly Translation[] SupplementalTranslations =
     [
         new(
+            PtBr: "A atualização de metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde.",
+            PtPt: "A atualização dos metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde.",
+            EnUs: "The metadata update timed out. Available data has been kept. Please try again later.",
+            EnGb: "The metadata update timed out. Available data has been kept. Please try again later.",
+            Es419: "La actualización de metadatos agotó el tiempo de espera. Se conservaron los datos disponibles. Inténtalo de nuevo más tarde.",
+            EsEs: "La actualización de metadatos agotó el tiempo de espera. Se conservaron los datos disponibles. Inténtalo de nuevo más tarde.",
+            JaJp: "メタデータの更新がタイムアウトしました。取得済みのデータは保持されています。後でもう一度お試しください。"),
+        new(
+            PtBr: "Não foi possível atualizar os metadados deste jogo. Tente novamente mais tarde.",
+            PtPt: "Não foi possível atualizar os metadados deste jogo. Tente novamente mais tarde.",
+            EnUs: "Could not update metadata for this game. Please try again later.",
+            EnGb: "Could not update metadata for this game. Please try again later.",
+            Es419: "No se pudieron actualizar los metadatos de este juego. Inténtalo de nuevo más tarde.",
+            EsEs: "No se pudieron actualizar los metadatos de este juego. Inténtalo de nuevo más tarde.",
+            JaJp: "このゲームのメタデータを更新できませんでした。後でもう一度お試しください。"),
+        new(
             PtBr: "MAIS RECENTES",
             PtPt: "MAIS RECENTES",
             EnUs: "MOST RECENT",

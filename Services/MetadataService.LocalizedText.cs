@@ -125,7 +125,7 @@ public sealed partial class MetadataService
                 data.TryGetProperty("name", out var name) ? name.GetString() : null,
                 data.TryGetProperty("short_description", out var description) ? SanitizeDescription(description.GetString()) : null);
         }
-        catch (OperationCanceledException) { throw; }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
         catch { return null; }
         finally { _steamStoreGate.Release(); }
     }
@@ -170,7 +170,7 @@ public sealed partial class MetadataService
                     }
                 }
             }
-            catch (OperationCanceledException) { throw; }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch { }
         }
         return null;
