@@ -13,7 +13,6 @@ public static class DuplicateMetadataService
         IEnumerable<Game> games,
         LauncherSettings settings)
     {
-        var changed = false;
         var groups = games
             .Where(game => game.IsDuplicate && !string.IsNullOrWhiteSpace(game.CanonicalGameId))
             .GroupBy(game => game.CanonicalGameId, StringComparer.OrdinalIgnoreCase);
@@ -25,17 +24,20 @@ public static class DuplicateMetadataService
                 continue;
 
             var source = ResolveSource(entries, settings);
+            GameStateService.RestoreManualMetadata(source, settings);
             foreach (var target in entries)
             {
                 if (ReferenceEquals(target, source))
                     continue;
 
                 CopyTextMetadata(source.Metadata, target.Metadata);
-                changed |= SynchronizeManualOverrides(source, target, settings);
+                // Automatic synchronization must never rewrite saved user choices.
+                GameStateService.RestoreManualMetadata(target, settings);
             }
         }
 
-        return changed;
+        // No settings were changed; callers need not persist automatic metadata here.
+        return false;
     }
 
     private static Game ResolveSource(
@@ -116,48 +118,4 @@ public static class DuplicateMetadataService
         // IDs podem ser específicos do provider e cada versão pode ter capa própria.
     }
 
-    private static bool SynchronizeManualOverrides(
-        Game source,
-        Game target,
-        LauncherSettings settings)
-    {
-        if (target.Platform != GamePlatform.Manual)
-            return false;
-
-        settings.ManualMetadata.TryGetValue(source.ProviderId, out var sourceManual);
-        settings.ManualMetadata.TryGetValue(target.ProviderId, out var targetManual);
-
-        // Entradas manuais duplicadas antigas podem conter um snapshot automático em
-        // ManualMetadata. Mantemos apenas overrides que também existam na principal;
-        // os demais campos voltam a seguir os metadados automáticos/localizados.
-        targetManual ??= new ManualGameMetadata();
-
-        var horizontal = targetManual.HorizontalCoverUrl;
-        var vertical = targetManual.VerticalCoverUrl;
-        var disableVertical = targetManual.DisableAutomaticSteamGridDbVertical;
-        var disableHorizontal = targetManual.DisableAutomaticSteamGridDbHorizontal;
-
-        targetManual.Name = sourceManual?.Name ?? source.Name;
-        target.Name = targetManual.Name;
-        targetManual.Description = sourceManual?.Description;
-        // Preserve each entry's explicit per-language title choices.
-        targetManual.LocalizedNames ??= new(StringComparer.OrdinalIgnoreCase);
-        target.ManualLocalizedNames = new(targetManual.LocalizedNames, StringComparer.OrdinalIgnoreCase);
-        targetManual.LocalizedDescriptions = new(sourceManual?.LocalizedDescriptions ?? new(), StringComparer.OrdinalIgnoreCase);
-        targetManual.Genres = sourceManual?.Genres?.ToList() ?? new();
-        targetManual.Developer = sourceManual?.Developer;
-        targetManual.Publisher = sourceManual?.Publisher;
-        targetManual.ReleaseYear = sourceManual?.ReleaseYear;
-        targetManual.AgeRatings = new Dictionary<string, string>(
-            sourceManual?.AgeRatings ?? new(),
-            StringComparer.OrdinalIgnoreCase);
-
-        targetManual.HorizontalCoverUrl = horizontal;
-        targetManual.VerticalCoverUrl = vertical;
-        targetManual.DisableAutomaticSteamGridDbVertical = disableVertical;
-        targetManual.DisableAutomaticSteamGridDbHorizontal = disableHorizontal;
-
-        settings.ManualMetadata[target.ProviderId] = targetManual;
-        return true;
-    }
 }

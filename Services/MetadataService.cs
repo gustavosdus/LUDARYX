@@ -139,6 +139,24 @@ public sealed partial class MetadataService
         CancellationToken token = default,
         bool forceLocalizedText = false)
     {
+        try
+        {
+            await EnrichGameCoreAsync(game, settings, forceArtworkRefresh, token, forceLocalizedText);
+        }
+        finally
+        {
+            // Covers successful replacement, cache hits, source failures and timeouts.
+            GameStateService.RestoreManualMetadata(game, settings);
+        }
+    }
+
+    private async Task EnrichGameCoreAsync(
+        Game game,
+        LauncherSettings settings,
+        bool forceArtworkRefresh = false,
+        CancellationToken token = default,
+        bool forceLocalizedText = false)
+    {
         token.ThrowIfCancellationRequested();
         // Explicit refreshes must retry localized text even after a recent failed
         // automatic lookup. Fetch it before slower artwork and rating requests.
@@ -380,6 +398,21 @@ public sealed partial class MetadataService
     }
 
     public async Task EnsureLocalizedAgeRatingAsync(
+        Game game,
+        LauncherSettings settings,
+        CancellationToken token = default)
+    {
+        try
+        {
+            await EnsureLocalizedAgeRatingCoreAsync(game, settings, token);
+        }
+        finally
+        {
+            GameStateService.RestoreManualMetadata(game, settings);
+        }
+    }
+
+    private async Task EnsureLocalizedAgeRatingCoreAsync(
         Game game,
         LauncherSettings settings,
         CancellationToken token = default)

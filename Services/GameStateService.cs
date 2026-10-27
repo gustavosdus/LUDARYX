@@ -86,6 +86,14 @@ public sealed class GameStateService
         _settingsService.Save(settings);
     }
 
+    /// <summary>Reapply saved user choices after any automatic metadata update.</summary>
+    public static void RestoreManualMetadata(Game game, LauncherSettings settings)
+    {
+        if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual))
+            ApplyManualMetadata(game, manual);
+        game.RefreshLocalizedLabels();
+    }
+
     private static void ApplyManualMetadata(Game game, ManualGameMetadata manual)
     {
         if (!string.IsNullOrWhiteSpace(manual.Name))

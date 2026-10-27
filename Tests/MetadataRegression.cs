@@ -88,6 +88,7 @@ internal static class MetadataRegression
                 Require(LocalizedMetadataText.GetDescription(retryGame.Metadata, "ja-JP") == Japanese,
                     "Duplicate synchronization erased the freshly localized description.");
             }
+            await CheckManualPrecedenceAsync(folder);
             var service = new MetadataService(http, folder);
             var game = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Stable installed name" };
             game.Metadata.Description = "Descrição antiga sem idioma que não pode ser tratada como inglês.";
@@ -160,6 +161,74 @@ internal static class MetadataRegression
             if (Directory.Exists(folder))
                 Directory.Delete(folder, true);
         }
+    }
+
+    private static async Task CheckManualPrecedenceAsync(string folder)
+    {
+        using var http = new HttpClient(new FixtureHandler());
+        var service = new MetadataService(http, Path.Combine(folder, "manual-precedence"));
+        var settings = new LauncherSettings { Language = "en-US" };
+        var cachedGame = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "English title" };
+        cachedGame.Metadata = new GameMetadata
+        {
+            Source = "Steam Store", ExternalId = "123", CanonicalName = "English title",
+            Description = English, Developer = "Automatic developer", Publisher = "Automatic publisher",
+            ReleaseYear = 2000, Genres = new() { "Action" }, UpdatedAtUtc = DateTime.UtcNow,
+            HorizontalCoverLocalPath = "cached-horizontal", VerticalCoverLocalPath = "cached-vertical",
+            AgeRatings = new() { ["esrb"] = "E" }
+        };
+        await service.EnsureLocalizedDescriptionAsync(cachedGame, settings);
+        var game = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "English title" };
+        settings.ManualMetadata[game.ProviderId] = new ManualGameMetadata
+        {
+            LocalizedNames = new() { ["en-US"] = "My title" },
+            LocalizedDescriptions = new() { ["en-US"] = "My description" },
+            Developer = "My developer", Publisher = "My publisher", ReleaseYear = 1999,
+            Genres = new() { "RPG" }, AgeRatings = new() { ["esrb"] = "M" },
+            HorizontalCoverUrl = "my-horizontal", VerticalCoverUrl = "my-vertical"
+        };
+        var persisted = JsonSerializer.Serialize(settings);
+        settings = JsonSerializer.Deserialize<LauncherSettings>(persisted)!;
+        await service.EnrichGameAsync(game, settings);
+        AssertManualFields(game, settings, service);
+
+        // A cancellation must preserve overrides too, without swallowing cancellation.
+        game.Metadata = new GameMetadata();
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        try { await service.EnrichGameAsync(game, settings, token: cancellation.Token); }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        AssertManualFields(game, settings, service);
+
+        game.Metadata.AgeRatings["esrb"] = "E";
+        try { await service.EnsureLocalizedAgeRatingAsync(game, settings, cancellation.Token); }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        AssertManualFields(game, settings, service);
+
+        var duplicate = new Game { Id = "manual-copy", Platform = GamePlatform.Manual,
+            Name = "Manual copy", IsDuplicate = true, CanonicalGameId = "group" };
+        settings.ManualMetadata[duplicate.ProviderId] = JsonSerializer.Deserialize<ManualGameMetadata>(
+            JsonSerializer.Serialize(settings.ManualMetadata[game.ProviderId]))!;
+        cachedGame.IsDuplicate = true;
+        cachedGame.CanonicalGameId = "group";
+        settings.PreferredDuplicateProviders["group"] = cachedGame.ProviderId;
+        var before = JsonSerializer.Serialize(settings.ManualMetadata);
+        DuplicateMetadataService.Synchronize(new[] { cachedGame, duplicate }, settings);
+        Require(JsonSerializer.Serialize(settings.ManualMetadata) == before, "Duplicate sync rewrote saved manual metadata.");
+        AssertManualFields(duplicate, settings, service);
+    }
+
+    private static void AssertManualFields(Game game, LauncherSettings settings, MetadataService service)
+    {
+        Require(game.Metadata.Developer == "My developer", "Manual developer was overwritten.");
+        Require(game.Metadata.Publisher == "My publisher", "Manual publisher was overwritten.");
+        Require(game.Metadata.ReleaseYear == 1999, "Manual release year was overwritten.");
+        Require(game.Metadata.Genres.SequenceEqual(GenreService.NormalizeMany(new[] { "RPG" })), "Manual genres were overwritten.");
+        Require(AgeRatingService.GetValue(game.Metadata, "esrb") == "M", "Manual rating was overwritten.");
+        Require(game.ManualLocalizedNames["en-US"] == "My title", "Manual title was overwritten.");
+        Require(service.GetDisplayDescription(game, settings) == "My description", "Manual description was overwritten.");
+        Require(game.Metadata.CustomHorizontalCoverLocalPath == "my-horizontal" &&
+            game.Metadata.CustomVerticalCoverLocalPath == "my-vertical", "Manual artwork was overwritten.");
     }
 
     private static void Require(bool condition, string message)
