@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 using UnifiedGameLauncher.Services;
 
@@ -6,66 +6,66 @@ namespace UnifiedGameLauncher;
 
 public partial class LocalizedMessageWindow : Window
 {
-    private readonly bool _confirmation;
+    private readonly MessageBoxButton _buttons;
+    public MessageBoxResult Result { get; private set; }
 
-    private LocalizedMessageWindow(Window? owner, string message, bool confirmation)
+    internal LocalizedMessageWindow(Window? owner, string message, string caption,
+        MessageBoxButton buttons, MessageBoxImage image)
     {
         InitializeComponent();
-        _confirmation = confirmation;
-
-        var settings = new JsonSettingsService().Load();
-        LocalizationService.SetLanguage(settings.Language);
-        LudaryxThemeService.Apply(settings);
-
-        Owner = owner;
-        MessageText.Text = message;
-
-        if (confirmation)
-        {
-            SecondaryButton.Visibility = Visibility.Visible;
-            SecondaryButton.Content = LocalizationService.Translate("Não");
-            PrimaryButton.Content = LocalizationService.Translate("Sim");
-        }
+        _buttons = buttons;
+        Result = DismissResult(buttons);
+        if (owner is { IsVisible: true })
+            Owner = owner;
         else
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        Title = CaptionText.Text = LocalizationService.Translate(caption);
+        MessageText.Text = LocalizationService.Translate(message);
+        PrimaryButton.Content = LocalizationService.Translate(buttons is MessageBoxButton.YesNo or MessageBoxButton.YesNoCancel ? "Sim" : "OK");
+        SecondaryButton.Content = LocalizationService.Translate("Não");
+        SecondaryButton.Visibility = buttons is MessageBoxButton.YesNo or MessageBoxButton.YesNoCancel ? Visibility.Visible : Visibility.Collapsed;
+        CancelButton.Content = LocalizationService.Translate("Cancelar");
+        CancelButton.Visibility = buttons is MessageBoxButton.OKCancel or MessageBoxButton.YesNoCancel ? Visibility.Visible : Visibility.Collapsed;
+        PrimaryButton.IsDefault = buttons == MessageBoxButton.OK;
+        PreviewKeyDown += (_, e) =>
         {
-            SecondaryButton.Visibility = Visibility.Collapsed;
-            PrimaryButton.Content = "OK";
-        }
+            if (e.Key == Key.Escape) { Close(); e.Handled = true; }
+        };
+        Loaded += (_, _) =>
+        {
+            WindowPlacementService.FitToWorkingArea(this, Owner, margin: 16, center: true);
+            if (SecondaryButton.IsVisible) SecondaryButton.Focus();
+            else if (CancelButton.IsVisible) CancelButton.Focus();
+            else PrimaryButton.Focus();
+        };
+        _ = new WindowGamepadNavigationService(this, Close);
     }
 
-    public static void ShowInfo(Window? owner, string message)
+    public static MessageBoxResult DismissResult(MessageBoxButton buttons) => buttons switch
     {
-        var window = new LocalizedMessageWindow(owner, message, confirmation: false);
-        window.ShowDialog();
-    }
+        MessageBoxButton.YesNo => MessageBoxResult.No,
+        MessageBoxButton.OK => MessageBoxResult.OK,
+        MessageBoxButton.YesNoCancel => MessageBoxResult.None,
+        _ => MessageBoxResult.Cancel
+    };
 
-    public static bool ShowConfirm(Window? owner, string message)
-    {
-        var window = new LocalizedMessageWindow(owner, message, confirmation: true);
-        return window.ShowDialog() == true;
-    }
+    public static void ShowInfo(Window? owner, string message) =>
+        LudaryxMessageBox.Show(owner, message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
+
+    public static bool ShowConfirm(Window? owner, string message) =>
+        LudaryxMessageBox.Show(owner, message, "LUDARYX", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
 
     private void Primary_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = true;
+        Result = _buttons is MessageBoxButton.YesNo or MessageBoxButton.YesNoCancel ? MessageBoxResult.Yes : MessageBoxResult.OK;
         Close();
     }
 
-    private void Secondary_Click(object sender, RoutedEventArgs e)
-    {
-        DialogResult = false;
-        Close();
-    }
-
-    private void Close_Click(object sender, RoutedEventArgs e)
-    {
-        DialogResult = _confirmation ? false : true;
-        Close();
-    }
-
+    private void Secondary_Click(object sender, RoutedEventArgs e) { Result = MessageBoxResult.No; Close(); }
+    private void Cancel_Click(object sender, RoutedEventArgs e) { Result = MessageBoxResult.Cancel; Close(); }
+    private void Close_Click(object sender, RoutedEventArgs e) => Close();
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed)
-            DragMove();
+        if (e.LeftButton == MouseButtonState.Pressed) DragMove();
     }
 }

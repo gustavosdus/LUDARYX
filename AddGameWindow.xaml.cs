@@ -162,7 +162,7 @@ public partial class AddGameWindow : Window
     {
         if (_profiles.Count <= 1 || ProfileCombo.SelectedItem is not ManualLaunchProfile selected)
         {
-            MessageBox.Show(this, LocalizationService.Translate("O jogo precisa manter pelo menos um perfil de inicialização."),
+            LudaryxMessageBox.Show(this, LocalizationService.Translate("O jogo precisa manter pelo menos um perfil de inicialização."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -216,7 +216,7 @@ public partial class AddGameWindow : Window
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            MessageBox.Show(this, LocalizationService.Translate("Informe o nome do jogo."), "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Translate("Informe o nome do jogo."), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -239,7 +239,7 @@ public partial class AddGameWindow : Window
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Não foi possível salvar o ícone personalizado.\n\n{ex.Message}",
+                LudaryxMessageBox.Show(this, LocalizationService.Format("Não foi possível salvar o ícone personalizado.\n\n{0}", ex.Message),
                     "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -267,7 +267,7 @@ public partial class AddGameWindow : Window
     {
         if (string.IsNullOrWhiteSpace(profile.Executable) && string.IsNullOrWhiteSpace(profile.LaunchUri))
         {
-            MessageBox.Show(this, $"O perfil '{profile.Name}' precisa de um executável ou URI.",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("O perfil '{0}' precisa de um executável ou URI.", profile.Name),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             return false;
         }
@@ -276,7 +276,7 @@ public partial class AddGameWindow : Window
         if (!string.IsNullOrWhiteSpace(profile.Executable) &&
             !LaunchTargetValidator.TryValidateExecutable(profile.Executable, out safeExe, out var exeError))
         {
-            MessageBox.Show(this, $"{profile.Name}: {exeError}", "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("{0}: {1}", profile.Name, LocalizationService.Translate(exeError)), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
@@ -287,7 +287,7 @@ public partial class AddGameWindow : Window
         if (!string.IsNullOrWhiteSpace(profile.LaunchUri) &&
             !LaunchTargetValidator.TryValidateUri(profile.LaunchUri, out safeUri, out var uriError))
         {
-            MessageBox.Show(this, $"{profile.Name}: {uriError}", "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("{0}: {1}", profile.Name, LocalizationService.Translate(uriError)), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
@@ -296,7 +296,7 @@ public partial class AddGameWindow : Window
 
         if (profile.Arguments is { Length: > 4096 })
         {
-            MessageBox.Show(this, $"{profile.Name}: argumentos maiores que o limite permitido.",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("{0}: argumentos maiores que o limite permitido.", profile.Name),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
@@ -311,7 +311,7 @@ public partial class AddGameWindow : Window
             }
             catch
             {
-                MessageBox.Show(this, $"{profile.Name}: a pasta de trabalho não existe ou é inválida.",
+                LudaryxMessageBox.Show(this, LocalizationService.Format("{0}: a pasta de trabalho não existe ou é inválida.", profile.Name),
                     "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }

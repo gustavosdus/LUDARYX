@@ -184,7 +184,7 @@ public partial class SettingsWindow : Window
         _settingsService.Save(_sourceSettings);
         UpdateChangeParentalPinButtonVisibility();
 
-        MessageBox.Show(
+        LudaryxMessageBox.Show(
             this,
             LocalizationService.Translate("PIN alterado com sucesso."),
             "LUDARYX",
@@ -297,8 +297,8 @@ public partial class SettingsWindow : Window
         }
         catch (Exception ex)
         {
-            System.Windows.MessageBox.Show(
-                $"Não foi possível alterar a inicialização automática do Windows.\n\n{ex.Message}",
+            LudaryxMessageBox.Show(
+                LocalizationService.Format("Não foi possível alterar a inicialização automática do Windows.\n\n{0}", ex.Message),
                 "LUDARYX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -325,8 +325,8 @@ public partial class SettingsWindow : Window
         {
             if (!IsValidShortcut(shortcut))
             {
-                MessageBox.Show(this,
-                    $"Atalho inválido: {shortcut}\n\nUse formatos como Ctrl+F, F11, F5 ou Ctrl+,.",
+                LudaryxMessageBox.Show(this,
+                    LocalizationService.Format("Atalho inválido: {0}\n\nUse formatos como Ctrl+F, F11, F5 ou Ctrl+,.", shortcut),
                     "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -415,7 +415,7 @@ public partial class SettingsWindow : Window
             if (!result.IsUpdateAvailable)
             {
                 UpdateStatusText.Text = LocalizationService.Format("Você já está na versão mais recente ({0}).", result.CurrentVersionDisplay);
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     this,
                     LocalizationService.Format("Nenhuma atualização foi encontrada.\n\nVersão atual: {0}", result.CurrentVersionDisplay),
                     "LUDARYX",
@@ -436,9 +436,9 @@ public partial class SettingsWindow : Window
         {
             UpdateStatusText.Text = LocalizationService.Translate("Não foi possível verificar atualizações agora.");
             DiagnosticLogService.LogException("Could not check for updates", ex);
-            MessageBox.Show(
+            LudaryxMessageBox.Show(
                 this,
-                $"{LocalizationService.Translate("Não foi possível verificar atualizações agora.")}\n\n{ex.Message}",
+                LocalizationService.Format("{0}\n\n{1}", LocalizationService.Translate("Não foi possível verificar atualizações agora."), ex.Message),
                 "LUDARYX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
@@ -468,7 +468,7 @@ public partial class SettingsWindow : Window
     {
         CacheMaintenanceService.ClearDownloadCache();
         RefreshCacheSize();
-        MessageBox.Show(this, "O cache de capas baixadas foi limpo. Artes personalizadas foram preservadas.",
+        LudaryxMessageBox.Show(this, "O cache de capas baixadas foi limpo. Artes personalizadas foram preservadas.",
             "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -481,7 +481,7 @@ public partial class SettingsWindow : Window
         catch (Exception ex)
         {
             DiagnosticLogService.LogException("Could not open LUDARYX data folder", ex);
-            MessageBox.Show(this, ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+            LudaryxMessageBox.ShowError(this, ex, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -506,8 +506,8 @@ public partial class SettingsWindow : Window
         catch (Exception ex)
         {
             DiagnosticLogService.LogException($"Could not open integration client: {item.Name}", ex);
-            MessageBox.Show(this,
-                $"Não foi possível abrir {item.Name}.\n\n{ex.Message}",
+            LudaryxMessageBox.Show(this,
+                LocalizationService.Format("Não foi possível abrir {0}.\n\n{1}", item.Name, ex.Message),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
@@ -540,7 +540,7 @@ public partial class SettingsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Não foi possível exportar o backup.\n\n{ex.Message}", "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("Não foi possível exportar o backup.\n\n{0}", ex.Message), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -572,7 +572,7 @@ public partial class SettingsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Não foi possível importar o backup.\n\n{ex.Message}", "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Format("Não foi possível importar o backup.\n\n{0}", ex.Message), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -580,7 +580,7 @@ public partial class SettingsWindow : Window
     private void CopyDiagnostic_Click(object sender, RoutedEventArgs e)
     {
         System.Windows.Clipboard.SetText(DiagnosticLogService.BuildDiagnosticReport());
-        MessageBox.Show(this, "Relatório de diagnóstico sanitizado copiado para a área de transferência.",
+        LudaryxMessageBox.Show(this, "Relatório de diagnóstico sanitizado copiado para a área de transferência.",
             "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 

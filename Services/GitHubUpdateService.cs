@@ -101,11 +101,11 @@ public static class GitHubUpdateService
             return false;
 
         var notes = BuildReleaseNotesPreview(updateInfo.ReleaseNotes);
-        var initialChoice = MessageBox.Show(
+        var initialChoice = LudaryxMessageBox.Show(
             owner,
-            $"A versão {updateInfo.LatestVersionDisplay} está disponível no GitHub.\n\n" +
-            (string.IsNullOrWhiteSpace(notes) ? "" : $"Novidades:\n{notes}\n\n") +
-            "Sim: baixar e instalar agora.\nNão: lembrar mais tarde.\nCancelar: abrir as novidades no GitHub.",
+            LocalizationService.Format("A versão {0} está disponível no GitHub.\n\n", updateInfo.LatestVersionDisplay) +
+            (string.IsNullOrWhiteSpace(notes) ? "" : LocalizationService.Format("Novidades:\n{0}\n\n", notes)) +
+            LocalizationService.Translate("Sim: baixar e instalar agora.\nNão: lembrar mais tarde.\nCancelar: abrir as novidades no GitHub."),
             "Atualização do LUDARYX",
             MessageBoxButton.YesNoCancel,
             MessageBoxImage.Information);
@@ -123,7 +123,7 @@ public static class GitHubUpdateService
             string.IsNullOrWhiteSpace(updateInfo.InstallerName))
         {
             OpenReleasePageIfAvailable(updateInfo);
-            MessageBox.Show(
+            LudaryxMessageBox.Show(
                 owner,
                 "Nenhum instalador compatível foi encontrado na release mais recente. A página da release será aberta no navegador.",
                 "Atualização do LUDARYX",
@@ -135,7 +135,7 @@ public static class GitHubUpdateService
         if (string.IsNullOrWhiteSpace(updateInfo.ChecksumDownloadUrl))
         {
             OpenReleasePageIfAvailable(updateInfo);
-            MessageBox.Show(
+            LudaryxMessageBox.Show(
                 owner,
                 "A release mais recente não contém SHA256SUMS.txt. Por segurança, a instalação automática foi bloqueada. A página da release será aberta para download manual.",
                 "Atualização do LUDARYX",
@@ -168,9 +168,9 @@ public static class GitHubUpdateService
             progressWindow.Close();
             DiagnosticLogService.LogException("Could not download or validate update installer", ex);
 
-            var openReleaseChoice = MessageBox.Show(
+            var openReleaseChoice = LudaryxMessageBox.Show(
                 owner,
-                $"A atualização automática não pôde ser concluída com segurança.\n\n{ex.Message}\n\nDeseja abrir a página da release no GitHub?",
+                LocalizationService.Format("A atualização automática não pôde ser concluída com segurança.\n\n{0}\n\nDeseja abrir a página da release no GitHub?", ex.Message),
                 "Atualização do LUDARYX",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -183,9 +183,9 @@ public static class GitHubUpdateService
 
         progressWindow.Close();
 
-        var runInstallerChoice = MessageBox.Show(
+        var runInstallerChoice = LudaryxMessageBox.Show(
             owner,
-            $"A atualização {updateInfo.LatestVersionDisplay} foi baixada e o SHA-256 foi validado com sucesso.\n\nDeseja fechar o LUDARYX e iniciar a atualização agora?",
+            LocalizationService.Format("A atualização {0} foi baixada e o SHA-256 foi validado com sucesso.\n\nDeseja fechar o LUDARYX e iniciar a atualização agora?", updateInfo.LatestVersionDisplay),
             "Atualização do LUDARYX",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);

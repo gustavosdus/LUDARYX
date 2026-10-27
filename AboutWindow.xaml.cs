@@ -23,7 +23,7 @@ public partial class AboutWindow : Window
         catch (Exception ex)
         {
             DiagnosticLogService.LogException("Could not open log directory", ex);
-            MessageBox.Show(ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+            LudaryxMessageBox.ShowError(ex, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -46,7 +46,7 @@ public partial class AboutWindow : Window
             var result = await GitHubUpdateService.CheckForUpdatesAsync();
             if (!result.IsUpdateAvailable)
             {
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     this,
                     LocalizationService.Format("Nenhuma atualização foi encontrada.\n\nVersão atual: {0}", result.CurrentVersionDisplay),
                     "LUDARYX",
@@ -64,7 +64,7 @@ public partial class AboutWindow : Window
         catch (Exception ex)
         {
             DiagnosticLogService.LogException("Could not check for updates from About window", ex);
-            MessageBox.Show(ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
+            LudaryxMessageBox.ShowError(ex, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

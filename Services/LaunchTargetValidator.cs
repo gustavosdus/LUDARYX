@@ -290,7 +290,7 @@ public static class LaunchTargetValidator
         }
         if (!AllowedUriSchemes.Contains(uri.Scheme))
         {
-            error = $"O protocolo '{uri.Scheme}' não é permitido para inicialização.";
+            error = LocalizationService.Format("O protocolo '{0}' não é permitido para inicialização.", uri.Scheme);
             return false;
         }
 

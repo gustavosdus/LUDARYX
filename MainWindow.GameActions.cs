@@ -399,8 +399,8 @@ public partial class MainWindow
         catch (Exception ex)
         {
             StatusText.Text = "Falha ao iniciar o jogo";
-            MessageBox.Show(
-                $"Não foi possível iniciar {game.DisplayName}.\n\n{ex.Message}",
+            LudaryxMessageBox.Show(
+                LocalizationService.Format("Não foi possível iniciar {0}.\n\n{1}", game.DisplayName, ex.Message),
                 "LUDARYX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

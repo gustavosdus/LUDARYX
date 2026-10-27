@@ -42,7 +42,7 @@ public partial class SteamGridDbGamePickerWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -54,7 +54,7 @@ public partial class SteamGridDbGamePickerWindow : Window
     {
         if (ResultsList.SelectedItem is not SteamGridDbGameResult game)
         {
-            MessageBox.Show("Selecione um jogo da lista.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
+            LudaryxMessageBox.Show("Selecione um jogo da lista.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         SelectedGame = game;

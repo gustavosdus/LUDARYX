@@ -45,11 +45,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                $"Não foi possível iniciar a atualização do LUDARYX.\n\n{ex.Message}",
-                "LUDARYX Updater",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            UpdaterErrorWindow.Show(ex);
             return 1;
         }
     }

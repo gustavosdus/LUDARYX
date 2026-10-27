@@ -66,7 +66,7 @@ public partial class BackupOptionsWindow : Window
         Selection = ReadSelection();
         if (!Selection.HasAny)
         {
-            MessageBox.Show(this, LocalizationService.Translate("Selecione pelo menos uma categoria."), "LUDARYX",
+            LudaryxMessageBox.Show(this, LocalizationService.Translate("Selecione pelo menos uma categoria."), "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }

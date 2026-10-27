@@ -21,6 +21,7 @@ internal static class Program
             MetadataRegression.RunAsync().GetAwaiter().GetResult();
             CheckGeneratedControlText();
             CheckLegacySettings();
+            CheckThemedDialogs();
             Console.WriteLine("Localization, WPF control updates and legacy settings checks passed.");
             return 0;
         }
@@ -120,6 +121,41 @@ internal static class Program
             foreach (var value in VisualTexts(VisualTreeHelper.GetChild(root, index)))
                 yield return value;
         }
+    }
+
+    private static void CheckThemedDialogs()
+    {
+        var app = Application.Current ?? new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        app.Resources.MergedDictionaries.Add(new ResourceDictionary
+        { Source = new Uri("/LUDARYX;component/Themes/LudaryxControls.xaml", UriKind.Relative) });
+        const string message = "Nenhuma arte compatível foi encontrada para este jogo.\n\nVocê pode tentar corrigir o jogo do SteamGridDB e pesquisar novamente.";
+        foreach (var theme in new[] { "Light", "Dark" })
+        foreach (var language in LocalizationService.SupportedLanguages)
+        {
+            LocalizationService.SetLanguage(language.Code);
+            LudaryxThemeService.Apply(new LauncherSettings { Theme = theme, Language = language.Code });
+            var window = (UnifiedGameLauncher.LocalizedMessageWindow)Activator.CreateInstance(
+                typeof(UnifiedGameLauncher.LocalizedMessageWindow), BindingFlags.Instance | BindingFlags.NonPublic,
+                null, new object?[] { null, message, "SteamGridDB", MessageBoxButton.YesNoCancel, MessageBoxImage.Information }, null)!;
+            try
+            {
+                Require(window.WindowStyle == WindowStyle.None, "A dialog uses the Windows title bar.");
+                Require(LocalizationService.CurrentLanguage == language.Code, "Opening a dialog reset the active language.");
+                var text = (TextBlock)window.FindName("MessageText");
+                Require(text.Text == LocalizationService.Translate(message), "Dialog body was not localized.");
+                if (!language.Code.StartsWith("pt")) Require(text.Text != message, "Missing dialog translation.");
+                Require(((Button)window.FindName("CancelButton")).Visibility == Visibility.Visible, "Three-choice dialog lost Cancel.");
+                Require(window.Result == MessageBoxResult.None, "Dismissing update prompt opens GitHub or accepts update.");
+                var primary = (Button)window.FindName("PrimaryButton");
+                primary.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Require(window.Result == MessageBoxResult.Yes, "Confirm result changed.");
+            }
+            finally { window.Close(); }
+        }
+        Require(UnifiedGameLauncher.LocalizedMessageWindow.DismissResult(MessageBoxButton.YesNo) == MessageBoxResult.No,
+            "Closing confirmation must not accept it.");
+        Require(UnifiedGameLauncher.LocalizedMessageWindow.DismissResult(MessageBoxButton.OKCancel) == MessageBoxResult.Cancel,
+            "Closing OK/Cancel must cancel.");
     }
 
     private static void CheckLegacySettings()

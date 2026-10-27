@@ -48,8 +48,8 @@ public partial class App : System.Windows.Application
         catch (Exception ex)
         {
             DiagnosticLogService.LogException("Startup failed", ex);
-            System.Windows.MessageBox.Show(
-                $"O LUDARYX não conseguiu abrir.\n\n{ex}",
+            LudaryxMessageBox.Show(
+                LocalizationService.Format("O LUDARYX não conseguiu abrir.\n\n{0}", ex),
                 "LUDARYX - erro de inicialização",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

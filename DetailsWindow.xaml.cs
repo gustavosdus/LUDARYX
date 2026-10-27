@@ -231,7 +231,7 @@ public partial class DetailsWindow : Window
             {
                 _game.IsRunning = true;
                 LoadData();
-                MessageBox.Show(this, $"{_game.Name} já está em execução.", "LUDARYX",
+                LudaryxMessageBox.Show(this, LocalizationService.Format("{0} já está em execução.", _game.Name), "LUDARYX",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -256,7 +256,7 @@ public partial class DetailsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(this, ex, "Erro ao iniciar", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -296,7 +296,7 @@ public partial class DetailsWindow : Window
         var directory = ResolveInstallDirectory(_game);
         if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
         {
-            MessageBox.Show(this, LocalizationService.Translate("A pasta do jogo não foi encontrada."),
+            LudaryxMessageBox.Show(this, LocalizationService.Translate("A pasta do jogo não foi encontrada."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -335,14 +335,14 @@ public partial class DetailsWindow : Window
             _metadata.SaveCacheSnapshot();
             LoadData();
             LocalizationService.Apply(this);
-            MessageBox.Show(this,
+            LudaryxMessageBox.Show(this,
                 LocalizationService.Translate("A atualização de metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine(ex);
-            MessageBox.Show(this,
+            LudaryxMessageBox.Show(this,
                 LocalizationService.Translate("Não foi possível atualizar os metadados deste jogo. Tente novamente mais tarde."),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
@@ -459,15 +459,15 @@ public partial class DetailsWindow : Window
             x.Id.Equals(_game.Id, StringComparison.OrdinalIgnoreCase));
         if (definition is null)
         {
-            MessageBox.Show("A definição deste jogo manual não foi encontrada.", "LUDARYX",
+            LudaryxMessageBox.Show("A definição deste jogo manual não foi encontrada.", "LUDARYX",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (!string.IsNullOrWhiteSpace(definition.Executable) && !File.Exists(definition.Executable))
         {
-            MessageBox.Show(this,
-                $"O executável configurado para este jogo não existe mais:\n\n{definition.Executable}\n\nVocê pode selecionar um novo executável na próxima tela.",
+            LudaryxMessageBox.Show(this,
+                LocalizationService.Format("O executável configurado para este jogo não existe mais:\n\n{0}\n\nVocê pode selecionar um novo executável na próxima tela.", definition.Executable),
                 "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
@@ -511,7 +511,7 @@ public partial class DetailsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Imagem inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+            LudaryxMessageBox.ShowError(ex, "Imagem inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -527,7 +527,7 @@ public partial class DetailsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Imagem inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+            LudaryxMessageBox.ShowError(ex, "Imagem inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -575,7 +575,7 @@ public partial class DetailsWindow : Window
             var apiKey = _settings.SteamGridDbApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     "Configure a API Key do SteamGridDB em Configurações → SteamGridDB e tente novamente.",
                     "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -588,13 +588,13 @@ public partial class DetailsWindow : Window
             _settings.SteamGridDbGameIds[_game.ProviderId] = picker.SelectedGame.Id;
             new JsonSettingsService().Save(_settings);
 
-            MessageBox.Show(
-                $"Jogo associado ao SteamGridDB:\n\n{picker.SelectedGame.Name}\nID: {picker.SelectedGame.Id}\n\nAs próximas buscas automáticas usarão esta associação.",
+            LudaryxMessageBox.Show(
+                LocalizationService.Format("Jogo associado ao SteamGridDB:\n\n{0}\nID: {1}\n\nAs próximas buscas automáticas usarão esta associação.", picker.SelectedGame.Name, picker.SelectedGame.Id),
                 "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -605,7 +605,7 @@ public partial class DetailsWindow : Window
             var apiKey = _settings.SteamGridDbApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     "Configure a API Key do SteamGridDB em Configurações → SteamGridDB e tente novamente.",
                     "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -615,7 +615,7 @@ public partial class DetailsWindow : Window
             var gameId = await ResolveSteamGridGameIdAsync(apiKey);
             if (gameId is null)
             {
-                MessageBox.Show("O SteamGridDB não encontrou um jogo correspondente. Use CORRIGIR JOGO DO STEAMGRIDDB para escolher manualmente.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
+                LudaryxMessageBox.Show("O SteamGridDB não encontrou um jogo correspondente. Use CORRIGIR JOGO DO STEAMGRIDDB para escolher manualmente.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -623,13 +623,13 @@ public partial class DetailsWindow : Window
             SetAutomaticSteamGridDbDisabled(vertical, disabled: false);
             PersistArtwork();
             LoadData();
-            MessageBox.Show(
-                $"Arte baixada com sucesso do SteamGridDB.\n\nTamanho: {result.Width}×{result.Height}\nPontuação: {result.Score}\nEstilo: {result.Style ?? "não informado"}\nAutor: {result.Author ?? "não informado"}",
+            LudaryxMessageBox.Show(
+                LocalizationService.Format("Arte baixada com sucesso do SteamGridDB.\n\nTamanho: {0}×{1}\nPontuação: {2}\nEstilo: {3}\nAutor: {4}", result.Width, result.Height, result.Score, result.Style ?? LocalizationService.Translate("não informado"), result.Author ?? LocalizationService.Translate("não informado")),
                 "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -644,7 +644,7 @@ public partial class DetailsWindow : Window
             var apiKey = _settings.SteamGridDbApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     "Configure a API Key do SteamGridDB em Configurações → SteamGridDB e tente novamente.",
                     "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -655,7 +655,7 @@ public partial class DetailsWindow : Window
             Mouse.OverrideCursor = null;
             if (gameId is null)
             {
-                MessageBox.Show("O SteamGridDB não encontrou um jogo correspondente. Use CORRIGIR JOGO DO STEAMGRIDDB para escolher manualmente.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
+                LudaryxMessageBox.Show("O SteamGridDB não encontrou um jogo correspondente. Use CORRIGIR JOGO DO STEAMGRIDDB para escolher manualmente.", "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -669,7 +669,7 @@ public partial class DetailsWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

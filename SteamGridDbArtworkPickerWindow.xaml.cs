@@ -54,14 +54,14 @@ public partial class SteamGridDbArtworkPickerWindow : Window
             ArtworkList.ItemsSource = options;
             if (options.Count == 0)
             {
-                MessageBox.Show(
+                LudaryxMessageBox.Show(
                     "Nenhuma arte compatível foi encontrada para este jogo.\n\nVocê pode tentar corrigir o jogo do SteamGridDB e pesquisar novamente.",
                     "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -107,7 +107,7 @@ public partial class SteamGridDbArtworkPickerWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "SteamGridDB", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

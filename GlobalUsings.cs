@@ -7,7 +7,6 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 // Resolve WPF/Windows Forms name collisions introduced by UseWindowsForms.
-global using MessageBox = System.Windows.MessageBox;
 global using Button = System.Windows.Controls.Button;
 global using ComboBox = System.Windows.Controls.ComboBox;
 global using TextBox = System.Windows.Controls.TextBox;

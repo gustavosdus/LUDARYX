@@ -113,7 +113,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             StatusText.Text = "Erro ao carregar biblioteca";
-            MessageBox.Show(ex.Message, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Error);
+            LudaryxMessageBox.ShowError(ex, "LUDARYX", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
