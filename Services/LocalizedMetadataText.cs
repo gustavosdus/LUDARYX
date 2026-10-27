@@ -5,13 +5,14 @@ namespace UnifiedGameLauncher.Services;
 /// <summary>Locale-tagged display text. Untagged legacy text is never assumed to be English.</summary>
 public static class LocalizedMetadataText
 {
-    public const int CacheVersion = 1;
+    public const int CacheVersion = 2;
 
     public static void Prepare(GameMetadata metadata)
     {
         if (metadata.LocalizedTextVersion != CacheVersion)
         {
-            // Older entries could contain a provider's English fallback labelled as
+            // Older entries could mix manual titles with automatic titles, or contain
+            // a provider's English fallback labelled as
             // Japanese/Portuguese. Re-fetch text only; keep artwork and other metadata.
             metadata.LocalizedDescriptions = new(StringComparer.OrdinalIgnoreCase);
             metadata.LocalizedNames = new(StringComparer.OrdinalIgnoreCase);

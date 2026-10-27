@@ -8,7 +8,18 @@ public sealed class Game : INotifyPropertyChanged
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
-    public string DisplayName => LocalizedMetadataText.GetName(Metadata, LocalizationService.CurrentLanguage) ?? Name;
+    // Manual titles belong to settings; automatic titles stay in the metadata cache.
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Dictionary<string, string> ManualLocalizedNames { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public string DisplayName
+    {
+        get
+        {
+            var manual = LocalizedMetadataText.Exact(ManualLocalizedNames, LocalizationService.CurrentLanguage);
+            return !string.IsNullOrWhiteSpace(manual) ? manual :
+                LocalizedMetadataText.GetName(Metadata, LocalizationService.CurrentLanguage) ?? Name;
+        }
+    }
     public GamePlatform Platform
     {
         get; set;

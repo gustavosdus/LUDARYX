@@ -124,6 +124,9 @@ public partial class DetailsWindow : Window
 
         SetImage(VerticalCoverImage, _game.VerticalCover);
         SetImage(HorizontalCoverImage, _game.HorizontalCover);
+        var titleLanguage = LocalizationService.SupportedLanguages.FirstOrDefault(x => x.Code == _settings.Language).Name ?? _settings.Language;
+        ManualNameLabel.Text = $"{LocalizationService.Translate("Nome do jogo")} ({titleLanguage})";
+        ManualNameBox.ToolTip = ManualNameLabel.Text;
         ManualNameBox.Text = _initialName = _game.DisplayName;
         ManualGenresBox.Text = GenreService.DisplayManyCommaSeparated(_game.Metadata.Genres);
         ManualDeveloperBox.Text = _game.Metadata.Developer ?? "";
@@ -771,7 +774,12 @@ public partial class DetailsWindow : Window
             Description = previousManual?.Description
         };
         if (ManualNameBox.Text != _initialName)
-            manual.LocalizedNames[_settings.Language] = ManualNameBox.Text.Trim();
+        {
+            if (string.IsNullOrWhiteSpace(ManualNameBox.Text))
+                manual.LocalizedNames.Remove(_settings.Language);
+            else
+                manual.LocalizedNames[_settings.Language] = ManualNameBox.Text.Trim();
+        }
         if (ManualDescriptionBox.Text != _initialDescription)
             manual.LocalizedDescriptions[_settings.Language] = ManualDescriptionBox.Text.Trim();
         _state.SaveManualMetadata(_game, _settings, manual);

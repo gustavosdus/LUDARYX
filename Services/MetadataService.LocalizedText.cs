@@ -15,6 +15,9 @@ public sealed partial class MetadataService
     public async Task<string?> EnsureLocalizedDescriptionAsync(
         Game game, LauncherSettings settings, CancellationToken token = default, bool forceRefresh = false)
     {
+        game.ManualLocalizedNames = settings.ManualMetadata.TryGetValue(game.ProviderId, out var titleOverrides)
+            ? new(titleOverrides.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase)
+            : new(StringComparer.OrdinalIgnoreCase);
         var language = NormalizeDescriptionLanguage(settings.Language);
         var requestKey = $"{game.ProviderId}:{game.Metadata.ExternalId}:{game.Metadata.Source}:{language}";
         var gate = _localizedTextGates.GetOrAdd(game.ProviderId, _ => new SemaphoreSlim(1, 1));
@@ -46,8 +49,6 @@ public sealed partial class MetadataService
                 MergeLocalizedDescriptions(game.Metadata, metadata);
             if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual))
             {
-                foreach (var pair in manual.LocalizedNames ?? new())
-                    game.Metadata.LocalizedNames[pair.Key] = pair.Value;
                 foreach (var pair in manual.LocalizedDescriptions ?? new())
                     game.Metadata.LocalizedDescriptions[pair.Key] = pair.Value;
             }

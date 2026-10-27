@@ -159,8 +159,9 @@
                                 </Grid.RowDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,8,10">
-                                    <TextBlock Text="Nome do jogo" Style="{StaticResource LudaryxLabel}"/>
+                                    <TextBlock x:Name="ManualNameLabel" Text="Nome do jogo" Style="{StaticResource LudaryxLabel}"/>
                                     <TextBox x:Name="ManualNameBox" ToolTip="Nome"/>
+                                    <TextBlock Text="Deixe vazio e salve para usar o título dos metadados." TextWrapping="Wrap" Opacity="0.7" Margin="0,4,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,0,8,10">
                                     <TextBlock Text="Gêneros" Style="{StaticResource LudaryxLabel}"/>

@@ -14,6 +14,14 @@ public static partial class LocalizationService
     private static readonly Translation[] SupplementalTranslations =
     [
         new(
+            PtBr: "Deixe vazio e salve para usar o título dos metadados.",
+            PtPt: "Deixe vazio e guarde para usar o título dos metadados.",
+            EnUs: "Leave empty and save to use the metadata title.",
+            EnGb: "Leave empty and save to use the metadata title.",
+            Es419: "Déjalo vacío y guarda para usar el título de los metadatos.",
+            EsEs: "Déjalo vacío y guarda para usar el título de los metadatos.",
+            JaJp: "空欄にして保存すると、メタデータのタイトルを使用します。"),
+        new(
             PtBr: "A atualização de metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde.",
             PtPt: "A atualização dos metadados atingiu o limite de tempo. Os dados disponíveis foram mantidos. Tente novamente mais tarde.",
             EnUs: "The metadata update timed out. Available data has been kept. Please try again later.",

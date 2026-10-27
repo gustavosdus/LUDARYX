@@ -99,6 +99,39 @@ internal static class MetadataRegression
             Require(LocalizedMetadataText.GetName(game.Metadata, "ja-JP") == "日本語のタイトル", "Japanese title was not stored.");
             Require(game.Name == "Stable installed name", "Localization changed the discovery identity.");
 
+            var previousLanguage = LocalizationService.CurrentLanguage;
+            try
+            {
+                var state = new GameStateService();
+                settings.ManualMetadata[game.ProviderId] = new ManualGameMetadata
+                {
+                    LocalizedNames = new() { ["ja-JP"] = "私のタイトル", ["pt-BR"] = "Meu título" }
+                };
+                state.Apply(game, settings);
+                LocalizationService.SetLanguage("ja-JP");
+                Require(game.DisplayName == "私のタイトル", "Japanese manual title was ignored.");
+                LocalizationService.SetLanguage("pt-BR");
+                Require(game.DisplayName == "Meu título", "Portuguese manual title was ignored.");
+                LocalizationService.SetLanguage("en-US");
+                Require(game.DisplayName == "English title", "Manual title leaked into another language.");
+                Require(game.Metadata.LocalizedNames["ja-JP"] == "日本語のタイトル", "Manual title overwrote the automatic title.");
+                await service.EnsureLocalizedDescriptionAsync(game, settings, forceRefresh: true);
+                LocalizationService.SetLanguage("ja-JP");
+                Require(game.DisplayName == "私のタイトル", "Metadata refresh erased the manual title.");
+                var restoredSettings = JsonSerializer.Deserialize<LauncherSettings>(JsonSerializer.Serialize(settings))!;
+                restoredSettings.ManualMetadata[game.ProviderId].LocalizedNames.Remove("ja-JP");
+                state.Apply(game, restoredSettings);
+                Require(game.DisplayName == "日本語のタイトル", "Removing the override did not restore the automatic title.");
+                LocalizationService.SetLanguage("pt-BR");
+                Require(game.DisplayName == "Meu título", "Removing one locale erased another manual title.");
+                settings.ManualMetadata.Clear();
+                state.Apply(game, settings);
+            }
+            finally
+            {
+                LocalizationService.SetLanguage(previousLanguage);
+            }
+
             settings.Language = "pt-BR";
             await service.EnsureLocalizedDescriptionAsync(game, settings);
             Require(service.GetDisplayDescription(game, settings) == English, "Missing Portuguese text did not fall back to English.");

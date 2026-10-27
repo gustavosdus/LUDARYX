@@ -140,7 +140,9 @@ public static class DuplicateMetadataService
         targetManual.Name = sourceManual?.Name ?? source.Name;
         target.Name = targetManual.Name;
         targetManual.Description = sourceManual?.Description;
-        targetManual.LocalizedNames = new(sourceManual?.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase);
+        // Preserve each entry's explicit per-language title choices.
+        targetManual.LocalizedNames ??= new(StringComparer.OrdinalIgnoreCase);
+        target.ManualLocalizedNames = new(targetManual.LocalizedNames, StringComparer.OrdinalIgnoreCase);
         targetManual.LocalizedDescriptions = new(sourceManual?.LocalizedDescriptions ?? new(), StringComparer.OrdinalIgnoreCase);
         targetManual.Genres = sourceManual?.Genres?.ToList() ?? new();
         targetManual.Developer = sourceManual?.Developer;

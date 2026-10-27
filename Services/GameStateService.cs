@@ -17,6 +17,7 @@ public sealed class GameStateService
             game.PlayCount = count;
         if (settings.TotalPlayTimeSeconds.TryGetValue(game.ProviderId, out var seconds))
             game.TotalPlayTimeSeconds = seconds;
+        game.ManualLocalizedNames.Clear();
         if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual))
             ApplyManualMetadata(game, manual);
     }
@@ -89,11 +90,10 @@ public sealed class GameStateService
     {
         if (!string.IsNullOrWhiteSpace(manual.Name))
             game.Name = manual.Name.Trim();
-        if (manual.LocalizedNames is { Count: > 0 } || manual.LocalizedDescriptions is { Count: > 0 })
+        game.ManualLocalizedNames = new(manual.LocalizedNames ?? new(), StringComparer.OrdinalIgnoreCase);
+        if (manual.LocalizedDescriptions is { Count: > 0 })
         {
             LocalizedMetadataText.Prepare(game.Metadata);
-            foreach (var pair in manual.LocalizedNames ?? new())
-                game.Metadata.LocalizedNames[pair.Key] = pair.Value;
             foreach (var pair in manual.LocalizedDescriptions ?? new())
                 game.Metadata.LocalizedDescriptions[pair.Key] = pair.Value;
         }
