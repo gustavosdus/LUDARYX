@@ -348,6 +348,12 @@ public sealed partial class MetadataService
         metadata.CustomHorizontalCoverLocalPath = game.Metadata.CustomHorizontalCoverLocalPath;
         metadata.CustomVerticalCoverLocalPath = game.Metadata.CustomVerticalCoverLocalPath;
 
+        // Publish recovered text before optional artwork downloads can time out.
+        lock (_cacheSync)
+            _cache[key] = metadata;
+        Apply(game, metadata);
+        SaveCache();
+
         if (game.Platform == GamePlatform.Steam)
             await EnsureSteamVerticalCoverAsync(metadata, game, token);
 
@@ -2217,6 +2223,8 @@ public sealed partial class MetadataService
         ReadGenresFromProperties(root, metadata.Genres);
         ReadGenresRecursive(root, metadata.Genres);
 
+        // All GOG callers above explicitly request an English locale.
+        StoreEnglishDescription(metadata);
         var hasUsefulData = !string.IsNullOrWhiteSpace(metadata.Description) ||
                             !string.IsNullOrWhiteSpace(metadata.Developer) ||
                             !string.IsNullOrWhiteSpace(metadata.Publisher) ||
@@ -2820,6 +2828,8 @@ public sealed partial class MetadataService
 
     private static void MergeLocalizedDescriptions(GameMetadata target, GameMetadata source)
     {
+        if (source.LocalizedTextVersion == 1)
+            LocalizedMetadataText.Prepare(source);
         if (source.LocalizedTextVersion == LocalizedMetadataText.CacheVersion)
         {
             LocalizedMetadataText.Prepare(target);
@@ -3118,6 +3128,7 @@ public sealed partial class MetadataService
             // O parágrafo inicial costuma separar melhor o estúdio principal e a
             // publicadora do que listas amplas de claims do Wikidata. Nunca inventa
             // empresas: só aplica quando a frase contém explicitamente developed/published.
+            StoreEnglishDescription(metadata);
             ApplyCompaniesFromDescription(metadata);
 
             GenreService.NormalizeInPlace(metadata);
@@ -3177,7 +3188,11 @@ public sealed partial class MetadataService
             return null;
 
         // Tenta primeiro os títulos mais prováveis, sem depender da pesquisa geral.
-        foreach (var title in new[] { gameName.Trim(), $"{gameName.Trim()} (video game)" })
+        // The Komplete edition is documented in the 2011 game's article.
+        // https://en.wikipedia.org/wiki/Mortal_Kombat_(2011_video_game)
+        var editionArticle = NormalizeTitle(gameName) == "mortalkombatkompleteedition"
+            ? "Mortal Kombat (2011 video game)" : gameName.Trim();
+        foreach (var title in new[] { editionArticle, gameName.Trim(), $"{gameName.Trim()} (video game)" }.Distinct())
         {
             var summary = await GetWikipediaSummaryAsync(title, token);
             if (!IsLowQualityDescription(summary) && SummaryMatchesGame(summary, gameName))

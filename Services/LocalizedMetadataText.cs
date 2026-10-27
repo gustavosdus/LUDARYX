@@ -14,7 +14,10 @@ public static class LocalizedMetadataText
             // Older entries could mix manual titles with automatic titles, or contain
             // a provider's English fallback labelled as
             // Japanese/Portuguese. Re-fetch text only; keep artwork and other metadata.
-            metadata.LocalizedDescriptions = new(StringComparer.OrdinalIgnoreCase);
+            // Version 1 descriptions already have verified locale tags. Only titles
+            // require migration when separating manual and automatic names.
+            if (metadata.LocalizedTextVersion < 1)
+                metadata.LocalizedDescriptions = new(StringComparer.OrdinalIgnoreCase);
             metadata.LocalizedNames = new(StringComparer.OrdinalIgnoreCase);
             metadata.LocalizedTextVersion = CacheVersion;
         }
@@ -39,7 +42,7 @@ public static class LocalizedMetadataText
     }
 
     public static string? GetDescription(GameMetadata metadata, string language) =>
-        metadata.LocalizedTextVersion == CacheVersion ? Select(metadata.LocalizedDescriptions, language) : null;
+        metadata.LocalizedTextVersion >= 1 ? Select(metadata.LocalizedDescriptions, language) : null;
 
     public static string? GetName(GameMetadata metadata, string language) =>
         metadata.LocalizedTextVersion == CacheVersion ? Select(metadata.LocalizedNames, language) : null;

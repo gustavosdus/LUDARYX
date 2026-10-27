@@ -88,6 +88,7 @@ internal static class MetadataRegression
                 Require(LocalizedMetadataText.GetDescription(retryGame.Metadata, "ja-JP") == Japanese,
                     "Duplicate synchronization erased the freshly localized description.");
             }
+            await CheckDescriptionRecoveryAsync(folder);
             await CheckManualPrecedenceAsync(folder);
             var service = new MetadataService(http, folder);
             var game = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Stable installed name" };
@@ -160,6 +161,60 @@ internal static class MetadataRegression
         {
             if (Directory.Exists(folder))
                 Directory.Delete(folder, true);
+        }
+    }
+
+    private static async Task CheckDescriptionRecoveryAsync(string folder)
+    {
+        var legacy = new GameMetadata { LocalizedTextVersion = 1 };
+        legacy.LocalizedDescriptions["en-US"] = English;
+        legacy.LocalizedDescriptions["ja-JP"] = Japanese;
+        LocalizedMetadataText.Prepare(legacy);
+        Require(LocalizedMetadataText.GetDescription(legacy, "ja-JP") == Japanese,
+            "Title cache migration erased a valid localized description.");
+        var handler = new RecoveryHandler();
+        using var http = new HttpClient(handler);
+        var service = new MetadataService(http, Path.Combine(folder, "recovery"));
+        var settings = new LauncherSettings { Language = "en-US" };
+        foreach (var name in new[] { "Mortal Kombat 4", "Mortal Kombat Trilogy", "Mortal Kombat Komplete Edition" })
+        {
+            var game = new Game { Id = name, Name = name,
+                Platform = name.Contains("Komplete") ? GamePlatform.Manual : GamePlatform.GOG };
+            await service.EnsureLocalizedDescriptionAsync(game, settings, forceRefresh: true);
+            Require(!string.IsNullOrWhiteSpace(service.GetDisplayDescription(game, settings)),
+                $"Known English source text was not displayed for {name}.");
+            var recovered = service.GetDisplayDescription(game, settings);
+            handler.Unavailable = true;
+            await service.EnsureLocalizedDescriptionAsync(game, settings, forceRefresh: true);
+            Require(service.GetDisplayDescription(game, settings) == recovered,
+                "An unavailable source erased a recovered description.");
+            settings.Language = "ja-JP";
+            Require(service.GetDisplayDescription(game, settings) == recovered,
+                "Recovered English text was not available as fallback.");
+            settings.Language = "en-US";
+            handler.Unavailable = false;
+        }
+    }
+
+    private sealed class RecoveryHandler : HttpMessageHandler
+    {
+        public bool Unavailable { get; set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (Unavailable)
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
+            object? payload = null;
+            if (request.RequestUri!.Host == "api.gog.com")
+                payload = new { title = "GOG fixture title", description = new { full = English } };
+            else if (Uri.UnescapeDataString(request.RequestUri.AbsolutePath).Contains("Mortal_Kombat_(2011_video_game)"))
+                payload = new { extract = "Mortal Kombat Komplete Edition is a fighting video game. " + English };
+            return Task.FromResult(payload is null
+                ? new HttpResponseMessage(HttpStatusCode.NotFound)
+                : new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+                });
         }
     }
 

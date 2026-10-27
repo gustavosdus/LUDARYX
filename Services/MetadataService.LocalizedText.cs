@@ -40,9 +40,9 @@ public sealed partial class MetadataService
             // Fetch English independently. A fallback response must never be saved
             // under the requested locale, otherwise future refreshes never retry it.
             if (forceRefresh || !metadata.LocalizedNames.ContainsKey("en-US") || !metadata.LocalizedDescriptions.ContainsKey("en-US"))
-                await FetchAndStoreLocaleAsync(metadata, game.Name, appId, "en-US", token);
+                await FetchAndStoreLocaleAsync(metadata, game, appId, "en-US", token);
             if (!language.Equals("en-US", StringComparison.OrdinalIgnoreCase))
-                await FetchAndStoreLocaleAsync(metadata, game.Name, appId, language, token);
+                await FetchAndStoreLocaleAsync(metadata, game, appId, language, token);
 
             // Metadata enrichment can replace the object while a request is running.
             if (!ReferenceEquals(game.Metadata, metadata))
@@ -66,10 +66,17 @@ public sealed partial class MetadataService
     }
 
     private async Task FetchAndStoreLocaleAsync(
-        GameMetadata metadata, string lookupName, int? appId, string language, CancellationToken token)
+        GameMetadata metadata, Game game, int? appId, string language, CancellationToken token)
     {
+        var lookupName = game.Name;
         var english = LocalizedMetadataText.Select(metadata.LocalizedDescriptions, "en-US");
         var text = appId.HasValue ? await FetchSteamTextAsync(appId.Value, language, token) : null;
+        if (text is null && game.Platform == GamePlatform.GOG && language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+        {
+            var gog = await GetGogMetadataByProductIdAsync(game.Id, game, token);
+            if (gog is not null)
+                text = new LocalizedStoreText(gog.CanonicalName, LocalizedMetadataText.GetDescription(gog, "en-US"));
+        }
         var name = text?.Name;
         var englishName = LocalizedMetadataText.Select(metadata.LocalizedNames, "en-US");
         if (!language.StartsWith("en", StringComparison.OrdinalIgnoreCase) &&
@@ -88,10 +95,23 @@ public sealed partial class MetadataService
         if (IsLowQualityDescription(description))
             description = await GetLocalizedWikipediaDescriptionAsync(lookupName, language, token);
 
+        if (IsLowQualityDescription(description) && language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+            description = await GetWikipediaSummaryByExactGameNameAsync(lookupName, token);
+
         if (!string.IsNullOrWhiteSpace(name))
             metadata.LocalizedNames[language] = name.Trim();
         if (IsRequestedDescription(description, language, english))
             metadata.LocalizedDescriptions[language] = SanitizeDescription(description)!;
+    }
+
+    // Called only at acquisition points with a known English source, never for
+    // an untagged legacy cache entry whose language cannot be established.
+    private static void StoreEnglishDescription(GameMetadata metadata)
+    {
+        if (!IsRequestedDescription(metadata.Description, "en-US", null))
+            return;
+        LocalizedMetadataText.Prepare(metadata);
+        metadata.LocalizedDescriptions["en-US"] = SanitizeDescription(metadata.Description)!;
     }
 
     private static bool IsRequestedDescription(string? value, string language, string? english)
