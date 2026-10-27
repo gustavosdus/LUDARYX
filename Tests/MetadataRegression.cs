@@ -88,6 +88,7 @@ internal static class MetadataRegression
                 Require(LocalizedMetadataText.GetDescription(retryGame.Metadata, "ja-JP") == Japanese,
                     "Duplicate synchronization erased the freshly localized description.");
             }
+            await CheckDescriptionPriorityAsync(folder);
             await CheckDescriptionRecoveryAsync(folder);
             await CheckManualPrecedenceAsync(folder);
             var service = new MetadataService(http, folder);
@@ -178,6 +179,49 @@ internal static class MetadataRegression
         {
             if (Directory.Exists(folder))
                 Directory.Delete(folder, true);
+        }
+    }
+
+    private static async Task CheckDescriptionPriorityAsync(string folder)
+    {
+        foreach (var preferred in new[] { "Steam", "Wikipedia", "GOG" })
+        {
+            using var http = new HttpClient(new PriorityHandler(preferred));
+            var service = new MetadataService(http, Path.Combine(folder, "priority-" + preferred));
+            var game = new Game { Id = "999", Name = "Priority Game", Platform = GamePlatform.GOG };
+            var settings = new LauncherSettings { Language = "en-US" };
+            await service.EnsureLocalizedDescriptionAsync(game, settings, forceRefresh: true);
+            Require(game.Metadata.LocalizedDescriptionSources["en-US"] == preferred,
+                $"Expected {preferred} description priority.");
+            var selected = service.GetDisplayDescription(game, settings);
+            LocalizedMetadataText.StoreDescription(game.Metadata, "en-US", "GOG replacement: " + English, "GOG");
+            if (preferred != "GOG")
+                Require(service.GetDisplayDescription(game, settings) == selected, "GOG replaced a higher-priority cached description.");
+            settings.ManualMetadata[game.ProviderId] = new ManualGameMetadata
+            { LocalizedDescriptions = new() { ["en-US"] = "My own description" } };
+            Require(service.GetDisplayDescription(game, settings) == "My own description", "Source priority replaced manual text.");
+        }
+    }
+
+    private sealed class PriorityHandler(string preferred) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var uri = request.RequestUri!;
+            object? payload = null;
+            if (uri.AbsolutePath.Contains("storesearch"))
+                payload = new { items = new[] { new { id = 123, name = "Priority Game" } } };
+            else if (uri.AbsolutePath.Contains("appdetails") && preferred == "Steam")
+                payload = new Dictionary<string, object> { ["123"] = new { success = true,
+                    data = new { name = "Priority Game", short_description = "Steam: " + English } } };
+            else if (uri.Host == "en.wikipedia.org" && preferred != "GOG" && uri.AbsolutePath.Contains("summary"))
+                payload = new { extract = "Priority Game is a video game. Wikipedia: " + English };
+            else if (uri.Host == "api.gog.com")
+                payload = new { title = "Priority Game", description = new { full = "GOG: " + English } };
+            return Task.FromResult(payload is null
+                ? new HttpResponseMessage(HttpStatusCode.NotFound)
+                : new HttpResponseMessage(HttpStatusCode.OK)
+                { Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json") });
         }
     }
 

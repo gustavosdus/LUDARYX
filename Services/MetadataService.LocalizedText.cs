@@ -37,6 +37,10 @@ public sealed partial class MetadataService
                 : metadata.Source?.Contains("Steam Store", StringComparison.OrdinalIgnoreCase) == true &&
                   int.TryParse(metadata.ExternalId, out var relatedId) ? relatedId : null;
 
+            // GOG IDs are not Steam App IDs. Match the exact title before consulting Steam.
+            if (!appId.HasValue && game.Platform == GamePlatform.GOG)
+                appId = await FindSteamAppIdByStoreSearchApiAsync(game.Name, token);
+
             // Fetch English independently. A fallback response must never be saved
             // under the requested locale, otherwise future refreshes never retry it.
             if (forceRefresh || !metadata.LocalizedNames.ContainsKey("en-US") || !metadata.LocalizedDescriptions.ContainsKey("en-US"))
@@ -66,18 +70,13 @@ public sealed partial class MetadataService
         var lookupName = game.Name;
         var english = LocalizedMetadataText.Select(metadata.LocalizedDescriptions, "en-US");
         var text = appId.HasValue ? await FetchSteamTextAsync(appId.Value, language, token) : null;
-        if (text is null && game.Platform == GamePlatform.GOG && language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
-        {
-            var gog = await GetGogMetadataByProductIdAsync(game.Id, game, token);
-            if (gog is not null)
-                text = new LocalizedStoreText(gog.CanonicalName, LocalizedMetadataText.GetDescription(gog, "en-US"));
-        }
         var name = text?.Name;
         var englishName = LocalizedMetadataText.Select(metadata.LocalizedNames, "en-US");
         if (!language.StartsWith("en", StringComparison.OrdinalIgnoreCase) &&
             string.Equals(name, englishName, StringComparison.OrdinalIgnoreCase))
             name = null;
         var description = text?.Description;
+        var descriptionSource = "Steam";
         if (!IsRequestedDescription(description, language, english))
             description = null;
 
@@ -85,18 +84,37 @@ public sealed partial class MetadataService
         {
             var wiki = await FetchLinkedWikipediaTextAsync(lookupName, language, token);
             name = string.IsNullOrWhiteSpace(name) ? wiki?.Name : name;
-            description = IsLowQualityDescription(description) ? wiki?.Description : description;
+            if (IsLowQualityDescription(description))
+            {
+                description = wiki?.Description;
+                descriptionSource = "Wikipedia";
+            }
         }
         if (IsLowQualityDescription(description))
+        {
+            descriptionSource = "Wikipedia";
             description = await GetLocalizedWikipediaDescriptionAsync(lookupName, language, token);
+        }
 
         if (IsLowQualityDescription(description) && language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
             description = await GetWikipediaSummaryByExactGameNameAsync(lookupName, token);
 
+        if (!IsRequestedDescription(description, language, english) &&
+            game.Platform == GamePlatform.GOG && language.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+        {
+            var gog = await GetGogMetadataByProductIdAsync(game.Id, game, token);
+            if (gog is not null)
+            {
+                name = string.IsNullOrWhiteSpace(name) ? gog.CanonicalName : name;
+                description = LocalizedMetadataText.GetDescription(gog, "en-US");
+                descriptionSource = "GOG";
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(name))
             metadata.LocalizedNames[language] = name.Trim();
         if (IsRequestedDescription(description, language, english))
-            metadata.LocalizedDescriptions[language] = SanitizeDescription(description)!;
+            LocalizedMetadataText.StoreDescription(metadata, language, SanitizeDescription(description)!, descriptionSource);
     }
 
     // Called only at acquisition points with a known English source, never for
@@ -106,7 +124,8 @@ public sealed partial class MetadataService
         if (!IsRequestedDescription(metadata.Description, "en-US", null))
             return;
         LocalizedMetadataText.Prepare(metadata);
-        metadata.LocalizedDescriptions["en-US"] = SanitizeDescription(metadata.Description)!;
+        LocalizedMetadataText.StoreDescription(metadata, "en-US", SanitizeDescription(metadata.Description)!,
+            metadata.Source == "GOG" ? "GOG" : "Wikipedia");
     }
 
     private static bool IsRequestedDescription(string? value, string language, string? english)

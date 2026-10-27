@@ -2845,10 +2845,13 @@ public sealed partial class MetadataService
         foreach (var pair in source.LocalizedDescriptions)
         {
             if (!string.IsNullOrWhiteSpace(pair.Key) &&
-                !IsLowQualityDescription(pair.Value) &&
-                !target.LocalizedDescriptions.ContainsKey(pair.Key))
+                !IsLowQualityDescription(pair.Value))
             {
-                target.LocalizedDescriptions[pair.Key] = pair.Value;
+                var incomingSource = LocalizedMetadataText.Exact(source.LocalizedDescriptionSources, pair.Key);
+                var existingSource = LocalizedMetadataText.Exact(target.LocalizedDescriptionSources, pair.Key);
+                if (!target.LocalizedDescriptions.ContainsKey(pair.Key) ||
+                    LocalizedMetadataText.DescriptionPriority(incomingSource) < LocalizedMetadataText.DescriptionPriority(existingSource))
+                    LocalizedMetadataText.StoreDescription(target, pair.Key, pair.Value, incomingSource ?? "Unknown");
             }
         }
     }

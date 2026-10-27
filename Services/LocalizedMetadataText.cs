@@ -21,8 +21,28 @@ public static class LocalizedMetadataText
             metadata.LocalizedNames = new(StringComparer.OrdinalIgnoreCase);
             metadata.LocalizedTextVersion = CacheVersion;
         }
+        metadata.LocalizedDescriptionSources ??= new(StringComparer.OrdinalIgnoreCase);
         metadata.LocalizedDescriptions ??= new(StringComparer.OrdinalIgnoreCase);
         metadata.LocalizedNames ??= new(StringComparer.OrdinalIgnoreCase);
+    }
+
+    public static int DescriptionPriority(string? source) => source switch
+    {
+        "Steam" => 0,
+        "Wikipedia" => 1,
+        "GOG" => 2,
+        _ => 3
+    };
+
+    public static void StoreDescription(GameMetadata metadata, string language, string text, string source)
+    {
+        Prepare(metadata);
+        var existing = Exact(metadata.LocalizedDescriptions, language);
+        if (!string.IsNullOrWhiteSpace(existing) &&
+            DescriptionPriority(Exact(metadata.LocalizedDescriptionSources, language)) < DescriptionPriority(source))
+            return;
+        metadata.LocalizedDescriptions[language] = text;
+        metadata.LocalizedDescriptionSources[language] = source;
     }
 
     public static string? Exact(IReadOnlyDictionary<string, string>? values, string language) =>

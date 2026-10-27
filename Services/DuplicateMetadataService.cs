@@ -100,7 +100,11 @@ public static class DuplicateMetadataService
             foreach (var pair in source.LocalizedNames ?? new())
                 target.LocalizedNames.TryAdd(pair.Key, pair.Value);
             foreach (var pair in source.LocalizedDescriptions ?? new())
-                target.LocalizedDescriptions.TryAdd(pair.Key, pair.Value);
+            {
+                if (!target.LocalizedDescriptions.ContainsKey(pair.Key))
+                    LocalizedMetadataText.StoreDescription(target, pair.Key, pair.Value,
+                        LocalizedMetadataText.Exact(source.LocalizedDescriptionSources, pair.Key) ?? "Unknown");
+            }
         }
         target.Description = source.Description;
         target.Genres = source.Genres.ToList();
