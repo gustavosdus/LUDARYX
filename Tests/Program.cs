@@ -170,13 +170,19 @@ internal static class Program
         panel.Children.Add(text);
         panel.Children.Add(pin);
         panel.Children.Add(primary);
-        var window = new Window { Content = panel };
+        var window = new Window { Content = panel, Width = 360, Height = 220, ShowInTaskbar = false };
+        text.ToolTip = tooltip;
+        tooltip.PlacementTarget = text;
+        window.Show();
+        tooltip.IsOpen = true;
         try
         {
             foreach (var theme in new[] { "Light", "Dark", "Light" })
             {
                 LudaryxThemeService.Apply(new LauncherSettings { Theme = theme });
                 window.UpdateLayout();
+                tooltip.UpdateLayout();
+                app.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
                 var expectedCaret = theme == "Light" ? Colors.Black : Colors.White;
                 Require(((SolidColorBrush)text.CaretBrush).Color == expectedCaret, "Text caret did not follow the theme.");
                 Require(((SolidColorBrush)pin.CaretBrush).Color == expectedCaret, "PIN caret did not follow the theme.");
@@ -200,7 +206,7 @@ internal static class Program
                 }
             }
         }
-        finally { window.Close(); }
+        finally { tooltip.IsOpen = false; window.Close(); }
     }
 
     private static double Luminance(Color color)
