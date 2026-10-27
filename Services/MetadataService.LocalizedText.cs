@@ -47,11 +47,6 @@ public sealed partial class MetadataService
             // Metadata enrichment can replace the object while a request is running.
             if (!ReferenceEquals(game.Metadata, metadata))
                 MergeLocalizedDescriptions(game.Metadata, metadata);
-            if (settings.ManualMetadata.TryGetValue(game.ProviderId, out var manual))
-            {
-                foreach (var pair in manual.LocalizedDescriptions ?? new())
-                    game.Metadata.LocalizedDescriptions[pair.Key] = pair.Value;
-            }
             lock (_cacheSync)
                 _cache[game.ProviderId] = game.Metadata;
             SaveCache();

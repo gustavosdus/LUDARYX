@@ -14,6 +14,14 @@ public static partial class LocalizationService
     private static readonly Translation[] SupplementalTranslations =
     [
         new(
+            PtBr: "Deixe vazio e salve para usar a descrição dos metadados.",
+            PtPt: "Deixe vazio e guarde para usar a descrição dos metadados.",
+            EnUs: "Leave empty and save to use the metadata description.",
+            EnGb: "Leave empty and save to use the metadata description.",
+            Es419: "Déjalo vacío y guarda para usar la descripción de los metadatos.",
+            EsEs: "Déjalo vacío y guarda para usar la descripción de los metadatos.",
+            JaJp: "空欄にして保存すると、メタデータの説明を使用します。"),
+        new(
             PtBr: "Deixe vazio e salve para usar o título dos metadados.",
             PtPt: "Deixe vazio e guarde para usar o título dos metadados.",
             EnUs: "Leave empty and save to use the metadata title.",

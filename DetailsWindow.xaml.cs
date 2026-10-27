@@ -135,6 +135,8 @@ public partial class DetailsWindow : Window
         var preferredRatingSystem = AgeRatingService.GetPreferredSystemKey(_settings.Language);
         ManualAgeRatingBox.Text = AgeRatingService.GetValue(_game.Metadata, preferredRatingSystem) ?? "";
         ManualAgeRatingBox.ToolTip = $"{LocalizationService.Translate("Classificação indicativa")} ({AgeRatingService.GetPreferredSystemLabel(_settings.Language)})";
+        ManualDescriptionLabel.Text = $"{LocalizationService.Translate("Descrição")} ({titleLanguage})";
+        ManualDescriptionBox.ToolTip = ManualDescriptionLabel.Text;
         ManualDescriptionBox.Text = _initialDescription = displayDescription ?? "";
         EditManualLaunchButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
         DuplicateManualGameButton.Visibility = _game.Platform == GamePlatform.Manual ? Visibility.Visible : Visibility.Collapsed;
@@ -781,7 +783,12 @@ public partial class DetailsWindow : Window
                 manual.LocalizedNames[_settings.Language] = ManualNameBox.Text.Trim();
         }
         if (ManualDescriptionBox.Text != _initialDescription)
-            manual.LocalizedDescriptions[_settings.Language] = ManualDescriptionBox.Text.Trim();
+        {
+            if (string.IsNullOrWhiteSpace(ManualDescriptionBox.Text))
+                manual.LocalizedDescriptions.Remove(_settings.Language);
+            else
+                manual.LocalizedDescriptions[_settings.Language] = ManualDescriptionBox.Text.Trim();
+        }
         _state.SaveManualMetadata(_game, _settings, manual);
         _game.RefreshLocalizedLabels();
         LoadData();

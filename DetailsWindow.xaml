@@ -186,9 +186,10 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Grid.ColumnSpan="3">
-                                    <TextBlock Text="Descrição" Style="{StaticResource LudaryxLabel}"/>
+                                    <TextBlock x:Name="ManualDescriptionLabel" Text="Descrição" Style="{StaticResource LudaryxLabel}"/>
                                     <TextBox x:Name="ManualDescriptionBox" Height="96" TextWrapping="Wrap"
                                              AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ToolTip="Descrição"/>
+                                    <TextBlock Text="Deixe vazio e salve para usar a descrição dos metadados." TextWrapping="Wrap" Opacity="0.7" Margin="0,4,0,0"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

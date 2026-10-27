@@ -150,6 +150,23 @@ internal static class MetadataRegression
             settings.ManualMetadata[game.ProviderId].LocalizedDescriptions["ja-JP"] = "手動の説明";
             Require(service.GetDisplayDescription(game, settings) == "手動の説明", "Locale-specific manual override was ignored.");
 
+            settings.ManualMetadata[game.ProviderId].LocalizedDescriptions["pt-BR"] = "Minha descrição";
+            new GameStateService().Apply(game, settings);
+            await service.EnsureLocalizedDescriptionAsync(game, settings, forceRefresh: true);
+            Require(service.GetDisplayDescription(game, settings) == "手動の説明", "Refresh erased the Japanese manual description.");
+            Require(game.Metadata.LocalizedDescriptions["ja-JP"] == Japanese, "Manual description overwrote the automatic cache.");
+            settings.Language = "pt-BR";
+            Require(service.GetDisplayDescription(game, settings) == "Minha descrição", "Portuguese manual description was not selected.");
+            settings.Language = "es-ES";
+            Require(service.GetDisplayDescription(game, settings) == English, "Manual English description leaked into another locale.");
+            settings = JsonSerializer.Deserialize<LauncherSettings>(JsonSerializer.Serialize(settings))!;
+            settings.ManualMetadata[game.ProviderId].LocalizedDescriptions.Remove("ja-JP");
+            settings.Language = "ja-JP";
+            new GameStateService().Apply(game, settings);
+            Require(service.GetDisplayDescription(game, settings) == Japanese, "Clearing the override did not restore automatic Japanese.");
+            Require(settings.ManualMetadata[game.ProviderId].LocalizedDescriptions["pt-BR"] == "Minha descrição",
+                "Clearing Japanese removed the Portuguese description.");
+
             using var reloadedHttp = new HttpClient(new FixtureHandler());
             var reloaded = new MetadataService(reloadedHttp, folder);
             var restored = new Game { Id = "123", Platform = GamePlatform.Steam, Name = "Stable installed name" };

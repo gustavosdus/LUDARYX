@@ -395,12 +395,12 @@ public sealed partial class MetadataService
         var exactManual = LocalizedMetadataText.Exact(manual?.LocalizedDescriptions, settings.Language);
         if (!string.IsNullOrWhiteSpace(exactManual))
             return exactManual;
-        var exactAutomatic = game.Metadata.LocalizedTextVersion == LocalizedMetadataText.CacheVersion
+        var exactAutomatic = game.Metadata.LocalizedTextVersion >= 1
             ? LocalizedMetadataText.Exact(game.Metadata.LocalizedDescriptions, settings.Language) : null;
         if (!string.IsNullOrWhiteSpace(exactAutomatic))
             return exactAutomatic;
-        return LocalizedMetadataText.Select(manual?.LocalizedDescriptions, "en-US")
-            ?? LocalizedMetadataText.GetDescription(game.Metadata, "en-US");
+        // Manual text applies only to its selected locale, just like manual titles.
+        return LocalizedMetadataText.GetDescription(game.Metadata, "en-US");
     }
 
     public async Task EnsureLocalizedAgeRatingAsync(
