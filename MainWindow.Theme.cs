@@ -144,9 +144,9 @@ public partial class MainWindow
         UpdateQuickToolbarSettingsPresentation();
 
         var lightTheme = string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase);
-        var topBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#666B73" : "#050507"));
+        var topBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D7DCE3" : "#050507"));
         var libraryBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D9DDE3" : "#07182D"));
-        var footerBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#666B73" : "#050507"));
+        var footerBrush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D7DCE3" : "#050507"));
         var selectionBorderColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#FF163D" : "#66F5FF");
         var selectionGameFillColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#FF334F" : "#13DFFF");
 
@@ -154,15 +154,15 @@ public partial class MainWindow
         // Pesquisa e botões de ação usam um cinza levemente mais escuro para
         // ficarem perceptíveis sem destoar. No tema escuro, preservamos as
         // cores originais. O cursor da pesquisa é preto no claro e branco no escuro.
-        var toolbarFieldColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#666B73" : "#050507");
-        var searchFieldColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#565B62" : "#11151D");
-        var navButtonColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#565B62" : "#11151D");
-        var navButtonHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#60666E" : "#1A202B");
-        var navButtonPressedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#4C5158" : "#252D3A");
-        var toolbarFieldHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#737982" : "#0A0D12");
-        var toolbarPopupColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#666B73" : "#050507");
-        var toolbarItemHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#737982" : "#111A26");
-        var toolbarItemSelectedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#555B63" : "#10283D");
+        var toolbarFieldColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D7DCE3" : "#050507");
+        var searchFieldColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E1E6EC" : "#11151D");
+        var navButtonColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E1E6EC" : "#11151D");
+        var navButtonHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D3DAE3" : "#1A202B");
+        var navButtonPressedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#C3CCD7" : "#252D3A");
+        var toolbarFieldHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E5EAF0" : "#0A0D12");
+        var toolbarPopupColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#D7DCE3" : "#050507");
+        var toolbarItemHoverColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#E5EAF0" : "#111A26");
+        var toolbarItemSelectedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#C9D6E4" : "#10283D");
         var searchCaretColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(lightTheme ? "#000000" : "#FFFFFF");
 
         // Superfícies do hero/painel mantêm seus contornos próprios.

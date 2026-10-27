@@ -45,6 +45,23 @@
     <SolidColorBrush x:Key="LudaryxDangerBorder" Color="#7D233A"/>
     <SolidColorBrush x:Key="LudaryxDangerForeground" Color="#FF93A7"/>
 
+    <SolidColorBrush x:Key="LudaryxTrack" Color="#42546A"/>
+    <SolidColorBrush x:Key="LudaryxTrackHover" Color="#607991"/>
+    <SolidColorBrush x:Key="LudaryxTrackMarker" Color="#7D91A8"/>
+    <SolidColorBrush x:Key="LudaryxThumbBorder" Color="#D9FBFF"/>
+    <SolidColorBrush x:Key="LudaryxGoldText" Color="#E6C577"/>
+    <SolidColorBrush x:Key="LudaryxSun" Color="#D6A94B"/>
+    <SolidColorBrush x:Key="LudaryxMoon" Color="#A9C9E8"/>
+    <SolidColorBrush x:Key="LudaryxScrollThumb" Color="#354660"/>
+    <SolidColorBrush x:Key="LudaryxRunningBackground" Color="#0E7490"/>
+    <SolidColorBrush x:Key="LudaryxRunningForeground" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="LudaryxToastBackground" Color="#F20A1420"/>
+    <SolidColorBrush x:Key="LudaryxToastBorder" Color="#39759A"/>
+    <SolidColorBrush x:Key="LudaryxPrimaryBackground" Color="#D9153C"/>
+    <SolidColorBrush x:Key="LudaryxPrimaryBorder" Color="#FF3158"/>
+    <SolidColorBrush x:Key="LudaryxPrimaryForeground" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="LudaryxTextSelection" Color="#527CA3"/>
+
     <Style x:Key="LudaryxCard" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
@@ -119,9 +136,9 @@
     </Style>
 
     <Style x:Key="LudaryxPrimaryButton" TargetType="Button" BasedOn="{StaticResource LudaryxButton}">
-        <Setter Property="Background" Value="#D9153C"/>
-        <Setter Property="BorderBrush" Value="#FF3158"/>
-        <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxPrimaryBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxPrimaryBorder}"/>
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxPrimaryForeground}"/>
         <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
@@ -145,14 +162,14 @@
 
     <Style x:Key="LudaryxTextBox" TargetType="TextBox">
         <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
-        <Setter Property="CaretBrush" Value="White"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource SearchCaretBrush}"/>
         <Setter Property="Background" Value="{DynamicResource LudaryxInputBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="10,7"/>
         <Setter Property="MinHeight" Value="34"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="SelectionBrush" Value="#527CA3"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource LudaryxTextSelection}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -188,6 +205,8 @@
     <Style TargetType="TextBox" BasedOn="{StaticResource LudaryxTextBox}"/>
 
     <Style x:Key="LudaryxPasswordBox" TargetType="PasswordBox">
+        <Setter Property="CaretBrush" Value="{DynamicResource SearchCaretBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource LudaryxTextSelection}"/>
         <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
         <Setter Property="Background" Value="{DynamicResource LudaryxInputBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
@@ -263,7 +282,7 @@
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Box" Property="Background" Value="{StaticResource LudaryxRed}"/>
-                            <Setter TargetName="Box" Property="BorderBrush" Value="#FF5270"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
@@ -583,5 +602,23 @@
         <Setter Property="Background" Value="{DynamicResource LudaryxSeparator}"/>
         <Setter Property="Height" Value="1"/>
         <Setter Property="Margin" Value="0,12"/>
+    </Style>
+    <Style TargetType="ToolTip">
+        <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
+        <Setter Property="Background" Value="{DynamicResource LudaryxPanelBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,7"/>
+        <Setter Property="MaxWidth" Value="480"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" CornerRadius="6">
+                        <ContentPresenter TextBlock.TextWrapping="Wrap"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

@@ -22,6 +22,7 @@ internal static class Program
             CheckGeneratedControlText();
             CheckLegacySettings();
             CheckThemedDialogs();
+            CheckThemePalette();
             Console.WriteLine("Localization, WPF control updates and legacy settings checks passed.");
             return 0;
         }
@@ -156,6 +157,60 @@ internal static class Program
             "Closing confirmation must not accept it.");
         Require(UnifiedGameLauncher.LocalizedMessageWindow.DismissResult(MessageBoxButton.OKCancel) == MessageBoxResult.Cancel,
             "Closing OK/Cancel must cancel.");
+    }
+
+    private static void CheckThemePalette()
+    {
+        var app = Application.Current;
+        var text = new TextBox { Style = (Style)app.FindResource("LudaryxTextBox") };
+        var pin = new PasswordBox { Style = (Style)app.FindResource("LudaryxPasswordBox") };
+        var primary = new Button { Style = (Style)app.FindResource("LudaryxPrimaryButton") };
+        var tooltip = new ToolTip { Content = "Theme check", Style = (Style)app.FindResource(typeof(ToolTip)) };
+        var panel = new StackPanel();
+        panel.Children.Add(text);
+        panel.Children.Add(pin);
+        panel.Children.Add(primary);
+        var window = new Window { Content = panel };
+        try
+        {
+            foreach (var theme in new[] { "Light", "Dark", "Light" })
+            {
+                LudaryxThemeService.Apply(new LauncherSettings { Theme = theme });
+                window.UpdateLayout();
+                var expectedCaret = theme == "Light" ? Colors.Black : Colors.White;
+                Require(((SolidColorBrush)text.CaretBrush).Color == expectedCaret, "Text caret did not follow the theme.");
+                Require(((SolidColorBrush)pin.CaretBrush).Color == expectedCaret, "PIN caret did not follow the theme.");
+                Require(((SolidColorBrush)primary.Background).Color == ((SolidColorBrush)app.FindResource("LudaryxPrimaryBackground")).Color,
+                    "Primary button retained the previous palette.");
+                Require(((SolidColorBrush)tooltip.Background).Color == ((SolidColorBrush)app.FindResource("LudaryxPanelBackground")).Color,
+                    "Tooltip retained the system background.");
+                foreach (var pair in new[]
+                {
+                    ("LudaryxTextPrimary", "LudaryxPanelBackground"),
+                    ("LudaryxTextSecondary", "LudaryxPanelBackground"),
+                    ("LudaryxGoldText", "LudaryxPanelBackground"),
+                    ("LudaryxPrimaryForeground", "LudaryxPrimaryBackground"),
+                    ("LudaryxRunningForeground", "LudaryxRunningBackground")
+                })
+                {
+                    var a = Luminance(((SolidColorBrush)app.FindResource(pair.Item1)).Color);
+                    var b = Luminance(((SolidColorBrush)app.FindResource(pair.Item2)).Color);
+                    Require((Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05) >= 4.5,
+                        $"Low text contrast in {theme}: {pair.Item1}.");
+                }
+            }
+        }
+        finally { window.Close(); }
+    }
+
+    private static double Luminance(Color color)
+    {
+        static double Linear(byte value)
+        {
+            var channel = value / 255d;
+            return channel <= 0.04045 ? channel / 12.92 : Math.Pow((channel + 0.055) / 1.055, 2.4);
+        }
+        return 0.2126 * Linear(color.R) + 0.7152 * Linear(color.G) + 0.0722 * Linear(color.B);
     }
 
     private static void CheckLegacySettings()

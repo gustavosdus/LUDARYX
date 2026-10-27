@@ -122,14 +122,14 @@
                             </StackPanel>
 
                             <TextBlock x:Name="RunningText" Grid.ColumnSpan="3"
-                                       Foreground="{StaticResource LudaryxBlue}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource LudaryxBlue}" FontWeight="SemiBold"
                                        VerticalAlignment="Bottom" Margin="0,78,0,0"/>
                         </Grid>
                     </Border>
 
                     <Border Style="{StaticResource LudaryxCard}" Margin="0,0,0,10"
                             Visibility="{Binding Visibility, ElementName=DuplicateText}">
-                        <TextBlock x:Name="DuplicateText" Foreground="#E6C577" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="DuplicateText" Foreground="{DynamicResource LudaryxGoldText}" TextWrapping="Wrap"/>
                     </Border>
 
                     <Border Style="{StaticResource LudaryxCard}" Margin="0,0,0,10">

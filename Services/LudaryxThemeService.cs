@@ -5,7 +5,7 @@ using UnifiedGameLauncher.Models;
 namespace UnifiedGameLauncher.Services;
 
 /// <summary>
-/// Paleta global do LUDARYX 1.2.0. Mantém janelas principais e secundárias
+/// Paleta global do LUDARYX. Mantém janelas principais e secundárias
 /// visualmente consistentes nos temas claro e escuro.
 /// </summary>
 public static class LudaryxThemeService
@@ -25,6 +25,7 @@ public static class LudaryxThemeService
         Set("LudaryxBorderHover", light ? "#FF163D" : "#3C6B93");
         Set("LudaryxTextPrimary", light ? "#111827" : "#F2F6FC");
         Set("LudaryxTextSecondary", light ? "#566273" : "#95A6BB");
+        Set("LudaryxBlue", light ? "#08668F" : "#59C7FF");
         Set("LudaryxDisabled", light ? "#8A94A3" : "#536174");
 
         Set("LudaryxButtonBackground", light ? "#E1E6EC" : "#111D2C");
@@ -61,6 +62,23 @@ public static class LudaryxThemeService
         Set("LudaryxDangerBackground", light ? "#FFF0F3" : "#24111B");
         Set("LudaryxDangerBorder", light ? "#D9153C" : "#7D233A");
         Set("LudaryxDangerForeground", light ? "#9B1230" : "#FF93A7");
+
+        Set("LudaryxTrack", light ? "#758396" : "#42546A");
+        Set("LudaryxTrackHover", light ? "#4D6075" : "#607991");
+        Set("LudaryxTrackMarker", light ? "#394B61" : "#7D91A8");
+        Set("LudaryxThumbBorder", light ? "#244A60" : "#D9FBFF");
+        Set("LudaryxGoldText", light ? "#765009" : "#E6C577");
+        Set("LudaryxSun", light ? "#79500A" : "#D6A94B");
+        Set("LudaryxMoon", light ? "#3E5875" : "#A9C9E8");
+        Set("LudaryxScrollThumb", light ? "#68788C" : "#354660");
+        Set("LudaryxRunningBackground", light ? "#C4EAF2" : "#0E7490");
+        Set("LudaryxRunningForeground", light ? "#124957" : "#FFFFFF");
+        Set("LudaryxToastBackground", light ? "#F2F7F9FB" : "#F20A1420");
+        Set("LudaryxToastBorder", light ? "#627F99" : "#39759A");
+        Set("LudaryxPrimaryBackground", light ? "#32BDEB" : "#D9153C");
+        Set("LudaryxPrimaryBorder", light ? "#087EA6" : "#FF3158");
+        Set("LudaryxPrimaryForeground", light ? "#07131D" : "#FFFFFF");
+        Set("LudaryxTextSelection", light ? "#9CC9E8" : "#527CA3");
 
         Set("SelectionAccentBorder", light ? "#FF163D" : "#66F5FF");
         Set("SearchCaretBrush", light ? "#000000" : "#FFFFFF");

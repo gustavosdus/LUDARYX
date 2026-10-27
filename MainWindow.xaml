@@ -4,7 +4,7 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:services="clr-namespace:UnifiedGameLauncher.Services"
         Title="LUDARYX" Icon="pack://application:,,,/Assets/LUDARYX.ico" Width="1400" Height="900"
-        WindowStartupLocation="CenterScreen" Background="#05070B"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource LudaryxWindowBackground}"
         WindowStyle="None" ResizeMode="CanResize"
         MinWidth="1100" MinHeight="650"
         KeyDown="Window_KeyDown" PreviewKeyDown="Window_PreviewKeyDown"
@@ -79,7 +79,7 @@
             <Setter Property="Margin" Value="2,0,0,0"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#DCE2EC"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -92,7 +92,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#20242D"/>
+                                <Setter Property="Background" Value="{DynamicResource LudaryxItemHoverBackground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -106,8 +106,8 @@
             <Setter Property="MinWidth" Value="112"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="Background" Value="{DynamicResource NavButtonBackground}"/>
-            <Setter Property="Foreground" Value="#E8ECF5"/>
-            <Setter Property="BorderBrush" Value="#293242"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="11"/>
@@ -161,14 +161,14 @@
                                         Height="2"
                                         Margin="2,0"
                                         VerticalAlignment="Center"
-                                        Background="#42546A"
+                                        Background="{DynamicResource LudaryxTrack}"
                                         CornerRadius="1"/>
                                 <Ellipse Width="5" Height="5" HorizontalAlignment="Left"
-                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                         VerticalAlignment="Center" Fill="{DynamicResource LudaryxTrackMarker}"/>
                                 <Ellipse Width="5" Height="5" HorizontalAlignment="Center"
-                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                         VerticalAlignment="Center" Fill="{DynamicResource LudaryxTrackMarker}"/>
                                 <Ellipse Width="5" Height="5" HorizontalAlignment="Right"
-                                         VerticalAlignment="Center" Fill="#7D91A8"/>
+                                         VerticalAlignment="Center" Fill="{DynamicResource LudaryxTrackMarker}"/>
                                 <Track x:Name="PART_Track" Orientation="Horizontal" IsDirectionReversed="False">
                                     <Track.DecreaseRepeatButton>
                                         <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" Focusable="False">
@@ -184,7 +184,7 @@
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
                                                     <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
-                                                             Stroke="#D9FBFF" StrokeThickness="1"/>
+                                                             Stroke="{DynamicResource LudaryxThumbBorder}" StrokeThickness="1"/>
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
@@ -206,17 +206,17 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="4" Foreground="#8092A8"
+                                <TextBlock Grid.Column="0" Text="4" Foreground="{DynamicResource LudaryxTextSecondary}"
                                            FontSize="7" HorizontalAlignment="Left"/>
-                                <TextBlock Grid.Column="1" Text="5" Foreground="#8092A8"
+                                <TextBlock Grid.Column="1" Text="5" Foreground="{DynamicResource LudaryxTextSecondary}"
                                            FontSize="7" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Text="6" Foreground="#8092A8"
+                                <TextBlock Grid.Column="2" Text="6" Foreground="{DynamicResource LudaryxTextSecondary}"
                                            FontSize="7" HorizontalAlignment="Right"/>
                             </Grid>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="DensityTrackLine" Property="Background" Value="#607991"/>
+                                <Setter TargetName="DensityTrackLine" Property="Background" Value="{DynamicResource LudaryxTrackHover}"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="DensityTrackLine" Property="Background"
@@ -240,10 +240,10 @@
                         <Grid Background="Transparent">
                             <Border x:Name="CoverTrackLine" Width="38" Height="2"
                                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    Background="#42546A" CornerRadius="1"/>
-                            <TextBlock Text="V" Foreground="#8EA1B7" FontWeight="Bold" FontSize="9"
+                                    Background="{DynamicResource LudaryxTrack}" CornerRadius="1"/>
+                            <TextBlock Text="V" Foreground="{DynamicResource LudaryxTextSecondary}" FontWeight="Bold" FontSize="9"
                                        HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1,0,0,0"/>
-                            <TextBlock Text="H" Foreground="#8EA1B7" FontWeight="Bold" FontSize="9"
+                            <TextBlock Text="H" Foreground="{DynamicResource LudaryxTextSecondary}" FontWeight="Bold" FontSize="9"
                                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,1,0"/>
                             <Track x:Name="PART_Track" Orientation="Horizontal"
                                    Margin="12,0" IsDirectionReversed="False">
@@ -261,7 +261,7 @@
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
                                                 <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
-                                                         Stroke="#D9FBFF" StrokeThickness="1"/>
+                                                         Stroke="{DynamicResource LudaryxThumbBorder}" StrokeThickness="1"/>
                                             </ControlTemplate>
                                         </Thumb.Template>
                                     </Thumb>
@@ -279,7 +279,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="CoverTrackLine" Property="Background" Value="#607991"/>
+                                <Setter TargetName="CoverTrackLine" Property="Background" Value="{DynamicResource LudaryxTrackHover}"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="CoverTrackLine" Property="Background"
@@ -303,10 +303,10 @@
                         <Grid Background="Transparent">
                             <Border x:Name="ThemeTrackLine" Width="38" Height="2"
                                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    Background="#42546A" CornerRadius="1"/>
-                            <TextBlock Text="☀" Foreground="#D6A94B" FontSize="13"
+                                    Background="{DynamicResource LudaryxTrack}" CornerRadius="1"/>
+                            <TextBlock Text="☀" Foreground="{DynamicResource LudaryxSun}" FontSize="13"
                                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBlock Text="☾" Foreground="#A9C9E8" FontSize="15"
+                            <TextBlock Text="☾" Foreground="{DynamicResource LudaryxMoon}" FontSize="15"
                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                             <Track x:Name="PART_Track" Orientation="Horizontal"
                                    Margin="14,0" IsDirectionReversed="False">
@@ -324,7 +324,7 @@
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
                                                 <Ellipse Fill="{DynamicResource SelectionAccentBorder}"
-                                                         Stroke="#D9FBFF" StrokeThickness="1"/>
+                                                         Stroke="{DynamicResource LudaryxThumbBorder}" StrokeThickness="1"/>
                                             </ControlTemplate>
                                         </Thumb.Template>
                                     </Thumb>
@@ -342,7 +342,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ThemeTrackLine" Property="Background" Value="#607991"/>
+                                <Setter TargetName="ThemeTrackLine" Property="Background" Value="{DynamicResource LudaryxTrackHover}"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="ThemeTrackLine" Property="Background"
@@ -357,7 +357,7 @@
 
         <Style x:Key="IntegratedIconButton" TargetType="Button">
             <Setter Property="Opacity" Value="0.58"/>
-            <Setter Property="Foreground" Value="#E8ECF5"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Width" Value="38"/>
@@ -432,9 +432,9 @@
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="MinWidth" Value="138"/>
-            <Setter Property="Foreground" Value="#E8ECF5"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
             <Setter Property="Background" Value="{DynamicResource ToolbarFieldBackground}"/>
-            <Setter Property="BorderBrush" Value="#252D3A"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource LudaryxBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="10,0,8,0"/>
             <Setter Property="FontSize" Value="11"/>
@@ -469,7 +469,7 @@
                                             <Grid Background="Transparent">
                                                 <Path HorizontalAlignment="Right" VerticalAlignment="Center"
                                                       Margin="0,0,10,0" Width="8" Height="5"
-                                                      Fill="#9AA6B8" Stretch="Fill"
+                                                      Fill="{DynamicResource LudaryxTextSecondary}" Stretch="Fill"
                                                       Data="M 0 0 L 8 0 L 4 5 Z"/>
                                             </Grid>
                                         </ControlTemplate>
@@ -483,7 +483,7 @@
                                 <Border Margin="0,3,0,0" Padding="3"
                                         MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                         MaxHeight="330" Background="{DynamicResource ToolbarPopupBackground}"
-                                        BorderBrush="#252D3A" BorderThickness="1"
+                                        BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1"
                                         CornerRadius="5">
                                     <ScrollViewer SnapsToDevicePixels="True">
                                         <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
@@ -508,7 +508,7 @@
             </Setter>
         </Style>
         <Style x:Key="FilterComboItem" TargetType="ComboBoxItem">
-            <Setter Property="Foreground" Value="#E8ECF5"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxTextPrimary}"/>
             <Setter Property="Background" Value="{DynamicResource ToolbarPopupBackground}"/>
             <Setter Property="Padding" Value="9,7"/>
             <Setter Property="Margin" Value="1"/>
@@ -526,7 +526,7 @@
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource ToolbarItemSelectedBackground}"/>
-                                <Setter Property="Foreground" Value="#62D4FF"/>
+                                <Setter Property="Foreground" Value="{DynamicResource LudaryxBadgeForeground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -538,7 +538,7 @@
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="9"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#354660"/>
+            <Setter Property="Foreground" Value="{DynamicResource LudaryxScrollThumb}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ScrollBar">
@@ -548,10 +548,10 @@
                                     <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Background="Transparent" BorderThickness="0" IsTabStop="False"/>
                                 </Track.DecreaseRepeatButton>
                                 <Track.Thumb>
-                                    <Thumb MinHeight="44" Background="#354660" BorderThickness="0">
+                                    <Thumb MinHeight="44" Background="{DynamicResource LudaryxScrollThumb}" BorderThickness="0">
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Border Background="#354660" CornerRadius="4" Margin="1"/>
+                                                <Border Background="{DynamicResource LudaryxScrollThumb}" CornerRadius="4" Margin="1"/>
                                             </ControlTemplate>
                                         </Thumb.Template>
                                     </Thumb>
@@ -606,7 +606,7 @@
         </Storyboard>
     </Window.Resources>
 
-    <Grid x:Name="MainRoot" Background="{StaticResource BlackChrome}">
+    <Grid x:Name="MainRoot" Background="{DynamicResource LudaryxWindowBackground}">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="HeaderRow" Height="78"/>
             <RowDefinition Height="3"/>
@@ -617,7 +617,7 @@
         </Grid.RowDefinitions>
 
         <!-- Desktop header: compact identity, central search and global actions. -->
-        <Grid x:Name="HeaderGrid" Grid.Row="0" Background="#05070B"
+        <Grid x:Name="HeaderGrid" Grid.Row="0" Background="{DynamicResource LudaryxWindowBackground}"
               MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
               GotKeyboardFocus="ToolbarRegion_GotKeyboardFocus">
             <Grid.ColumnDefinitions>
@@ -635,7 +635,7 @@
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Border Width="440" MaxWidth="520" Height="38"
                         Background="{DynamicResource SearchFieldBackground}"
-                        BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7"
+                        BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1" CornerRadius="7"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
                         <TextBlock Text="⌕" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="18"
@@ -731,8 +731,8 @@
         <Border x:Name="NeonSeparator" Grid.Row="1" Background="{StaticResource NeonRed}"/>
 
         <!-- Filters are kept separate from administrative actions. -->
-        <Border x:Name="ToolbarBorder" Grid.Row="2" Background="#070A10"
-                BorderBrush="#152131" BorderThickness="0,0,0,1"
+        <Border x:Name="ToolbarBorder" Grid.Row="2" Background="{DynamicResource LudaryxTitleBarBackground}"
+                BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="0,0,0,1"
                 GotKeyboardFocus="ToolbarRegion_GotKeyboardFocus">
             <Grid Margin="14,0,10,0">
                 <Grid.ColumnDefinitions>
@@ -821,7 +821,7 @@
                     <Border x:Name="FullscreenSearchContainer" Visibility="Collapsed"
                             Width="300" Height="36" Margin="8,0,7,0"
                             Background="{DynamicResource SearchFieldBackground}"
-                            BorderBrush="#2A3C50" BorderThickness="1" CornerRadius="7"
+                            BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="1" CornerRadius="7"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True">
                         <Grid>
                             <TextBlock Text="⌕" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="18" VerticalAlignment="Center" Margin="11,0,0,0"/>
@@ -885,11 +885,11 @@
         </Border>
 
         <!-- Active filters / context strip. -->
-        <Border x:Name="FilterSummaryBorder" Grid.Row="3" Background="#070C13"
-                BorderBrush="#172437" BorderThickness="0,0,0,1">
+        <Border x:Name="FilterSummaryBorder" Grid.Row="3" Background="{DynamicResource LudaryxPanelBackgroundAlt}"
+                BorderBrush="{DynamicResource LudaryxBorder}" BorderThickness="0,0,0,1">
             <Grid Margin="17,3,16,3">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="FILTROS" Foreground="#657B94" FontSize="9" FontWeight="Bold"
+                    <TextBlock Text="FILTROS" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="9" FontWeight="Bold"
                                VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <Button x:Name="CollectionFilterChip" Style="{StaticResource LudaryxFilterChip}"
                             Visibility="Collapsed" Click="ClearCollectionFilter_Click" Margin="0,0,6,0"/>
@@ -901,13 +901,13 @@
                             Visibility="Collapsed" Click="ResetSortFilter_Click" Margin="0,0,6,0"/>
                 </StackPanel>
                 <TextBlock x:Name="GameCountText" Text="0 jogos exibidos"
-                           Foreground="#8DA0B7" FontSize="10"
+                           Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="10"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>
 
         <!-- Shared library. Desktop adds a side panel; TV adds a hero above the same grid. -->
-        <Grid Grid.Row="4" Background="{StaticResource GameAreaBlue}">
+        <Grid Grid.Row="4" Background="{DynamicResource LudaryxListBackground}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -1044,7 +1044,7 @@
                     <ColumnDefinition x:Name="SelectedPanelColumn" Width="330"/>
                 </Grid.ColumnDefinitions>
 
-                <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{StaticResource GameAreaBlue}">
+                <Border x:Name="LibraryAreaBorder" Grid.Column="0" Background="{DynamicResource LudaryxListBackground}">
                     <Grid>
                         <ScrollViewer x:Name="LibraryScroll" Padding="24,18,18,24" ScrollChanged="LibraryScroll_ScrollChanged">
                             <ItemsControl x:Name="GameList" Focusable="True" FocusVisualStyle="{x:Null}"
@@ -1058,7 +1058,7 @@
                                     <DataTemplate>
                                         <Border Width="{Binding CoverWidth}" Height="{Binding CoverHeight}" Margin="14"
                                                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                Background="#0B1423" BorderThickness="2" CornerRadius="8"
+                                                BorderThickness="2" CornerRadius="8"
                                                 RenderTransformOrigin="0.5,0.5"
                                                 MouseEnter="Cover_MouseEnter"
                                                 MouseLeftButtonUp="Cover_Click" MouseRightButtonUp="Cover_RightClick"
@@ -1069,12 +1069,12 @@
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="BorderBrush" Value="Transparent"/>
-                                                    <Setter Property="Background" Value="#0B1423"/>
+                                                    <Setter Property="Background" Value="{DynamicResource LudaryxItemBackground}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsControllerSelected}" Value="True">
                                                             <Setter Property="BorderBrush" Value="{DynamicResource SelectionAccentBorder}"/>
                                                             <Setter Property="BorderThickness" Value="3"/>
-                                                            <Setter Property="Background" Value="#10283A"/>
+                                                            <Setter Property="Background" Value="{DynamicResource LudaryxItemHoverBackground}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -1093,19 +1093,19 @@
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7"
                                                         Visibility="{Binding IsFavorite, Converter={StaticResource BoolToVisibility}}">
-                                                    <TextBlock Text="★" Foreground="#FFD86A" FontSize="10"/>
+                                                    <TextBlock Text="★" Foreground="{DynamicResource LudaryxGoldText}" FontSize="10"/>
                                                 </Border>
 
                                                 <Border Style="{StaticResource LudaryxGameBadge}"
                                                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7"
                                                         Visibility="{Binding IsDuplicate, Converter={StaticResource BoolToVisibility}}">
-                                                    <TextBlock Text="{Binding DuplicateBadgeLabel}" Foreground="#E4C576" FontSize="8" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding DuplicateBadgeLabel}" Foreground="{DynamicResource LudaryxGoldText}" FontSize="8" FontWeight="Bold"/>
                                                 </Border>
 
                                                 <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="7"
-                                                        Padding="7,3" CornerRadius="5" Background="#D90E7490"
+                                                        Padding="7,3" CornerRadius="5" Background="{DynamicResource LudaryxRunningBackground}"
                                                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}">
-                                                    <TextBlock Text="● JOGANDO" Foreground="White" FontSize="8" FontWeight="Bold"/>
+                                                    <TextBlock Text="● JOGANDO" Foreground="{DynamicResource LudaryxRunningForeground}" FontSize="8" FontWeight="Bold"/>
                                                 </Border>
                                             </Grid>
                                         </Border>
@@ -1127,10 +1127,10 @@
 
                         <StackPanel x:Name="EmptyStatePanel" Visibility="Collapsed"
                                     HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="Nenhum jogo encontrado" Foreground="White"
+                            <TextBlock Text="Nenhum jogo encontrado" Foreground="{DynamicResource LudaryxTextPrimary}"
                                        FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             <TextBlock Text="Nenhum item corresponde aos filtros atuais."
-                                       Foreground="#8294AA" Margin="0,7,0,14" HorizontalAlignment="Center"/>
+                                       Foreground="{DynamicResource LudaryxTextSecondary}" Margin="0,7,0,14" HorizontalAlignment="Center"/>
                             <Button Content="LIMPAR FILTROS" Click="ClearFilters_Click" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
@@ -1184,7 +1184,7 @@
         </Grid>
 
         <!-- Adaptive footer. -->
-        <Border x:Name="FooterBorder" Grid.Row="5" Background="#05070B"
+        <Border x:Name="FooterBorder" Grid.Row="5" Background="{DynamicResource LudaryxWindowBackground}"
                 BorderBrush="{DynamicResource LudaryxTitleBarBorder}" BorderThickness="0,1,0,0">
             <Grid Margin="16,0">
                 <Grid.ColumnDefinitions>
@@ -1246,13 +1246,13 @@
                 Margin="24"
                 Padding="16,10"
                 MaxWidth="680"
-                Background="#F20A1420"
-                BorderBrush="#39759A"
+                Background="{DynamicResource LudaryxToastBackground}"
+                BorderBrush="{DynamicResource LudaryxToastBorder}"
                 BorderThickness="1"
                 CornerRadius="8"
                 IsHitTestVisible="False">
             <TextBlock x:Name="ToastText"
-                       Foreground="White"
+                       Foreground="{DynamicResource LudaryxTextPrimary}"
                        FontSize="11"
                        FontWeight="SemiBold"
                        TextWrapping="Wrap"/>
@@ -1477,7 +1477,7 @@
 
         <!-- Startup overlay remains unchanged in behavior. -->
         <Grid x:Name="StartupOverlay" Grid.RowSpan="6" Panel.ZIndex="9999"
-              Background="#02050C" Opacity="1" IsHitTestVisible="True">
+              Background="{DynamicResource LudaryxWindowBackground}" Opacity="1" IsHitTestVisible="True">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="1240" Height="380">
                 <Ellipse x:Name="StartupGlowHalo" Width="900" Height="150" Fill="#1AAEFF" Opacity="0"
                          HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,42,0,0">
@@ -1496,7 +1496,7 @@
                                Fill="#2AB0FF" RadiusX="2" RadiusY="2"
                                HorizontalAlignment="Center" Margin="0,12,0,0"/>
                     <TextBlock x:Name="StartupLibraryLoadingText" Text="CARREGANDO BIBLIOTECA..."
-                               Visibility="Collapsed" Foreground="#DCE9FF"
+                               Visibility="Collapsed" Foreground="{DynamicResource LudaryxTextPrimary}"
                                FontSize="12" FontWeight="SemiBold"
                                HorizontalAlignment="Center" Margin="0,14,0,0" Panel.ZIndex="10000"/>
                 </StackPanel>

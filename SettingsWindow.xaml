@@ -340,7 +340,7 @@
                                                     <TextBlock Text="{Binding Name}" Foreground="{DynamicResource LudaryxTextPrimary}" FontSize="13" FontWeight="SemiBold"/>
                                                     <TextBlock Text="{Binding ProviderId}" Foreground="{DynamicResource LudaryxTextSecondary}" FontSize="10" Margin="0,2,0,0"/>
                                                 </StackPanel>
-                                                <TextBlock Grid.Column="1" Text="FAVORITO" Foreground="#D7B46A" VerticalAlignment="Center" Margin="10"
+                                                <TextBlock Grid.Column="1" Text="FAVORITO" Foreground="{DynamicResource LudaryxGoldText}" VerticalAlignment="Center" Margin="10"
                                                            Visibility="{Binding IsFavorite, Converter={StaticResource BoolToVisibility}}"/>
                                                 <CheckBox Grid.Column="2" IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center" Margin="12,0,4,0" ToolTip="Mostrar"/>
                                                 <Button Grid.Column="3" Content="DESOCULTAR" Tag="{Binding}" Click="Unhide_Click" Margin="8,0,0,0"
