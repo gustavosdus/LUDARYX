@@ -1,6 +1,6 @@
 # LUDARYX 1.2.3
 
-Versão em desenvolvimento.
+Versão estável.
 
 ## Atualizador
 - Corrigido o corte do botão CANCELAR na janela de download de atualização.
@@ -35,5 +35,34 @@ Versão em desenvolvimento.
 - Avisos de backup e duplicação passaram a usar diálogo próprio do LUDARYX, permitindo traduzir também botões de confirmação independentemente do idioma do Windows.
 - O instalador 1.2.3 agora oferece seleção entre Português (Brasil) e English, incluindo tarefas, ação pós-instalação e mensagens de programa em execução.
 
-## Em desenvolvimento
-Estas notas serão ampliadas conforme a 1.2.3 receber novas correções.
+## Biblioteca e ordenação
+- Corrigidos os filtros de biblioteca, plataforma e ordenação para exibir a opção selecionada na barra.
+- Corrigido o botão de direção crescente/decrescente da ordenação.
+
+## Títulos e descrições por idioma
+- Títulos e descrições automáticos seguem o idioma selecionado, com inglês como alternativa quando não há conteúdo localizado disponível.
+- Título e descrição podem ser personalizados manualmente por idioma. Limpar e salvar o campo restaura o conteúdo automático daquele idioma.
+- A atualização individual pela tela de Personalização também consulta títulos e descrições localizados.
+- Descrições da Steam têm prioridade, seguidas pela Wikipedia e pelo GOG; alterações manuais continuam prioritárias.
+- Corrigida a perda de descrições durante migração de cache e atualizações incompletas.
+- Metadados recuperados são preservados mesmo quando uma etapa posterior de download de artes falha.
+- Ajustados os limites de tempo e o tratamento de falhas das fontes de metadados.
+
+## Personalização e controle parental
+- Alterações manuais são reaplicadas após atualizações automáticas, inclusive em fluxos de duplicatas e cancelamento.
+- Corrigida a normalização e exibição de ESRB E10+, sem depender de passar o mouse ou abrir Personalização.
+
+## Diálogos e temas
+- Avisos e confirmações do aplicativo usam diálogos próprios do LUDARYX, com botões localizados e navegação por teclado e controle.
+- A janela de erro do atualizador acompanha o idioma e o tema salvos.
+- Revisadas cores da biblioteca, filtros, campos, barras de rolagem, notificações, seleção e dicas de interface nos temas claro e escuro.
+- Melhorado o contraste de textos, cursores de edição, campos de PIN e botões de ação no tema claro.
+
+## Organização e validação
+- Código reorganizado em arquivos menores por responsabilidade, com limpeza de trechos sem uso e padronização da formatação.
+- Documentação de edição manual e script de formatação atualizados.
+- Ampliados os testes de regressão para localização, metadados manuais, descrições, classificações, diálogos e temas.
+
+## Instalação
+- Instalador para Windows x64, com o aplicativo e o atualizador na versão 1.2.3.
+- Arquivo SHA256SUMS.txt publicado junto ao instalador para verificação de integridade.

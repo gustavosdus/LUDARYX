@@ -21,7 +21,7 @@ function Require-Equal([string]$Label, [string]$Actual, [string]$Expected) {
 $mainProject = Join-Path $ProjectRoot "UnifiedGameLauncher.csproj"
 $updaterProject = Join-Path $ProjectRoot "Updater\LUDARYX.Updater.csproj"
 $installerScript = Join-Path $ProjectRoot "LUDARYX-Installer-$ExpectedVersion.iss"
-$releaseNotes = Join-Path $ProjectRoot "RELEASE-$ExpectedVersion.txt"
+$releaseNotes = Join-Path $ProjectRoot "Docs/Releases/RELEASE-$ExpectedVersion.txt"
 $publishScript = Join-Path $PSScriptRoot "Publish-Release.ps1"
 
 Require-File $mainProject

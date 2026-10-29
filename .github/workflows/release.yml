@@ -1,6 +1,8 @@
 name: Publish LUDARYX
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
@@ -17,10 +19,10 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'release: publish LUDARYX 1.2.3')
     runs-on: windows-latest
     env:
-      RELEASE_VERSION: ${{ inputs.version }}
+      RELEASE_VERSION: ${{ inputs.version || '1.2.3' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
@@ -51,6 +53,6 @@ jobs:
             --repo $env:GITHUB_REPOSITORY `
             --target $env:GITHUB_SHA `
             --title "LUDARYX $env:RELEASE_VERSION" `
-            --notes-file "./RELEASE-$env:RELEASE_VERSION.txt" `
+            --notes-file "./Docs/Releases/RELEASE-$env:RELEASE_VERSION.txt" `
             --latest
           if ($LASTEXITCODE -ne 0) { throw 'GitHub release creation failed.' }
