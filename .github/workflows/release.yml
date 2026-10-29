@@ -1,8 +1,6 @@
 name: Publish LUDARYX
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       version:
@@ -19,11 +17,10 @@ concurrency:
 
 jobs:
   publish:
-    if: >-
-      github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'release: publish LUDARYX 1.2.3')
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
     env:
-      RELEASE_VERSION: ${{ inputs.version || '1.2.3' }}
+      RELEASE_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
