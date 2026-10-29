@@ -19,7 +19,8 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'release: publish LUDARYX 1.2.3')
+    if: >-
+      github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'release: publish LUDARYX 1.2.3')
     runs-on: windows-latest
     env:
       RELEASE_VERSION: ${{ inputs.version || '1.2.3' }}
